@@ -3,8 +3,14 @@
 #include <QVector>
 #include <QHash>
 #include <AL/alut.h>
+#ifdef USE_OGGVORBIS
+#include <QFile>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
+#endif
 //------------------------------------------------------------------------------
-namespace utils {
+namespace utils
+{
 //------------------------------------------------------------------------------
 class USoundContainer;
 //------------------------------------------------------------------------------
@@ -30,6 +36,7 @@ public:
 
     bool openFile(const QString& fileName, bool looped = false, bool streamed = false);
     void play();
+    void pause();
     void stop();
     void close();
     void update();
@@ -40,13 +47,23 @@ public:
 
 private:
     bool loadWavFile(const QString& fileName);
+#ifdef USE_OGGVORBIS
+    bool ReadOggBlock(ALuint bufferId, size_t size);
+    bool loadOggFile(const QString& fileName, bool streamed = false);
+#endif
     bool checkSourceState(ALint state) const;
 
 private:
-    TSoundInfoHash mContainer;
+    TSoundInfoHash mBuffers;
     ALCdevice* mDevice;
     ALCcontext* mContext;
     ALuint mSourceId;
+#ifdef USE_OGGVORBIS
+    OggVorbis_File* mOggVorbisFile;
+    vorbis_comment* mVorbisComment;
+    vorbis_info* mVorbisInfo;
+    QFile mOggFile;
+#endif
     bool mLooped;
     bool mStreamed;
 };

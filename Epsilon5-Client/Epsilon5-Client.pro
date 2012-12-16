@@ -49,6 +49,9 @@ HEADERS  += \
 
 FORMS    +=
 
+OTHER_FILES += \
+    ../Epsilon5-Proto/Epsilon5.proto
+
 QMAKE_CXXFLAGS += -std=c++0x
 # -march=core2 -mfpmath=sse -Ofast -flto -funroll-loops
 
@@ -62,9 +65,15 @@ unix {
         LIBS += -lXrandr
     }
 }
+
 win32 {
     LIBS += -luser32
 }
 
-OTHER_FILES += \
-    ../Epsilon5-Proto/Epsilon5.proto
+# OGG/Vorbis support
+VAR=$$(USE_OGGVORBIS)
+!isEmpty(VAR) {
+    message( "Using OGG/Vorbis sound support" )
+    DEFINES += USE_OGGVORBIS
+    LIBS += -lvorbisfile
+}

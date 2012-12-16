@@ -55,6 +55,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     , CurrentWorld(NULL)
     , ShowStats(false)
     , Menu(Images)
+    , GameMusic(new utils::USound(this))
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
@@ -68,6 +69,8 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     Control.mutable_keystatus()->set_keydown(false);
     Control.set_weapon(Epsilon5::Pistol);
 
+    Application->GetSound()->addSound(GameMusic);
+
     startTimer(20);
 }
 
@@ -77,6 +80,9 @@ void TMainDisplay::Init() {
 
     connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
             Map, SLOT(LoadMap(QString)));
+
+    GameMusic->openFile("sounds/test.ogg", true, true);
+    GameMusic->play();
 
     Menu.Init();
 }
@@ -91,6 +97,7 @@ void TMainDisplay::RedrawWorld() {
 }
 
 void TMainDisplay::timerEvent(QTimerEvent*) {
+    GameMusic->update();
     this->update();
 }
 
@@ -206,6 +213,16 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
     case Qt::Key_F12:
         Application->GetNetwork()->Stop();
         close();
+        break;
+    case Qt::Key_F5:
+        GameMusic->play();
+        break;
+    case Qt::Key_F6:
+        GameMusic->pause();
+        break;
+    case Qt::Key_F7:
+        GameMusic->stop();
+        break;
 #endif
     case Qt::Key_Escape:
         Application->GetNetwork()->Stop();
