@@ -2,7 +2,11 @@
 #include <QObject>
 #include <QVector>
 #include <QHash>
+#include <AL/al.h>
+#include <AL/alc.h>
+#ifdef USE_ALUT
 #include <AL/alut.h>
+#endif
 #ifdef USE_OGGVORBIS
 #include <QFile>
 #include <vorbis/codec.h>
@@ -46,7 +50,9 @@ public:
     bool isStoped() const;
 
 private:
+#ifdef USE_ALUT
     bool loadWavFile(const QString& fileName);
+#endif
 #ifdef USE_OGGVORBIS
     bool ReadOggBlock(ALuint bufferId, size_t size);
     bool loadOggFile(const QString& fileName, bool streamed = false);
@@ -92,3 +98,4 @@ private:
 //------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------
+

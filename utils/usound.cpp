@@ -20,6 +20,7 @@ bool checkALError()
     return false;
 }
 //------------------------------------------------------------------------------
+#ifdef USE_ALUT
 bool checkALUTError()
 {
     ALenum errorCode = alutGetError();
@@ -29,6 +30,7 @@ bool checkALUTError()
     qDebug("ALUT Error: %s", alutGetErrorString(errorCode));
     return false;
 }
+#endif
 //------------------------------------------------------------------------------
 bool checkALCError(ALCdevice* device)
 {
@@ -77,6 +79,7 @@ int oggClose(void* datasource)
 }
 //------------------------------------------------------------------------------
 #endif
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------
 USound::USound(QObject* parent)
@@ -122,6 +125,7 @@ bool USound::isValid() const
     return mDevice && mContext;
 }
 //------------------------------------------------------------------------------
+#ifdef USE_ALUT
 bool USound::loadWavFile(const QString& fileName)
 {
     if (!isValid()) {
@@ -149,6 +153,7 @@ bool USound::loadWavFile(const QString& fileName)
     alSourcei(mSourceId, AL_BUFFER, buffer.ID);
     return true;
 }
+#endif
 //------------------------------------------------------------------------------
 #ifdef USE_OGGVORBIS
 bool USound::ReadOggBlock(ALuint bufferId, size_t size)
@@ -283,9 +288,11 @@ bool USound::openFile(const QString& fileName, bool looped, bool streamed)
     alSourcei(mSourceId, AL_LOOPING, mLooped);
 
     QString fileExt = fileName.right(4).toLower();
+#ifdef USE_ALUT
     if (fileExt == ".wav") {
         return loadWavFile(fileName);
     }
+#endif
 #ifdef USE_OGGVORBIS
     if (fileExt == ".ogg") {
         return loadOggFile(fileName, streamed);
@@ -424,11 +431,12 @@ void USoundContainer::initOpenAL()
     ALfloat listenerVelocity[] = { 0.0, 0.0, 0.0 };
     ALfloat listenerOrientation[] = { 0.0, 0.0, -1.0,  0.0, 1.0, 0.0 };
 
+#ifdef USE_ALUT
     if (!alutInitWithoutContext(NULL, NULL)) {
         qDebug() << Q_FUNC_INFO << ":: ALUT initialization failed";
         return;
     }
-
+#endif
     mDevice = alcOpenDevice(NULL);
     if (!mDevice) {
         qDebug() << Q_FUNC_INFO << ":: default sound device not present";
@@ -449,7 +457,9 @@ void USoundContainer::initOpenAL()
 //------------------------------------------------------------------------------
 void USoundContainer::destroyOpenAL()
 {
+#ifdef USE_ALUT
     alutExit();
+#endif
     alcMakeContextCurrent(NULL);
     alcDestroyContext(mContext);
     alcCloseDevice(mDevice);

@@ -55,7 +55,7 @@ OTHER_FILES += \
 QMAKE_CXXFLAGS += -std=c++0x
 # -march=core2 -mfpmath=sse -Ofast -flto -funroll-loops
 
-LIBS += -lprotobuf -lalut
+LIBS += -lprotobuf
 
 unix {
     VAR=$$(USE_XRANDR)
@@ -70,10 +70,18 @@ win32 {
     LIBS += -luser32
 }
 
-# OGG/Vorbis support
+# OGG/Vorbis support (using libvorbisfile)
 VAR=$$(USE_OGGVORBIS)
 !isEmpty(VAR) {
     message( "Using OGG/Vorbis sound support" )
     DEFINES += USE_OGGVORBIS
     LIBS += -lvorbisfile
+}
+
+# Wav support (using freealut lib)
+VAR=$$(USE_ALUT)
+!isEmpty(VAR) {
+    message( "Using WAV sound support" )
+    DEFINES += USE_ALUT
+    LIBS += -lalut
 }
