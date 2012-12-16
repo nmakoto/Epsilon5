@@ -26,7 +26,8 @@ SOURCES += \
     objects.cpp \
     ../utils/ucast.cpp \
     graphics/basicitem.cpp \
-    menu.cpp
+    menu.cpp \
+    ../utils/usound.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -43,14 +44,15 @@ HEADERS  += \
     objects.h \
     ../utils/ucast.h \
     graphics/basicitem.h \
-    menu.h
+    menu.h \
+    ../utils/usound.h
 
 FORMS    +=
 
 QMAKE_CXXFLAGS += -std=c++0x
 # -march=core2 -mfpmath=sse -Ofast -flto -funroll-loops
 
-LIBS += -lprotobuf
+LIBS += -lprotobuf -lalut
 
 unix {
     VAR=$$(USE_XRANDR)

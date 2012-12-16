@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QDateTime>
+#include "../utils/usound.h"
 #include "maindisplay.h"
 #include "network.h"
 #include "settings.h"
@@ -35,13 +36,19 @@ public:
     inline void SetState(EState state) {
         State = state;
     }
+    inline utils::USoundContainer* GetSound() {
+        return SoundContainer;
+    }
+
 public slots:
     inline void Disconnected() {
         State = ST_MainMenu;
     }
+
 private:
     TMainDisplay MainDisplay;
     TNetwork* Network;
     TSettings* Settings;
     EState State;
+    utils::USoundContainer* SoundContainer;
 };

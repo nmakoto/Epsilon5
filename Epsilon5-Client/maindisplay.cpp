@@ -8,10 +8,10 @@
 #include <QMatrix>
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "../utils/uexception.h"
+#include "../utils/usound.h"
 #include "network.h"
 #include "maindisplay.h"
 #include "application.h"
-
 
 #ifdef Q_OS_UNIX
 #include <linux/input.h>
@@ -79,6 +79,13 @@ void TMainDisplay::Init() {
             Map, SLOT(LoadMap(QString)));
 
     Menu.Init();
+
+    utils::USound* sound = new utils::USound();
+    // Append sound to container BEFORE opening
+    Application->GetSound()->addSound(*sound);
+
+    sound->openFile("sounds/bells001.wav", false);
+    sound->play();
 }
 
 TMainDisplay::~TMainDisplay() {
@@ -97,6 +104,7 @@ void TMainDisplay::timerEvent(QTimerEvent*) {
 void TMainDisplay::paintEvent(QPaintEvent*) {
     EState state = Application->GetState();
     QPainter painter(this);
+
     switch (state) {
     case ST_Connecting : {
         painter.fillRect(0, 0, width(), height(), Qt::black);
