@@ -46,9 +46,9 @@ public slots:
     }
 
 private:
+    utils::USoundContainer* SoundContainer;
     TMainDisplay MainDisplay;
     TNetwork* Network;
     TSettings* Settings;
     EState State;
-    utils::USoundContainer* SoundContainer;
 };

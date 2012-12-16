@@ -79,13 +79,6 @@ void TMainDisplay::Init() {
             Map, SLOT(LoadMap(QString)));
 
     Menu.Init();
-
-    utils::USound* sound = new utils::USound();
-    // Append sound to container BEFORE opening
-    Application->GetSound()->addSound(*sound);
-
-    sound->openFile("sounds/bells001.wav", false);
-    sound->play();
 }
 
 TMainDisplay::~TMainDisplay() {
@@ -121,7 +114,8 @@ void TMainDisplay::paintEvent(QPaintEvent*) {
         DrawPing(painter);
 
         if( !Application->GetNetwork()->IsServerAlive() )
-            DrawText(painter, QPoint(width() / 2 - 50, height() / 2 - 5), tr("Connection lost..."), 28);
+            DrawText(painter, QPoint(width() / 2 - 50, height() / 2 - 5),
+                     tr("Connection lost..."), 28);
         break;
     }
 }

@@ -2,11 +2,11 @@
 
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
+    , SoundContainer(new utils::USoundContainer(this))
     , MainDisplay(this)
     , Network(new TNetwork(this))
     , Settings(new TSettings(this))
     , State(ST_MainMenu)
-    , SoundContainer(new utils::USoundContainer(this))
 {
     connect(Network, SIGNAL(WorldReceived()), &MainDisplay, SLOT(RedrawWorld()));
     connect(Network, SIGNAL(Disconnected()), SLOT(Disconnected()));
