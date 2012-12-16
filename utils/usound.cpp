@@ -10,7 +10,15 @@ bool checkALError() {
     ALenum errorCode = alGetError();
     if( errorCode == AL_NO_ERROR )
         return true;
-    qDebug( "ALError: %s", alGetString(errorCode));
+    qDebug( "AL Error: %s", alGetString(errorCode));
+    return false;
+}
+//------------------------------------------------------------------------------
+bool checkALUTError() {
+    ALenum errorCode = alutGetError();
+    if( errorCode == AL_NO_ERROR )
+        return true;
+    qDebug( "ALUT Error: %s", alutGetErrorString(errorCode));
     return false;
 }
 //------------------------------------------------------------------------------
@@ -19,7 +27,7 @@ bool checkALCError(ALCdevice* device) {
     if( errorCode == AL_NO_ERROR )
         return true;
 
-    qDebug( "ALCError: %s", alcGetString(device, errorCode));
+    qDebug( "ALC Error: %s", alcGetString(device, errorCode));
     return false;
 }
 //------------------------------------------------------------------------------
@@ -76,10 +84,6 @@ bool USound::loadWavFile(const QString &fileName)
     }
 
     TSoundInfo buffer;
-    ALvoid *data;
-    ALsizei size;
-    ALboolean loop;
-
     buffer.fileName = fileName.trimmed();
     for( auto it = mContainer.constBegin(); it != mContainer.constEnd(); ++it) {
         if( (*it).fileName == buffer.fileName ) {
@@ -89,23 +93,11 @@ bool USound::loadWavFile(const QString &fileName)
         }
     }
 
-    alGenBuffers(1, &buffer.ID);
-    if( !checkALError() )
+    ALint id = alutCreateBufferFromFile(qPrintable(buffer.fileName));
+    if( !checkALUTError() || id == AL_NONE )
         return false;
 
-    alutLoadWAVFile((ALbyte*) qPrintable(buffer.fileName), &buffer.format,
-            &data, &size, &buffer.rate, &loop);
-    if( !checkALError() )
-        return false;
-
-    alBufferData(buffer.ID, buffer.format, data, size, buffer.rate);
-    if( !checkALError() )
-        return false;
-
-    alutUnloadWAV(buffer.format, data, size, buffer.rate);
-    if( !checkALError() )
-        return false;
-
+    buffer.ID = id;
     mContainer[buffer.ID] = buffer;
     alSourcei(mSourceId, AL_BUFFER, buffer.ID);
     return true;
@@ -160,8 +152,9 @@ void USound::close()
         return;
 
     alSourceStop(mSourceId);
-    if (alIsSource(mSourceId))
+    if (alIsSource(mSourceId)) {
         alDeleteSources(1, &mSourceId);
+    }
 }
 //------------------------------------------------------------------------------
 void USound::update()
@@ -174,11 +167,26 @@ void USound::move(qreal x, qreal y, qreal z)
     alSourcefv(mSourceId, AL_POSITION, pos);
 }
 //------------------------------------------------------------------------------
+bool USound::checkSourceState(ALint state) const
+{
+    ALint currentState;
+    alGetSourcei(mSourceId, AL_SOURCE_STATE, &currentState);
+    return currentState == state;
+}
+//------------------------------------------------------------------------------
 bool USound::isPlaying() const
 {
-    ALint state;
-    alGetSourcei(mSourceId, AL_SOURCE_STATE, &state);
-    return state == AL_PLAYING;
+    return checkSourceState(AL_PLAYING);
+}
+//------------------------------------------------------------------------------
+bool USound::isPaused() const
+{
+    return checkSourceState(AL_PAUSED);
+}
+//------------------------------------------------------------------------------
+bool USound::isStoped() const
+{
+    return checkSourceState(AL_STOPPED);
 }
 //------------------------------------------------------------------------------
 USoundContainer::USoundContainer(QObject* parent)
@@ -191,8 +199,9 @@ USoundContainer::USoundContainer(QObject* parent)
 //------------------------------------------------------------------------------
 USoundContainer::~USoundContainer()
 {
-    for( auto it = mSounds.begin(); it != mSounds.end(); ++it)
-        (*it).close();
+    for( auto it = mSounds.begin(); it != mSounds.end(); ++it) {
+        (*it)->close();
+    }
 
     destroyOpenAL();
 }
@@ -202,6 +211,12 @@ void USoundContainer::initOpenAL()
     ALfloat listenerPosition[] = { 0.0, 0.0, 2.0 };
     ALfloat listenerVelocity[] = { 0.0, 0.0, 0.0 };
     ALfloat listenerOrientation[] = { 0.0, 0.0, -1.0,  0.0, 1.0, 0.0 };
+
+    if( !alutInitWithoutContext(NULL, NULL) )
+    {
+        qDebug( "ALUT initialization failed" );
+        return;
+    }
 
     mDevice = alcOpenDevice(NULL);
     if( !mDevice )
@@ -223,17 +238,16 @@ void USoundContainer::initOpenAL()
 //------------------------------------------------------------------------------
 void USoundContainer::destroyOpenAL()
 {
+    alutExit();
     alcMakeContextCurrent(NULL);
-    if( mContext )
-        alcDestroyContext(mContext);
-    if( mDevice )
-        alcCloseDevice(mDevice);
+    alcDestroyContext(mContext);
+    alcCloseDevice(mDevice);
 }
 //------------------------------------------------------------------------------
-void USoundContainer::addSound(USound &sound)
+void USoundContainer::addSound(USound* sound)
 {
-    sound.init(mDevice, mContext);
-    sound.setParent(this);
+    sound->init(mDevice, mContext);
+    sound->setParent(this);
     mSounds.append(sound);
 }
 //------------------------------------------------------------------------------

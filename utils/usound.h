@@ -35,9 +35,12 @@ public:
     void update();
     void move(qreal x, qreal y, qreal z = 0.0);
     bool isPlaying() const;
+    bool isPaused() const;
+    bool isStoped() const;
 
 private:
     bool loadWavFile(const QString& fileName);
+    bool checkSourceState(ALint state) const;
 
 private:
     TSoundInfoHash mContainer;
@@ -51,12 +54,12 @@ private:
 class USoundContainer : public QObject
 {
     Q_OBJECT
-    typedef QVector<USound> TSoundVector;
+    typedef QVector<USound*> TSoundVector;
 public:
     explicit USoundContainer(QObject* parent = 0);
     ~USoundContainer();
 
-    void addSound(USound& sound);
+    void addSound(USound* sound);
     int count() const;
     bool isValid() const;
 

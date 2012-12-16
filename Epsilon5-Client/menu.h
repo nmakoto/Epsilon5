@@ -44,6 +44,7 @@ class TMenu : public QObject
     Q_OBJECT
 public:
     explicit TMenu(TImageStorage* images, QObject* parent = 0);
+    ~TMenu();
     void paint(QPainter* p);
     TApplication* Application();
 

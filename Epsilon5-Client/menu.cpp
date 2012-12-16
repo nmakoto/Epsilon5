@@ -12,8 +12,13 @@ TMenu::TMenu(TImageStorage* images, QObject* parent)
     , SoundClick(new utils::USound(this))
 {
     // Append sound to container BEFORE opening
-    Application()->GetSound()->addSound(*SoundClick);
+    Application()->GetSound()->addSound(SoundClick);
     SoundClick->openFile("sounds/hit-01.wav");
+}
+
+TMenu::~TMenu()
+{
+    SoundClick->close();
 }
 
 TMenuItem* TMenu::AddMenuItem(TMenuItem* item)
