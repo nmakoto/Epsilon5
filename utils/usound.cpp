@@ -174,6 +174,13 @@ void USound::move(qreal x, qreal y, qreal z)
     alSourcefv(mSourceId, AL_POSITION, pos);
 }
 //------------------------------------------------------------------------------
+bool USound::isPlaying() const
+{
+    ALint state;
+    alGetSourcei(mSourceId, AL_SOURCE_STATE, &state);
+    return state == AL_PLAYING;
+}
+//------------------------------------------------------------------------------
 USoundContainer::USoundContainer(QObject* parent)
     : QObject(parent)
     , mDevice(0)

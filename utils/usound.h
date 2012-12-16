@@ -28,12 +28,13 @@ public:
     void init(ALCdevice* device, ALCcontext* context);
     bool isValid() const;
 
-    bool openFile(const QString& fileName, bool looped, bool streamed = false);
+    bool openFile(const QString& fileName, bool looped = false, bool streamed = false);
     void play();
     void stop();
     void close();
     void update();
     void move(qreal x, qreal y, qreal z = 0.0);
+    bool isPlaying() const;
 
 private:
     bool loadWavFile(const QString& fileName);
