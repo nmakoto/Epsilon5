@@ -57,7 +57,7 @@ OTHER_FILES += \
 QMAKE_CXXFLAGS += -std=c++0x
 # -march=core2 -mfpmath=sse -Ofast -flto -funroll-loops
 
-LIBS += -lprotobuf
+LIBS += -lprotobuf -lopenal
 
 unix {
     VAR=$$(USE_XRANDR)

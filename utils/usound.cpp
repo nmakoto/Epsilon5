@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QStringList>
 #include <QFile>
 #include "../utils/usound.h"
 //------------------------------------------------------------------------------
@@ -85,33 +86,34 @@ USound::USound(QObject* parent)
     : QObject(parent)
     , mDevice(0)
     , mContext(0)
-    , mSourceId(0)
-    , mLooped(0)
+//    , mSourceId(0)
+//    , mLooped(0)
 {
 }
 //------------------------------------------------------------------------------
-USound::USound(const USound& sound)
-    : QObject(sound.parent())
-    , mDevice(sound.mDevice)
-    , mContext(sound.mContext)
-    , mSourceId(sound.mSourceId)
-    , mLooped(sound.mLooped)
-{
-}
+//USound::USound(const USound& sound)
+//    : QObject(sound.parent())
+//    , mDevice(sound.mDevice)
+//    , mContext(sound.mContext)
+//    , mSourceId(sound.mSourceId)
+//    , mLooped(sound.mLooped)
+//{
+//}
 //------------------------------------------------------------------------------
 USound::~USound()
 {
-    alDeleteBuffers(1, &mSourceId);
+    for( auto it = mSources.begin(); it != mSources.end(); ++it)
+        alDeleteBuffers(1, &((*it).sourceId));
 }
 //------------------------------------------------------------------------------
-USound& USound::operator =(const USound& sound)
-{
-    mDevice = sound.mDevice;
-    mContext = sound.mContext;
-    mSourceId = sound.mSourceId;
-    mLooped = sound.mLooped;
-    return *this;
-}
+//USound& USound::operator =(const USound& sound)
+//{
+//    mDevice = sound.mDevice;
+//    mContext = sound.mContext;
+//    mSourceId = sound.mSourceId;
+//    mLooped = sound.mLooped;
+//    return *this;
+//}
 //------------------------------------------------------------------------------
 void USound::init(ALCdevice* device, ALCcontext* context)
 {
@@ -125,19 +127,24 @@ bool USound::isValid() const
 }
 //------------------------------------------------------------------------------
 #ifdef USE_ALUT
-bool USound::loadWavFile(const QString& fileName)
+bool USound::loadWavFile(const QString& fileName, const QString& name)
 {
     if (!isValid()) {
         qDebug() << Q_FUNC_INFO << ":: sound object not valid";
         return false;
     }
 
-    TSoundInfo buffer;
+    ALuint sourceId = mSources[name].sourceId;
+    TBufferInfo buffer;
+    buffer.sourceId = sourceId;
     buffer.fileName = fileName.trimmed();
+
+    // Find buffer with already loaded file (with same filename)
     for (auto it = mBuffers.constBegin(); it != mBuffers.constEnd(); ++it) {
         if ((*it).fileName == buffer.fileName) {
-            buffer = mBuffers[(*it).ID];
-            alSourcei(mSourceId, AL_BUFFER, buffer.ID);
+            buffer = mBuffers[(*it).bufferId];
+            alSourcei(sourceId, AL_BUFFER, buffer.bufferId);
+            mSources[name].bufferId = buffer.bufferId;
             return true;
         }
     }
@@ -147,9 +154,10 @@ bool USound::loadWavFile(const QString& fileName)
         return false;
     }
 
-    buffer.ID = id;
-    mBuffers[buffer.ID] = buffer;
-    alSourcei(mSourceId, AL_BUFFER, buffer.ID);
+    buffer.bufferId = id;
+    mSources[name].bufferId = id;
+    mBuffers[buffer.bufferId] = buffer;
+    alSourcei(sourceId, AL_BUFFER, buffer.bufferId);
     return true;
 }
 #endif
@@ -190,8 +198,13 @@ bool USound::ReadOggBlock(ALuint bufferId, size_t size)
     return (readSize > 0);
 }
 //------------------------------------------------------------------------------
-bool USound::loadOggFile(const QString& fileName, bool streamed)
+bool USound::loadOggFile(const QString& fileName, const QString& name, bool streamed)
 {
+    if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: sound object not valid";
+        return false;
+    }
+
     ov_callbacks cb;
     cb.close_func = oggClose;
     cb.read_func = oggRead;
@@ -209,23 +222,26 @@ bool USound::loadOggFile(const QString& fileName, bool streamed)
     int blockSize = 1;
     int buffersCount = 1;
     ALuint bufferId = 0;
+    ALuint sourceId = mSources[name].sourceId;
     if (!streamed) {
         for (auto it = mBuffers.constBegin(); it != mBuffers.constEnd(); ++it) {
             if ((*it).fileName == fileName) {
-                bufferId = (*it).ID;
+                bufferId = (*it).bufferId;
+                break;
             }
         }
         blockSize = ov_pcm_total(mOggVorbisFile, -1) * 4;
     } else {
         blockSize = BUFFER_BLOCK_SIZE;
         buffersCount  = BUFFERS_COUNT;
-        alSourcei(mSourceId, AL_LOOPING, AL_FALSE);
+        alSourcei(sourceId, AL_LOOPING, AL_FALSE);
     }
 
     mVorbisComment = ov_comment(mOggVorbisFile, -1);
     mVorbisInfo = ov_info(mOggVorbisFile, -1);
 
-    TSoundInfo buffer;
+    TBufferInfo buffer;
+    buffer.sourceId = sourceId;
     buffer.rate = mVorbisInfo->rate;
     buffer.fileName = fileName;
     buffer.format = (mVorbisInfo->channels == 1)
@@ -233,107 +249,140 @@ bool USound::loadOggFile(const QString& fileName, bool streamed)
                     : AL_FORMAT_STEREO16;
 
     if (!streamed && bufferId) {
-        alSourcei(mSourceId, AL_BUFFER, mBuffers[bufferId].ID);
+        alSourcei(sourceId, AL_BUFFER, mBuffers[bufferId].bufferId);
         return true;
     }
 
     for (int i = 0; i < buffersCount; i++) {
-        alGenBuffers(1, &buffer.ID);
+        alGenBuffers(1, &buffer.bufferId);
         if (!checkALError()) {
             return false;
         }
-        mBuffers[buffer.ID] = buffer;
+        mBuffers[buffer.bufferId] = buffer;
 
-        ReadOggBlock(buffer.ID, blockSize);
+        ReadOggBlock(buffer.bufferId, blockSize);
         if (!checkALError()) {
             return false;
         }
 
         if (streamed) {
-            alSourceQueueBuffers(mSourceId, 1, &buffer.ID);
+            alSourceQueueBuffers(sourceId, 1, &buffer.bufferId);
             if (!checkALError()) {
                 return false;
             }
         } else {
-            alSourcei(mSourceId, AL_BUFFER, buffer.ID);
+            alSourcei(sourceId, AL_BUFFER, buffer.bufferId);
         }
     }
     return true;
 }
 #endif
 //------------------------------------------------------------------------------
-bool USound::openFile(const QString& fileName, bool looped, bool streamed)
+bool USound::openFile(const QString& fileName, const QString& name,
+        bool looped, bool streamed)
 {
     if (!QFile::exists(fileName)) {
         qDebug() << Q_FUNC_INFO << ":: sound file not exists:" << fileName;
         return false;
     }
 
-    mLooped = looped;
-    mStreamed = streamed;
-
-    alGenSources(1, &mSourceId);
-    if (!checkALError()) {
-        return false;
+    TSourceInfo sourceInfo;
+    if( mSources.contains(name) ) {
+        sourceInfo = mSources[name];
+        close(name);
+    } else {
+        alGenSources(1, &sourceInfo.sourceId);
+        if (!checkALError()) {
+            return false;
+        }
     }
 
-    ALfloat listenerPosition[] = {0.0, 0.0, 0.0};
-    ALfloat listenerVelocity[] = {0.0, 0.0, 0.0};
+    sourceInfo.looped = looped;
+    sourceInfo.streamed = streamed;
 
-    alSourcef(mSourceId, AL_PITCH, 1.0f);
-    alSourcef(mSourceId, AL_GAIN, 1.0f);
-    alSourcefv(mSourceId, AL_POSITION, listenerPosition);
-    alSourcefv(mSourceId, AL_VELOCITY, listenerVelocity);
-    alSourcei(mSourceId, AL_LOOPING, mLooped);
+    alSourcef(sourceInfo.sourceId, AL_PITCH, sourceInfo.pitch);
+    alSourcef(sourceInfo.sourceId, AL_GAIN, sourceInfo.gain);
+    alSourcefv(sourceInfo.sourceId, AL_POSITION, sourceInfo.position);
+    alSourcefv(sourceInfo.sourceId, AL_VELOCITY, sourceInfo.velocity);
+    alSourcei(sourceInfo.sourceId, AL_LOOPING, sourceInfo.looped);
+
+    mSources[name] = sourceInfo;
 
     QString fileExt = fileName.right(4).toLower();
 #ifdef USE_ALUT
     if (fileExt == ".wav") {
-        return loadWavFile(fileName);
+        return loadWavFile(fileName, name);
     }
 #endif
 #ifdef USE_OGGVORBIS
     if (fileExt == ".ogg") {
-        return loadOggFile(fileName, streamed);
+        return loadOggFile(fileName, name, streamed);
     }
 #endif
     qDebug() << Q_FUNC_INFO << ":: unsupported format" << fileExt;
     return false;
 }
 //------------------------------------------------------------------------------
-void USound::play()
+void USound::play(const QString& name)
 {
     if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
         return;
     }
-    alSourcePlay(mSourceId);
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return;
+    }
+    alSourcePlay(mSources[name].sourceId);
 }
 //------------------------------------------------------------------------------
-void USound::pause()
+void USound::pause(const QString& name)
 {
     if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
         return;
     }
-    alSourcePause(mSourceId);
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return;
+    }
+    alSourcePause(mSources[name].sourceId);
 }
 //------------------------------------------------------------------------------
-void USound::stop()
+void USound::stop( const QString& name)
 {
     if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
         return;
     }
-    alSourceStop(mSourceId);
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return;
+    }
+    alSourceStop(mSources[name].sourceId);
 }
 //------------------------------------------------------------------------------
-void USound::close()
+void USound::close(const QString& name)
 {
     if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
         return;
     }
-    alSourceStop(mSourceId);
-    if (alIsSource(mSourceId)) {
-        alDeleteSources(1, &mSourceId);
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return;
     }
+
+    ALuint sourceId = mSources[name].sourceId;
+    alSourceStop(sourceId);
+    if (alIsSource(sourceId)) {
+        alDeleteSources(1, &sourceId);
+    }
+    mSources.remove(name);
 #ifdef USE_OGGVORBIS
     if (!mOggVorbisFile) {
         ov_clear(mOggVorbisFile);
@@ -342,25 +391,32 @@ void USound::close()
 #endif
 }
 //------------------------------------------------------------------------------
-void USound::update()
+void USound::update(const QString& name)
 {
 #ifdef USE_OGGVORBIS
-    if (!mStreamed) {
+    if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
+        return;
+    }
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
         return;
     }
 
     int processed = 0;
     ALuint bufferId;
+    ALuint sourceId = mSources[name].sourceId;
 
-    alGetSourcei(mSourceId, AL_BUFFERS_PROCESSED, &processed);
+    alGetSourcei(sourceId, AL_BUFFERS_PROCESSED, &processed);
     while (processed--) {
-        alSourceUnqueueBuffers(mSourceId, 1, &bufferId);
+        alSourceUnqueueBuffers(sourceId, 1, &bufferId);
         if (!checkALError()) {
             return;
         }
 
         if (ReadOggBlock(bufferId, BUFFER_BLOCK_SIZE) != 0) {
-            alSourceQueueBuffers(mSourceId, 1, &bufferId);
+            alSourceQueueBuffers(sourceId, 1, &bufferId);
             if (!checkALError()) {
                 return;
             }
@@ -368,43 +424,83 @@ void USound::update()
         }
 
         ov_pcm_seek(mOggVorbisFile, 0);
-        alSourceQueueBuffers(mSourceId, 1, &bufferId);
+        alSourceQueueBuffers(sourceId, 1, &bufferId);
         if (!checkALError()) {
             return;
         }
 
-        if (!mLooped) {
-            stop();
+        if (!mSources[name].looped) {
+            stop(name);
         }
     }
 #endif
 }
 //------------------------------------------------------------------------------
-void USound::move(qreal x, qreal y, qreal z)
+void USound::move(qreal x, qreal y, qreal z, const QString& name)
 {
+    if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
+        return;
+    }
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return;
+    }
     ALfloat pos[3] = { (float)x, (float)y, (float)z };
-    alSourcefv(mSourceId, AL_POSITION, pos);
+    alSourcefv(mSources[name].sourceId, AL_POSITION, pos);
 }
 //------------------------------------------------------------------------------
-bool USound::checkSourceState(ALint state) const
+bool USound::checkSourceState(ALuint sourceId, ALint state) const
 {
     ALint currentState;
-    alGetSourcei(mSourceId, AL_SOURCE_STATE, &currentState);
+    alGetSourcei(sourceId, AL_SOURCE_STATE, &currentState);
     return currentState == state;
 }
 //------------------------------------------------------------------------------
-bool USound::isPlaying() const
+bool USound::isPlaying(const QString& name) const
 {
-    return checkSourceState(AL_PLAYING);
+    if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
+        return false;
+    }
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return false;
+    }
+    return checkSourceState(mSources[name].sourceId, AL_PLAYING);
 }
 //------------------------------------------------------------------------------
-bool USound::isPaused() const
+bool USound::isPaused(const QString& name) const
 {
-    return checkSourceState(AL_PAUSED);
+    if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
+        return false;
+    }
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return false;
+    }
+    return checkSourceState(mSources[name].sourceId, AL_PAUSED);
 }
 //------------------------------------------------------------------------------
-bool USound::isStoped() const
+bool USound::isStoped(const QString& name) const
 {
-    return checkSourceState(AL_STOPPED);
+    if (!isValid()) {
+        qDebug() << Q_FUNC_INFO << ":: not valid sound object";
+        return false;
+    }
+    if( !mSources.contains(name) ) {
+        qDebug() << Q_FUNC_INFO << ":: sound source with name" << name
+                << "not found";
+        return false;
+    }
+    return checkSourceState(mSources[name].sourceId, AL_STOPPED);
 }
 //------------------------------------------------------------------------------
+QStringList USound::keys()
+{
+    return QStringList(mSources.keys());
+}

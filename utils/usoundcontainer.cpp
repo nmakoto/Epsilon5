@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QStringList>
 #include "../utils/usoundcontainer.h"
 //------------------------------------------------------------------------------
 using namespace utils;
@@ -30,7 +31,9 @@ USoundContainer::USoundContainer(QObject* parent)
 USoundContainer::~USoundContainer()
 {
     for (auto it = mSounds.begin(); it != mSounds.end(); ++it) {
-        (*it)->close();
+        QStringList list = (*it)->keys();
+        for( auto it2 = list.begin(); it2 != list.end(); ++it2 )
+            (*it)->close((*it2));
     }
     destroyOpenAL();
 }

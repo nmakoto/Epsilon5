@@ -83,9 +83,9 @@ void TMainDisplay::Init() {
     connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
             Map, SLOT(LoadMap(QString)));
 
-    WalkSound->openFile("sounds/footsteps-4.wav");
-    GameMusic->openFile("sounds/test.ogg", true, true);
-    GameMusic->play();
+    WalkSound->openFile("sounds/footsteps-4.wav", "walk");
+//    GameMusic->openFile("sounds/test.ogg", "music", true, true);
+//    GameMusic->play("music");
 
     Menu.Init();
 }
@@ -100,7 +100,7 @@ void TMainDisplay::RedrawWorld() {
 }
 
 void TMainDisplay::timerEvent(QTimerEvent*) {
-    GameMusic->update();
+//    GameMusic->update("music");
     this->update();
 }
 
@@ -182,9 +182,9 @@ void TMainDisplay::SetMovementKeysState(bool state, const QKeyEvent *event)
         Control.mutable_keystatus()->set_keyright(state);
 
     if( state )
-        WalkSound->play();
+        WalkSound->play("walk");
     else
-        WalkSound->pause();
+        WalkSound->pause("walk");
 }
 
 void TMainDisplay::keyPressEvent(QKeyEvent *event)
@@ -226,13 +226,13 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
         close();
         break;
     case Qt::Key_F5:
-        GameMusic->play();
+//        GameMusic->play("music");
         break;
     case Qt::Key_F6:
-        GameMusic->pause();
+//        GameMusic->pause("music");
         break;
     case Qt::Key_F7:
-        GameMusic->stop();
+//        GameMusic->stop("music");
         break;
 #endif
     case Qt::Key_Escape:
