@@ -4,14 +4,18 @@
 #include <QHash>
 #include <AL/al.h>
 #include <AL/alc.h>
+
 #ifdef USE_ALUT
 #include <AL/alut.h>
 #endif
+
 #ifdef USE_OGGVORBIS
 #include <QFile>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 #endif
+
+#include "../utils/usoundcontainer.h"
 //------------------------------------------------------------------------------
 namespace utils
 {
@@ -72,28 +76,6 @@ private:
 #endif
     bool mLooped;
     bool mStreamed;
-};
-//------------------------------------------------------------------------------
-class USoundContainer : public QObject
-{
-    Q_OBJECT
-    typedef QVector<USound*> TSoundVector;
-public:
-    explicit USoundContainer(QObject* parent = 0);
-    ~USoundContainer();
-
-    void addSound(USound* sound);
-    int count() const;
-    bool isValid() const;
-
-private:
-    void initOpenAL();
-    void destroyOpenAL();
-
-private:
-    TSoundVector mSounds;
-    ALCdevice* mDevice;
-    ALCcontext* mContext;
 };
 //------------------------------------------------------------------------------
 }

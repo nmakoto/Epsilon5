@@ -27,7 +27,8 @@ SOURCES += \
     ../utils/ucast.cpp \
     graphics/basicitem.cpp \
     menu.cpp \
-    ../utils/usound.cpp
+    ../utils/usound.cpp \
+    ../utils/usoundcontainer.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -45,7 +46,8 @@ HEADERS  += \
     ../utils/ucast.h \
     graphics/basicitem.h \
     menu.h \
-    ../utils/usound.h
+    ../utils/usound.h \
+    ../utils/usoundcontainer.h
 
 FORMS    +=
 
