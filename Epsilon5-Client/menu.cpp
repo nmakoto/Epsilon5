@@ -1,24 +1,20 @@
-#include "menu.h"
+#include <QDebug>
 #include <QStaticText>
-#include "application.h"
 #include <QEvent>
 #include <QMouseEvent>
 #include <QBrush>
-#include <QDebug>
+#include "application.h"
+#include "menu.h"
+#include "sound.h"
 
 TMenu::TMenu(TImageStorage* images, QObject* parent)
     : QObject(parent)
     , Images(images)
-    , SoundClick(new utils::USound(this))
 {
-    // Append sound to container BEFORE opening
-    Application()->GetSound()->addSound(SoundClick);
-    SoundClick->openFile("sounds/hit-01.wav", "menu-click");
 }
 
 TMenu::~TMenu()
 {
-    SoundClick->close("menu-click");
 }
 
 TMenuItem* TMenu::AddMenuItem(TMenuItem* item)
@@ -34,7 +30,6 @@ void TMenu::paint(QPainter* p)
         Items[i]->paint(p);
     }
 }
-
 
 void TMenuItem::paint(QPainter* p)
 {
@@ -89,7 +84,7 @@ void TMenu::Init()
                                       Images->GetImage("menu-connect-h"),
                                       QPoint(0, -50),
                                       this));
-    connect(item, SIGNAL(Clicked()), SLOT(OnClickedItem()));
+    connect(item, SIGNAL(Clicked()), Application()->GetSound(), SLOT(MenuItemClicked()));
     connect(item, SIGNAL(Clicked()), Application()->GetNetwork(), SLOT(Start()));
 
     item = AddMenuItem(new TMenuItem(
@@ -97,7 +92,6 @@ void TMenu::Init()
                                           Images->GetImage("menu-exit-h"),
                                           QPoint(0, 50),
                                           this));
-    connect(item, SIGNAL(Clicked()), SLOT(OnClickedItem()));
     connect(item, SIGNAL(Clicked()), Application(), SLOT(quit()));
 }
 
@@ -109,9 +103,4 @@ bool TMenu::event(QEvent *ev)
         }
     }
     return false;
-}
-
-void TMenu::OnClickedItem()
-{
-    SoundClick->play("menu-click");
 }

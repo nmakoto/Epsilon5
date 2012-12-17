@@ -39,6 +39,7 @@ struct TSourceInfo {
     ALfloat velocity[3];
     bool looped;
     bool streamed;
+    QString name;
 
     TSourceInfo()
         : sourceId(0)
@@ -46,6 +47,7 @@ struct TSourceInfo {
         , gain(1.0f)
         , looped(false)
         , streamed(false)
+        , name()
     {
         position[0] = 0.0f;
         position[1] = 0.0f;
@@ -84,6 +86,11 @@ public:
 
     void position(qreal& x, qreal& y, qreal& z, const QString& name);
     void velocity(qreal& x, qreal& y, qreal& z, const QString& name);
+
+//    quint32 sourceId(const QString& name);
+//    QString sourceName(quint32 sourceId);
+
+    TSourceInfo sourceInfo(const QString& name) const;
 
 private:
 #ifdef USE_ALUT

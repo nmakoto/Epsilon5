@@ -54,9 +54,8 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     , Objects(new TObjects(this))
     , CurrentWorld(NULL)
     , ShowStats(false)
+    , Ping(0)
     , Menu(Images)
-    , GameMusic(new utils::USound(this))
-    , WalkSound(new utils::USound(this))
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
@@ -70,9 +69,6 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     Control.mutable_keystatus()->set_keydown(false);
     Control.set_weapon(Epsilon5::Pistol);
 
-    Application->GetSound()->addSound(GameMusic);
-    Application->GetSound()->addSound(WalkSound);
-
     startTimer(20);
 }
 
@@ -82,10 +78,6 @@ void TMainDisplay::Init() {
 
     connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
             Map, SLOT(LoadMap(QString)));
-
-    WalkSound->openFile("sounds/footsteps-4.wav", "walk");
-//    GameMusic->openFile("sounds/test.ogg", "music", true, true);
-//    GameMusic->play("music");
 
     Menu.Init();
 }
@@ -100,7 +92,6 @@ void TMainDisplay::RedrawWorld() {
 }
 
 void TMainDisplay::timerEvent(QTimerEvent*) {
-//    GameMusic->update("music");
     this->update();
 }
 
@@ -180,11 +171,6 @@ void TMainDisplay::SetMovementKeysState(bool state, const QKeyEvent *event)
         Control.mutable_keystatus()->set_keyleft(state);
     if( event->key() == Qt::Key_Right )
         Control.mutable_keystatus()->set_keyright(state);
-
-    if( state )
-        WalkSound->play("walk");
-    else
-        WalkSound->pause("walk");
 }
 
 void TMainDisplay::keyPressEvent(QKeyEvent *event)
@@ -224,15 +210,6 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
     case Qt::Key_F12:
         Application->GetNetwork()->Stop();
         close();
-        break;
-    case Qt::Key_F5:
-//        GameMusic->play("music");
-        break;
-    case Qt::Key_F6:
-//        GameMusic->pause("music");
-        break;
-    case Qt::Key_F7:
-//        GameMusic->stop("music");
         break;
 #endif
     case Qt::Key_Escape:
@@ -279,7 +256,6 @@ void TMainDisplay::DrawFps(QPainter& painter)
 
 void TMainDisplay::DrawPing(QPainter& painter)
 {
-    if(Ping != 2686572)
     DrawText(painter, QPoint(0, 24), QString("Ping: %1").arg(Ping), 10);
 }
 

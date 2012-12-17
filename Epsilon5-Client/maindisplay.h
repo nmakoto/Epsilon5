@@ -86,6 +86,4 @@ private:
     bool ShowStats;
     int Ping;
     TMenu Menu;
-    utils::USound* GameMusic;
-    utils::USound* WalkSound;
 };

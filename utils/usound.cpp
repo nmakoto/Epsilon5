@@ -279,6 +279,7 @@ bool USound::openFile(const QString& fileName, const QString& name,
 
     sourceInfo.looped = looped;
     sourceInfo.streamed = streamed;
+    sourceInfo.name = name;
 
     alSourcef(sourceInfo.sourceId, AL_PITCH, sourceInfo.pitch);
     alSourcef(sourceInfo.sourceId, AL_GAIN, sourceInfo.gain);
@@ -450,6 +451,9 @@ QStringList USound::keys()
 //------------------------------------------------------------------------------
 bool USound::checkForValidName(const QString &name) const
 {
+    if( name.isEmpty() ) {
+        return false;
+    }
     if (!isValid()) {
         qDebug() << Q_FUNC_INFO << ":: not valid sound object";
         return false;
@@ -460,5 +464,12 @@ bool USound::checkForValidName(const QString &name) const
         return false;
     }
     return true;
+}
+//------------------------------------------------------------------------------
+TSourceInfo USound::sourceInfo(const QString& name) const
+{
+    if( !checkForValidName(name) )
+        return TSourceInfo();
+    return mSources[name];
 }
 //------------------------------------------------------------------------------

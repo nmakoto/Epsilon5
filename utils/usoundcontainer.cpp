@@ -40,7 +40,7 @@ USoundContainer::~USoundContainer()
 //------------------------------------------------------------------------------
 void USoundContainer::initOpenAL()
 {
-    ALfloat listenerPosition[] = { 0.0, 0.0, 2.0 };
+    ALfloat listenerPosition[] = { 0.0, 0.0, 4.0 };
     ALfloat listenerVelocity[] = { 0.0, 0.0, 0.0 };
     ALfloat listenerOrientation[] = { 0.0, 0.0, -1.0,  0.0, 1.0, 0.0 };
 

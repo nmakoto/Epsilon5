@@ -28,7 +28,8 @@ SOURCES += \
     graphics/basicitem.cpp \
     menu.cpp \
     ../utils/usound.cpp \
-    ../utils/usoundcontainer.cpp
+    ../utils/usoundcontainer.cpp \
+    sound.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -47,7 +48,8 @@ HEADERS  += \
     graphics/basicitem.h \
     menu.h \
     ../utils/usound.h \
-    ../utils/usoundcontainer.h
+    ../utils/usoundcontainer.h \
+    sound.h
 
 FORMS    +=
 

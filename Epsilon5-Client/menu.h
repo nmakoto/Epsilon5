@@ -8,7 +8,6 @@
 #include <QPoint>
 #include <QImage>
 #include "imagestorage.h"
-#include "../utils/usound.h"
 
 class TApplication;
 class TMenu;
@@ -27,12 +26,16 @@ public:
 
     void paint(QPainter* p);
 
-protected:
-    bool event(QEvent*);
-private:
-    TApplication* Application();
+
 signals:
     void Clicked();
+
+protected:
+    bool event(QEvent*);
+
+private:
+    TApplication* Application();
+
 private:
     QPoint Pos;
     const QImage& Image;
@@ -51,12 +54,8 @@ public:
     void Init();
     bool event(QEvent*ev);
 
-private slots:
-    void OnClickedItem();
-
 private:
     TMenuItem* AddMenuItem(TMenuItem* item);
     QVector<TMenuItem*> Items;
     TImageStorage* Images;
-    utils::USound* SoundClick;
 };
