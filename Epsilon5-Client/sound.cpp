@@ -19,13 +19,14 @@ TSound::TSound(TApplication* app, QObject* parent)
 
     MenuSounds->openFile("sounds/hit-01.wav", "menu-click");
     BackgroundMusic->openFile(
-            "sounds/JewelBeat-Game_Adventure-mono.wav", "music-menu", true);
+        "sounds/JewelBeat-Game_Adventure-mono.wav", "music-menu", true);
     BackgroundMusic->openFile(
-            "sounds/JewelBeat-Great_Escape-mono.wav", "music-battle00", true);
+        "sounds/JewelBeat-Great_Escape-mono.wav", "music-battle00", true);
     PlayerSounds->openFile("sounds/walking-in-snow-mono.wav", "walk", true);
 
-    BackgroundMusic->setPosition(0,0,2, "music-menu");
-    BackgroundMusic->setPosition(0,0,20, "music-battle00");
+    BackgroundMusic->setPosition(0, 0, 2, "music-menu");
+    BackgroundMusic->setPosition(0, 0, 20, "music-battle00");
+    PlayerSounds->setPitch(1.2f, "walk");
 
     CurrentMusic = BackgroundMusic->sourceInfo("music-menu");
 
@@ -50,37 +51,42 @@ void TSound::MenuItemClicked()
     MenuSounds->play("menu-click");
 }
 //------------------------------------------------------------------------------
-void TSound::timerEvent(QTimerEvent *event)
+void TSound::timerEvent(QTimerEvent* event)
 {
     Q_UNUSED(event);
-    if( lastState != Application->GetState() ) {
-        if( Application->GetState() == ST_MainMenu ) {
+    if (lastState != Application->GetState()) {
+        if (Application->GetState() == ST_MainMenu) {
             BackgroundMusic->pause(CurrentMusic.name);
             BackgroundMusic->play("music-menu");
             CurrentMusic = BackgroundMusic->sourceInfo("music-menu");
-        } else if( Application->GetState() == ST_InGame ) {
+        } else if (Application->GetState() == ST_InGame) {
             BackgroundMusic->pause(CurrentMusic.name);
             BackgroundMusic->play("music-battle00");
             CurrentMusic = BackgroundMusic->sourceInfo("music-battle00");
         }
     }
 
-    if( CurrentWorld ) {
-        for( auto it = CurrentWorld->players().begin(); it != CurrentWorld->players().end(); ++it ) {
-            const Epsilon5::Player &player = (*it);
-            if( (size_t)player.id() == Application->GetNetwork()->GetId() ) {
-                if (LastPlayerPos.x() != player.x() || LastPlayerPos.y() != player.y()) {
-                    LastPlayerPos = QPoint(player.x(), player.y());
-                    PlayerSounds->play("walk");
-                } else {
+    if (CurrentWorld) {
+        auto it = CurrentWorld->players().begin();
+        for ( ; it != CurrentWorld->players().end(); ++it) {
+            const Epsilon5::Player& player = (*it);
+            if ((size_t)player.id() == Application->GetNetwork()->GetId()) {
+                QPoint delta = QPoint(player.x(), player.y()) - LastPlayerPos;
+                if (abs(delta.x()) > 2 || abs(delta.y()) > 2) {
+                    if (!PlayerSounds->isPlaying("walk")) {
+                        PlayerSounds->play("walk");
+                    }
+                } else if (delta.x() == 0 && delta.y() == 0) {
                     PlayerSounds->pause("walk");
                 }
+                LastPlayerPos = QPoint(player.x(), player.y());
             }
         }
     }
 
     // Update streamed sound objects
-    if( !CurrentMusic.name.isEmpty() )
+    if (!CurrentMusic.name.isEmpty()) {
         BackgroundMusic->update(CurrentMusic.name);
+    }
 }
 //------------------------------------------------------------------------------

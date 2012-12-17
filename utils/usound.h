@@ -86,6 +86,8 @@ public:
 
     void position(qreal& x, qreal& y, qreal& z, const QString& name);
     void velocity(qreal& x, qreal& y, qreal& z, const QString& name);
+    void setGain(qreal gain, const QString& name);
+    void setPitch(qreal gain, const QString& name);
 
 //    quint32 sourceId(const QString& name);
 //    QString sourceName(quint32 sourceId);

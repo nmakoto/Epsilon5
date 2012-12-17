@@ -473,3 +473,10 @@ TSourceInfo USound::sourceInfo(const QString& name) const
     return mSources[name];
 }
 //------------------------------------------------------------------------------
+void USound::setPitch(qreal gain, const QString& name)
+{
+    if (!checkForValidName(name))
+        return;
+    alSourcefv(mSources[name].sourceId, AL_PITCH, (ALfloat*)&gain);
+}
+//------------------------------------------------------------------------------
