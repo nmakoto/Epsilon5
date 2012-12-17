@@ -12,6 +12,7 @@ Game controls:
 * **W** / **S** / **A** / **D** -- also movement
 * **LMB** / **RMB** -- fire
 * **1** / **2** / **3** -- weapon switch
+* **Tab** *(on battlefield)* -- show score status
 
 MapEditor controls:
 ----
@@ -32,5 +33,8 @@ Requires:
 ----
 
 * [Qt 4.6](http://qt-project.org/)
-* [Protobuf 2.4.1](http://code.google.com/p/protobuf/)
-* [Box2D 2.2.1](http://code.google.com/p/box2d/)
+* [Protobuf 2.4.1](http://code.google.com/p/protobuf/) -- for network protocol
+* [Box2D 2.2.1](http://code.google.com/p/box2d/) -- physics
+* [OpenAL](http://connect.creativelabs.com/openal/) ([mirror](http://http://kcat.strangesoft.net/openal.html)) -- sound support
+* [FreeALUT](https://github.com/vancegroup/freealut/) *(optional)* -- WAV sound files support
+* [Ogg/Vorbis](http://xiph.org/) *(optional)* -- OGG sound files support

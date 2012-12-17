@@ -8,11 +8,11 @@
 #include <QMatrix>
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "../utils/uexception.h"
+#include "../utils/usound.h"
 #include "network.h"
 #include "maindisplay.h"
 #include "application.h"
 #include <QtOpenGL>
-
 
 #ifdef Q_OS_UNIX
 #include <linux/input.h>
@@ -55,6 +55,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     , Objects(new TObjects(this))
     , CurrentWorld(NULL)
     , ShowStats(false)
+    , Ping(0)
     , Menu(Images)
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
@@ -127,7 +128,8 @@ void TMainDisplay::paintEvent(QPaintEvent*) {
         DrawPing(painter);
 
         if( !Application->GetNetwork()->IsServerAlive() )
-            DrawText(painter, QPoint(width() / 2 - 50, height() / 2 - 5), tr("Connection lost..."), 28);
+            DrawText(painter, QPoint(width() / 2 - 50, height() / 2 - 5),
+                     tr("Connection lost..."), 28);
         break;
     }
             painter.end();
@@ -187,6 +189,9 @@ void TMainDisplay::SetMovementKeysState(bool state, const QKeyEvent *event)
 
 void TMainDisplay::keyPressEvent(QKeyEvent *event)
 {
+    if( Application->GetState() != ST_InGame )
+        return;
+
     SetMovementKeysState(true, event);
 
     switch(event->key()) {
@@ -219,6 +224,7 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
     case Qt::Key_F12:
         Application->GetNetwork()->Stop();
         close();
+        break;
 #endif
     case Qt::Key_Escape:
         Application->GetNetwork()->Stop();
@@ -264,7 +270,6 @@ void TMainDisplay::DrawFps(QPainter& painter)
 
 void TMainDisplay::DrawPing(QPainter& painter)
 {
-    if(Ping != 2686572)
     DrawText(painter, QPoint(0, 24), QString("Ping: %1").arg(Ping), 10);
 }
 

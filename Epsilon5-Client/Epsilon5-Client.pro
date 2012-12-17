@@ -26,7 +26,10 @@ SOURCES += \
     objects.cpp \
     ../utils/ucast.cpp \
     graphics/basicitem.cpp \
-    menu.cpp
+    menu.cpp \
+    ../utils/usound.cpp \
+    ../utils/usoundcontainer.cpp \
+    sound.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -43,14 +46,20 @@ HEADERS  += \
     objects.h \
     ../utils/ucast.h \
     graphics/basicitem.h \
-    menu.h
+    menu.h \
+    ../utils/usound.h \
+    ../utils/usoundcontainer.h \
+    sound.h
 
 FORMS    +=
+
+OTHER_FILES += \
+    ../Epsilon5-Proto/Epsilon5.proto
 
 QMAKE_CXXFLAGS += -std=c++0x
 # -march=core2 -mfpmath=sse -Ofast -flto -funroll-loops
 
-LIBS += -lprotobuf
+LIBS += -lprotobuf -lopenal
 
 unix {
     VAR=$$(USE_XRANDR)
@@ -60,9 +69,23 @@ unix {
         LIBS += -lXrandr
     }
 }
+
 win32 {
     LIBS += -luser32
 }
 
-OTHER_FILES += \
-    ../Epsilon5-Proto/Epsilon5.proto
+# OGG/Vorbis support (using libvorbisfile)
+VAR=$$(USE_OGGVORBIS)
+!isEmpty(VAR) {
+    message( "Using OGG/Vorbis sound support" )
+    DEFINES += USE_OGGVORBIS
+    LIBS += -lvorbisfile
+}
+
+# Wav support (using freealut lib)
+VAR=$$(USE_ALUT)
+!isEmpty(VAR) {
+    message( "Using WAV sound support" )
+    DEFINES += USE_ALUT
+    LIBS += -lalut
+}

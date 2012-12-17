@@ -26,12 +26,16 @@ public:
 
     void paint(QPainter* p);
 
-protected:
-    bool event(QEvent*);
-private:
-    TApplication* Application();
+
 signals:
     void Clicked();
+
+protected:
+    bool event(QEvent*);
+
+private:
+    TApplication* Application();
+
 private:
     QPoint Pos;
     const QImage& Image;
@@ -43,6 +47,7 @@ class TMenu : public QObject
     Q_OBJECT
 public:
     explicit TMenu(TImageStorage* images, QObject* parent = 0);
+    ~TMenu();
     void paint(QPainter* p);
     TApplication* Application();
 

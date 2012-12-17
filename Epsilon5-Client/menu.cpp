@@ -1,16 +1,20 @@
-#include "menu.h"
+#include <QDebug>
 #include <QStaticText>
-#include "application.h"
 #include <QEvent>
 #include <QMouseEvent>
 #include <QBrush>
-#include <QDebug>
+#include "application.h"
+#include "menu.h"
+#include "sound.h"
 
 TMenu::TMenu(TImageStorage* images, QObject* parent)
     : QObject(parent)
     , Images(images)
 {
+}
 
+TMenu::~TMenu()
+{
 }
 
 TMenuItem* TMenu::AddMenuItem(TMenuItem* item)
@@ -26,7 +30,6 @@ void TMenu::paint(QPainter* p)
         Items[i]->paint(p);
     }
 }
-
 
 void TMenuItem::paint(QPainter* p)
 {
@@ -81,6 +84,7 @@ void TMenu::Init()
                                       Images->GetImage("menu-connect-h"),
                                       QPoint(0, -50),
                                       this));
+    connect(item, SIGNAL(Clicked()), Application()->GetSound(), SLOT(MenuItemClicked()));
     connect(item, SIGNAL(Clicked()), Application()->GetNetwork(), SLOT(Start()));
 
     item = AddMenuItem(new TMenuItem(

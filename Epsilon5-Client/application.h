@@ -1,10 +1,11 @@
 #pragma once
-
 #include <QApplication>
 #include <QDateTime>
 #include "maindisplay.h"
 #include "network.h"
 #include "settings.h"
+
+class TSound;
 
 enum EState {
     ST_MainMenu,
@@ -32,14 +33,20 @@ public:
     inline EState GetState() {
         return State;
     }
+    inline TSound* GetSound() {
+        return Sound;
+    }
     inline void SetState(EState state) {
         State = state;
     }
+
 public slots:
     inline void Disconnected() {
         State = ST_MainMenu;
     }
+
 private:
+    TSound* Sound;
     TMainDisplay MainDisplay;
     TNetwork* Network;
     TSettings* Settings;
