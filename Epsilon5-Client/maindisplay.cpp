@@ -56,6 +56,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     , ShowStats(false)
     , Menu(Images)
     , GameMusic(new utils::USound(this))
+    , WalkSound(new utils::USound(this))
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
@@ -70,6 +71,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     Control.set_weapon(Epsilon5::Pistol);
 
     Application->GetSound()->addSound(GameMusic);
+    Application->GetSound()->addSound(WalkSound);
 
     startTimer(20);
 }
@@ -81,6 +83,7 @@ void TMainDisplay::Init() {
     connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
             Map, SLOT(LoadMap(QString)));
 
+    WalkSound->openFile("sounds/footsteps-4.wav");
     GameMusic->openFile("sounds/test.ogg", true, true);
     GameMusic->play();
 
@@ -177,10 +180,18 @@ void TMainDisplay::SetMovementKeysState(bool state, const QKeyEvent *event)
         Control.mutable_keystatus()->set_keyleft(state);
     if( event->key() == Qt::Key_Right )
         Control.mutable_keystatus()->set_keyright(state);
+
+    if( state )
+        WalkSound->play();
+    else
+        WalkSound->pause();
 }
 
 void TMainDisplay::keyPressEvent(QKeyEvent *event)
 {
+    if( Application->GetState() != ST_InGame )
+        return;
+
     SetMovementKeysState(true, event);
 
     switch(event->key()) {
