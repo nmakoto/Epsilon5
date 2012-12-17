@@ -31,6 +31,7 @@ private:
     TSoundObject* MenuSounds;
     TSoundObject* BackgroundMusic;
     TSoundObject* PlayerSounds;
+    TSoundObject* AmbientSounds;
     TSoundInfo CurrentMusic;
     EState lastState;
     QPoint LastPlayerPos;

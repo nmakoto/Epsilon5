@@ -9,11 +9,13 @@ TSound::TSound(TApplication* app, QObject* parent)
     , MenuSounds(new TSoundObject(this))
     , BackgroundMusic(new TSoundObject(this))
     , PlayerSounds(new TSoundObject(this))
+    , AmbientSounds(new TSoundObject(this))
     , LastPlayerPos()
 {
     SoundContainer->addSound(MenuSounds);
     SoundContainer->addSound(BackgroundMusic);
     SoundContainer->addSound(PlayerSounds);
+    SoundContainer->addSound(AmbientSounds);
 
     lastState = Application->GetState();
 
@@ -23,10 +25,13 @@ TSound::TSound(TApplication* app, QObject* parent)
     BackgroundMusic->openFile(
         "sounds/JewelBeat-Great_Escape-mono.wav", "music-battle00", true);
     PlayerSounds->openFile("sounds/walking-in-snow-mono.wav", "walk", true);
+    AmbientSounds->openFile("sounds/wind-loop-mono.wav", "wind", true);
+
 
     BackgroundMusic->setPosition(0, 0, 2, "music-menu");
     BackgroundMusic->setPosition(0, 0, 20, "music-battle00");
     PlayerSounds->setPitch(1.2f, "walk");
+    AmbientSounds->setPosition(0, 0, 5, "wind");
 
     CurrentMusic = BackgroundMusic->sourceInfo("music-menu");
 
@@ -58,11 +63,14 @@ void TSound::timerEvent(QTimerEvent* event)
         if (Application->GetState() == ST_MainMenu) {
             BackgroundMusic->pause(CurrentMusic.name);
             BackgroundMusic->play("music-menu");
+            AmbientSounds->pause("wind");
             CurrentMusic = BackgroundMusic->sourceInfo("music-menu");
         } else if (Application->GetState() == ST_InGame) {
             BackgroundMusic->pause(CurrentMusic.name);
             BackgroundMusic->play("music-battle00");
             CurrentMusic = BackgroundMusic->sourceInfo("music-battle00");
+            if(!AmbientSounds->isPlaying("wind"))
+                AmbientSounds->play("wind");
         }
     }
 
