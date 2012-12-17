@@ -86,6 +86,11 @@ USound::USound(QObject* parent)
     : QObject(parent)
     , mDevice(0)
     , mContext(0)
+#ifdef USE_OGGVORBIS
+    , mOggVorbisFile(0)
+    , mVorbisComment(0)
+    , mVorbisInfo(0)
+#endif
 {
 }
 //------------------------------------------------------------------------------
@@ -304,11 +309,18 @@ bool USound::openFile(const QString& fileName, const QString& name,
     return false;
 }
 //------------------------------------------------------------------------------
-void USound::play(const QString& name)
+void USound::play(const QString& name, bool breakPlay)
 {
-    if (!checkForValidName(name))
+    if (!checkForValidName(name) || (!breakPlay && isPlaying(name)))
         return;
     alSourcePlay(mSources[name].sourceId);
+}
+//------------------------------------------------------------------------------
+void USound::play(const QStringList &namelist, bool breakPlay)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        play((*it), breakPlay);
+    }
 }
 //------------------------------------------------------------------------------
 void USound::pause(const QString& name)
@@ -318,11 +330,25 @@ void USound::pause(const QString& name)
     alSourcePause(mSources[name].sourceId);
 }
 //------------------------------------------------------------------------------
+void USound::pause(const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        pause((*it));
+    }
+}
+//------------------------------------------------------------------------------
 void USound::stop( const QString& name)
 {
     if (!checkForValidName(name))
         return;
     alSourceStop(mSources[name].sourceId);
+}
+//------------------------------------------------------------------------------
+void USound::stop(const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        stop((*it));
+    }
 }
 //------------------------------------------------------------------------------
 void USound::close(const QString& name)
@@ -342,6 +368,13 @@ void USound::close(const QString& name)
         delete mOggVorbisFile;
     }
 #endif
+}
+//------------------------------------------------------------------------------
+void USound::close(const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        close((*it));
+    }
 }
 //------------------------------------------------------------------------------
 void USound::update(const QString& name)
@@ -382,6 +415,13 @@ void USound::update(const QString& name)
 #endif
 }
 //------------------------------------------------------------------------------
+void USound::update(const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        update((*it));
+    }
+}
+//------------------------------------------------------------------------------
 void USound::setPosition(qreal x, qreal y, qreal z, const QString& name)
 {
     if (!checkForValidName(name))
@@ -390,12 +430,54 @@ void USound::setPosition(qreal x, qreal y, qreal z, const QString& name)
     alSourcefv(mSources[name].sourceId, AL_POSITION, pos);
 }
 //------------------------------------------------------------------------------
+void USound::setPosition(qreal x, qreal y, qreal z, const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        setPosition(x, y, z, (*it));
+    }
+}
+//------------------------------------------------------------------------------
 void USound::setVelocity(qreal x, qreal y, qreal z, const QString& name)
 {
     if (!checkForValidName(name))
         return;
     ALfloat pos[3] = { (float)x, (float)y, (float)z };
     alSourcefv(mSources[name].sourceId, AL_VELOCITY, pos);
+}
+//------------------------------------------------------------------------------
+void USound::setVelocity(qreal x, qreal y, qreal z, const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        setVelocity(x, y, z, (*it));
+    }
+}
+//------------------------------------------------------------------------------
+void USound::setGain(qreal gain, const QString& name)
+{
+    if (!checkForValidName(name))
+        return;
+    alSourcefv(mSources[name].sourceId, AL_PITCH, (ALfloat*)&gain);
+}
+//------------------------------------------------------------------------------
+void USound::setGain(qreal gain, const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        setGain(gain, (*it));
+    }
+}
+//------------------------------------------------------------------------------
+void USound::setPitch(qreal pitch, const QString& name)
+{
+    if (!checkForValidName(name))
+        return;
+    alSourcefv(mSources[name].sourceId, AL_PITCH, (ALfloat*)&pitch);
+}
+//------------------------------------------------------------------------------
+void USound::setPitch(qreal pitch, const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        setPitch(pitch, (*it));
+    }
 }
 //------------------------------------------------------------------------------
 void USound::position(qreal& x, qreal& y, qreal& z, const QString& name)
@@ -407,6 +489,13 @@ void USound::position(qreal& x, qreal& y, qreal& z, const QString& name)
     z = mSources[name].position[2];
 }
 //------------------------------------------------------------------------------
+void USound::position(qreal& x, qreal& y, qreal& z, const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        position(x, y, z, (*it));
+    }
+}
+//------------------------------------------------------------------------------
 void USound::velocity(qreal& x, qreal& y, qreal& z, const QString& name)
 {
     if (!checkForValidName(name))
@@ -414,6 +503,13 @@ void USound::velocity(qreal& x, qreal& y, qreal& z, const QString& name)
     x = mSources[name].velocity[0];
     y = mSources[name].velocity[1];
     z = mSources[name].velocity[2];
+}
+//------------------------------------------------------------------------------
+void USound::velocity(qreal& x, qreal& y, qreal& z, const QStringList &namelist)
+{
+    for( auto it = namelist.constBegin(); it != namelist.constEnd(); ++it ) {
+        velocity(x, y, z, (*it));
+    }
 }
 //------------------------------------------------------------------------------
 bool USound::checkSourceState(ALuint sourceId, ALint state) const
@@ -471,12 +567,5 @@ TSourceInfo USound::sourceInfo(const QString& name) const
     if( !checkForValidName(name) )
         return TSourceInfo();
     return mSources[name];
-}
-//------------------------------------------------------------------------------
-void USound::setPitch(qreal gain, const QString& name)
-{
-    if (!checkForValidName(name))
-        return;
-    alSourcefv(mSources[name].sourceId, AL_PITCH, (ALfloat*)&gain);
 }
 //------------------------------------------------------------------------------

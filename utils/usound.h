@@ -70,29 +70,43 @@ public:
     void init(ALCdevice* device, ALCcontext* context);
     bool isValid() const;
     QStringList keys();
-
     bool openFile(const QString& fileName, const QString& name,
             bool looped = false, bool streamed = false);
-    void play(const QString& name);
+    TSourceInfo sourceInfo(const QString& name) const;
+
+    void play(const QString& name, bool breakPlay = false);
     void pause(const QString& name);
     void stop(const QString& name);
     void close(const QString& name);
     void update(const QString& name);
-    void setPosition(qreal x, qreal y, qreal z, const QString& name);
-    void setVelocity(qreal x, qreal y, qreal z, const QString& name);
+
     bool isPlaying(const QString& name) const;
     bool isPaused(const QString& name) const;
     bool isStoped(const QString& name) const;
-
     void position(qreal& x, qreal& y, qreal& z, const QString& name);
     void velocity(qreal& x, qreal& y, qreal& z, const QString& name);
+
+    void setPosition(qreal x, qreal y, qreal z, const QString& name);
+    void setVelocity(qreal x, qreal y, qreal z, const QString& name);
     void setGain(qreal gain, const QString& name);
     void setPitch(qreal gain, const QString& name);
 
-//    quint32 sourceId(const QString& name);
-//    QString sourceName(quint32 sourceId);
+    void play(const QStringList& namelist, bool breakPlay = false);
+    void pause(const QStringList& namelist);
+    void stop(const QStringList& namelist);
+    void close(const QStringList& namelist);
+    void update(const QStringList& namelist);
 
-    TSourceInfo sourceInfo(const QString& name) const;
+    bool isPlaying(const QStringList& namelist) const;
+    bool isPaused(const QStringList& namelist) const;
+    bool isStoped(const QStringList& namelist) const;
+    void position(qreal& x, qreal& y, qreal& z, const QStringList& namelist);
+    void velocity(qreal& x, qreal& y, qreal& z, const QStringList& namelist);
+
+    void setPosition(qreal x, qreal y, qreal z, const QStringList& namelist);
+    void setVelocity(qreal x, qreal y, qreal z, const QStringList& namelist);
+    void setGain(qreal gain, const QStringList& namelist);
+    void setPitch(qreal pitch, const QStringList& namelist);
 
 private:
 #ifdef USE_ALUT

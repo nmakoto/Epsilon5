@@ -67,10 +67,9 @@ void TSound::timerEvent(QTimerEvent* event)
             CurrentMusic = BackgroundMusic->sourceInfo("music-menu");
         } else if (Application->GetState() == ST_InGame) {
             BackgroundMusic->pause(CurrentMusic.name);
-            BackgroundMusic->play("music-battle00");
+//            BackgroundMusic->play("music-battle00");
             CurrentMusic = BackgroundMusic->sourceInfo("music-battle00");
-            if(!AmbientSounds->isPlaying("wind"))
-                AmbientSounds->play("wind");
+            AmbientSounds->play("wind");
         }
     }
 
@@ -81,9 +80,7 @@ void TSound::timerEvent(QTimerEvent* event)
             if ((size_t)player.id() == Application->GetNetwork()->GetId()) {
                 QPoint delta = QPoint(player.x(), player.y()) - LastPlayerPos;
                 if (abs(delta.x()) > 2 || abs(delta.y()) > 2) {
-                    if (!PlayerSounds->isPlaying("walk")) {
-                        PlayerSounds->play("walk");
-                    }
+                    PlayerSounds->play("walk");
                 } else if (delta.x() == 0 && delta.y() == 0) {
                     PlayerSounds->pause("walk");
                 }

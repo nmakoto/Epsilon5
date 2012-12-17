@@ -12,7 +12,7 @@ class TSound : public QObject
 {
     Q_OBJECT
 public:
-    explicit TSound(TApplication* app, QObject* parent = 0);
+    explicit TSound(TApplication* app, QObject* parent);
     ~TSound();
 
     void Init();

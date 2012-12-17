@@ -3,7 +3,7 @@
 
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
-    , Sound(new TSound(this))
+    , Sound(new TSound(this, this))
     , MainDisplay(this)
     , Network(new TNetwork(this))
     , Settings(new TSettings(this))
