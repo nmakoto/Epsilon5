@@ -17,9 +17,6 @@ public:
 
     void Init();
 
-//    TSoundObject* addSound(const QString& name, const QString& fileName);
-//    void addSound(TSoundObject* sound);
-
 public slots:
     void UpdateSounds();
     void MenuItemClicked();
@@ -33,7 +30,9 @@ private:
     TSoundContainer* SoundContainer;
     TSoundObject* MenuSounds;
     TSoundObject* BackgroundMusic;
+    TSoundObject* PlayerSounds;
     TSoundInfo CurrentMusic;
     EState lastState;
+    QPoint LastPlayerPos;
 };
 //------------------------------------------------------------------------------
