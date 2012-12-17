@@ -25,11 +25,14 @@ TSound::TSound(TApplication* app, QObject* parent)
     BackgroundMusic->openFile(
         "sounds/JewelBeat-Great_Escape-mono.wav", "music-battle00", true);
     PlayerSounds->openFile("sounds/walking-in-snow-mono.wav", "walk", true);
+    PlayerSounds->openFile("sounds/machinegun-mono.wav", "mgun");
+    PlayerSounds->openFile("sounds/shotgun-mono.wav", "sgun");
+    PlayerSounds->openFile("sounds/pistol-mono.wav", "pgun");
     AmbientSounds->openFile("sounds/wind-loop-mono.wav", "wind", true);
-
 
     BackgroundMusic->setPosition(0, 0, 2, "music-menu");
     BackgroundMusic->setPosition(0, 0, 20, "music-battle00");
+    PlayerSounds->setPosition(0, 0, 4, QStringList() << "mgun" << "sgun" << "pgun");
     PlayerSounds->setPitch(1.2f, "walk");
     AmbientSounds->setPosition(0, 0, 5, "wind");
 
@@ -58,6 +61,7 @@ void TSound::MenuItemClicked()
 //------------------------------------------------------------------------------
 void TSound::timerEvent(QTimerEvent* event)
 {
+    // TODO: Refactor this function then
     Q_UNUSED(event);
     if (lastState != Application->GetState()) {
         if (Application->GetState() == ST_MainMenu) {
@@ -74,10 +78,12 @@ void TSound::timerEvent(QTimerEvent* event)
     }
 
     if (CurrentWorld) {
+        const Epsilon5::Control& control = Application->GetMainDisplay()->GetControl();
         auto it = CurrentWorld->players().begin();
         for ( ; it != CurrentWorld->players().end(); ++it) {
             const Epsilon5::Player& player = (*it);
             if ((size_t)player.id() == Application->GetNetwork()->GetId()) {
+                // player walking
                 QPoint delta = QPoint(player.x(), player.y()) - LastPlayerPos;
                 if (abs(delta.x()) > 2 || abs(delta.y()) > 2) {
                     PlayerSounds->play("walk");
@@ -85,11 +91,30 @@ void TSound::timerEvent(QTimerEvent* event)
                     PlayerSounds->pause("walk");
                 }
                 LastPlayerPos = QPoint(player.x(), player.y());
+
+                // player bullets
+                for (int i = 0; i != CurrentWorld->bullets_size(); i++) {
+                    const Epsilon5::Bullet& bullet = CurrentWorld->bullets(i);
+
+                    if(bullet.team() == player.team() && control.keystatus().keyattack1() )
+                        if( abs(bullet.x() - player.x()) < 50 - 20*(control.weapon() == Epsilon5::Pistol)
+                                && abs(bullet.y() - player.y()) < 50 - 20*(control.weapon() == Epsilon5::Pistol) )
+                        {
+                            if( control.weapon() == Epsilon5::Pistol ) {
+                                PlayerSounds->play("pgun", true);
+                            }
+                            else if( control.weapon() == Epsilon5::Machinegun )
+                                PlayerSounds->play("mgun");
+                            else if( control.weapon() == Epsilon5::Shotgun )
+                                PlayerSounds->play("sgun", true);
+                        }
+                }
             }
         }
     }
 
-    // Update streamed sound objects
+
+    // Update streamed sound objects (only OGG with streaming option)
     if (!CurrentMusic.name.isEmpty()) {
         BackgroundMusic->update(CurrentMusic.name);
     }
