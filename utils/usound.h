@@ -63,9 +63,7 @@ class USound : public QObject
     typedef QHash<QString, TSourceInfo> TSourceInfoHash;
 public:
     explicit USound(QObject* parent = 0);
-//    USound(const USound& sound);
     ~USound();
-//    USound& operator=(const USound& sound);
 
     void init(ALCdevice* device, ALCcontext* context);
     bool isValid() const;
@@ -78,10 +76,14 @@ public:
     void stop(const QString& name);
     void close(const QString& name);
     void update(const QString& name);
-    void move(qreal x, qreal y, qreal z, const QString&);
+    void setPosition(qreal x, qreal y, qreal z, const QString& name);
+    void setVelocity(qreal x, qreal y, qreal z, const QString& name);
     bool isPlaying(const QString& name) const;
     bool isPaused(const QString& name) const;
     bool isStoped(const QString& name) const;
+
+    void position(qreal& x, qreal& y, qreal& z, const QString& name);
+    void velocity(qreal& x, qreal& y, qreal& z, const QString& name);
 
 private:
 #ifdef USE_ALUT
@@ -93,21 +95,19 @@ private:
             bool streamed = false);
 #endif
     bool checkSourceState(ALuint sourceId, ALint state) const;
+    bool checkForValidName(const QString& name) const;
 
 private:
     TBufferInfoHash mBuffers;
     TSourceInfoHash mSources;
     ALCdevice* mDevice;
     ALCcontext* mContext;
-//    ALuint mSourceId;
 #ifdef USE_OGGVORBIS
     OggVorbis_File* mOggVorbisFile;
     vorbis_comment* mVorbisComment;
     vorbis_info* mVorbisInfo;
     QFile mOggFile;
 #endif
-//    bool mLooped;
-//    bool mStreamed;
 };
 //------------------------------------------------------------------------------
 }
