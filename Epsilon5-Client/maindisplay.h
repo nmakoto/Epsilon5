@@ -36,7 +36,8 @@ class TMainDisplay : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit TMainDisplay(TApplication* application, QGLWidget* parent = 0);
+    explicit TMainDisplay(TApplication* application);
+    explicit TMainDisplay(TApplication* application, QWidget* parent);
     void Init();
     ~TMainDisplay();
     inline const Epsilon5::Control& GetControl() {

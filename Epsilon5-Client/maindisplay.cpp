@@ -48,7 +48,12 @@ static double getAngle(const QPoint& point)
     return -angle;
 }
 //------------------------------------------------------------------------------
-TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
+TMainDisplay::TMainDisplay(TApplication* application)
+    : TMainDisplay(application, 0)
+{
+}
+//------------------------------------------------------------------------------
+TMainDisplay::TMainDisplay(TApplication* application, QWidget* parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
     , Application(application)
     , Images(new TImageStorage(this))
@@ -99,7 +104,8 @@ TMainDisplay::~TMainDisplay()
 //------------------------------------------------------------------------------
 void TMainDisplay::RedrawWorld()
 {
-    CurrentWorld = &((TNetwork*)(QObject::sender()))->GetWorld();
+//    CurrentWorld = &((TNetwork*)(QObject::sender()))->GetWorld();
+    CurrentWorld = &Application->GetNetwork()->GetWorld();
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::timerEvent(QTimerEvent*)
@@ -110,7 +116,7 @@ void TMainDisplay::timerEvent(QTimerEvent*)
 void TMainDisplay::paintEvent(QPaintEvent*)
 {
 
-    EState state = Application->GetState();
+    EGameState state = Application->GetState();
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
