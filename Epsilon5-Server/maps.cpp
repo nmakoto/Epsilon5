@@ -74,10 +74,10 @@ void TMaps::LoadObjects(const QString& fileName) {
             throw UException("Error parsing " + fileName);
         }
 
-        int id = FromString(objectParams[3]);
-        int x = FromString(objectParams[0]);
-        int y = FromString(objectParams[1]);
-        double angle = FromString(objectParams[2]);
+        int id = utils::FromString(objectParams[3]);
+        int x = utils::FromString(objectParams[0]);
+        int y = utils::FromString(objectParams[1]);
+        double angle = utils::FromString(objectParams[2]);
 
         emit SpawnObject(id, x, y, angle);
     }
@@ -104,14 +104,14 @@ void TMaps::LoadRespPoints(const QString& fileName) {
         TRespPoint point;
 
         //x:y:capture_radius:spawn_radius:is_capturable:is_main:capture_time:team
-        point.X = FromString(params[0]);
-        point.Y = FromString(params[1]);
-        point.CaptureRadius = FromString(params[2]);
-        point.SpawnRadius = FromString(params[3]);
-        point.IsCapturable = FromString(params[4]);
-        point.IsMain = FromString(params[5]);
-        point.CaptureTime = FromString(params[6]);
-        point.Team = FromString(params[7]) ? T_One : T_Second;
+        point.X = utils::FromString(params[0]);
+        point.Y = utils::FromString(params[1]);
+        point.CaptureRadius = utils::FromString(params[2]);
+        point.SpawnRadius = utils::FromString(params[3]);
+        point.IsCapturable = utils::FromString(params[4]);
+        point.IsMain = utils::FromString(params[5]);
+        point.CaptureTime = utils::FromString(params[6]);
+        point.Team = utils::FromString(params[7]) ? T_One : T_Second;
         RespPoints.push_back(point);
     }
 }

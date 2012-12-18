@@ -38,7 +38,7 @@ void USettings::Load(const QString& fname, const QStringList& required)
         }
     }
 }
-
+//------------------------------------------------------------------------------
 UFromStringFormat USettings::GetParameter(const QString& parameter)
 {
     if (Parameters.find(parameter) == Parameters.end()) {

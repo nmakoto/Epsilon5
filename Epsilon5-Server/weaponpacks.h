@@ -16,7 +16,7 @@ struct TTimeKey {
     size_t PlayerId;
     Epsilon5::Weapon WeaponType;
     operator QString() {
-        return ToString(PlayerId) + ":" + ToString((size_t)(WeaponType));
+        return utils::ToString(PlayerId) + ":" + utils::ToString((size_t)(WeaponType));
     }
 };
 

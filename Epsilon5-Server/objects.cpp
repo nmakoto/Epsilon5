@@ -50,14 +50,14 @@ void TObjects::LoadObjects(const QString &fileName) {
 
 QPoint TObjects::GetObjectSize(size_t id) {
     if (Objects.find(id) == Objects.end()) {
-        throw UException(QString("Object not found: #") + ToString(id));
+        throw UException(QString("Object not found: #") + utils::ToString(id));
     }
     return Objects[id];
 }
 
 bool TObjects::IsDynamicObject(size_t id) {
     if (ObjectsIsDyn.find(id) == ObjectsIsDyn.end()) {
-        throw UException(QString("Object not found: #") + ToString(id));
+        throw UException(QString("Object not found: #") + utils::ToString(id));
     }
     return ObjectsIsDyn[id];
 }
