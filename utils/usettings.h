@@ -1,13 +1,14 @@
 #pragma once
-
 #include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QHash>
 #include <QMap>
-
-#include "ucast.h"
-
+#include "../utils/ucast.h"
+//------------------------------------------------------------------------------
+namespace utils
+{
+//------------------------------------------------------------------------------
 class USettings: public QObject
 {
     Q_OBJECT
@@ -26,3 +27,6 @@ public:
 private:
     TParametersHash Parameters;
 };
+//------------------------------------------------------------------------------
+}
+//------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ TMap::TMap(QObject* parent)
 }
 
 void TMap::LoadMap(QString map) {
-    USettings settings;
+    utils::USettings settings;
     settings.Load("maps/" + map + "/config.ini");
     QString color = settings.GetParameter("color");
     Color = QColor(color);

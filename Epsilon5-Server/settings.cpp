@@ -9,10 +9,10 @@ const char* SETTINGS_FILENAME = "settings.ini";
 
 TSettings::TSettings(QObject* parent)
     : QObject(parent)
-    , Settings(new USettings(this))
+    , Settings(new utils::USettings(this))
 {
     // Define default params
-    USettings::TParametersHash params;
+    utils::USettings::TParametersHash params;
     params["server.address"] = QString(DEFAULT_SERVER_ADDRESS);
     params["server.port"] = QString().number(DEFAULT_SERVER_PORT);
     params["gameplay.friendlyfire"] = QString().number(DEFAULT_GAMEPLAY_FRIENDLYFIRE);

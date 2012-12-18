@@ -1,21 +1,23 @@
+#include <QDebug>
 #include <QFile>
 #include <QTextStream>
-
-#include "usettings.h"
-#include "uexception.h"
-
-#include <QDebug>
-
-USettings::USettings(QObject *parent)
+#include "../utils/usettings.h"
+#include "../utils/uexception.h"
+//------------------------------------------------------------------------------
+using namespace utils;
+//------------------------------------------------------------------------------
+USettings::USettings(QObject* parent)
     : QObject(parent)
 {
 }
-
-void USettings::Load(const QString& fname, const QStringList& required) {
+//------------------------------------------------------------------------------
+void USettings::Load(const QString& fname, const QStringList& required)
+{
     QFile file(fname);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         throw UException("Error opening file " + fname);
     }
+
     QTextStream in(&file);
     QString line = "";
     while (!line.isNull()) {
@@ -29,6 +31,7 @@ void USettings::Load(const QString& fname, const QStringList& required) {
         }
         Parameters.insert(acc[0].trimmed(), acc[1].trimmed());
     }
+
     for (auto i = required.begin(); i != required.end(); i++) {
         if (Parameters.find(*i) == Parameters.end()) {
             throw UException("Required parameter " + *i + " not found");
@@ -36,45 +39,53 @@ void USettings::Load(const QString& fname, const QStringList& required) {
     }
 }
 
-UFromStringFormat USettings::GetParameter(const QString& parameter) {
+UFromStringFormat USettings::GetParameter(const QString& parameter)
+{
     if (Parameters.find(parameter) == Parameters.end()) {
         throw UException(QString("Parameter '%1'not found in config")
                 .arg(parameter));
     }
     return FromString(Parameters[parameter]);
 }
-
-void USettings::SetParameter(const QString &parameter, const QString &value)
+//------------------------------------------------------------------------------
+void USettings::SetParameter(const QString& parameter, const QString& value)
 {
-    if( parameter.isEmpty() )
+    if (parameter.isEmpty()) {
         return;
+    }
 
-    if( Parameters.keys().contains(parameter) )
+    if (Parameters.keys().contains(parameter)) {
         Parameters.remove(parameter);
+    }
 
     Parameters[parameter] = value;
 }
-
-void USettings::DefineParams(const TParametersHash &paramsList) {
+//------------------------------------------------------------------------------
+void USettings::DefineParams(const TParametersHash& paramsList)
+{
     Parameters = paramsList;
 }
-
-void USettings::Save(const QString &fname, bool keepOrigin)
+//------------------------------------------------------------------------------
+void USettings::Save(const QString& fname, bool keepOrigin)
 {
     QFile file(fname);
-    if( keepOrigin && file.exists() )
+    if (keepOrigin && file.exists()) {
         return;
+    }
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate
-            | QIODevice::Text)) {
+                   | QIODevice::Text)) {
         throw UException("Error opening file for writing " + fname);
     }
+
     QTextStream stream(&file);
     QStringList vars(Parameters.uniqueKeys());
     vars.sort();
     auto it = vars.constBegin();
-    for(; it != vars.constEnd(); ++it){
+    for (; it != vars.constEnd(); ++it) {
         stream << *it << "=" << Parameters[*it] << "\n";
     }
+
     file.flush();
 }
+//------------------------------------------------------------------------------

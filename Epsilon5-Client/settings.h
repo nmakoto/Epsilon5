@@ -1,8 +1,7 @@
 #pragma once
-
 #include <QObject>
 #include "../utils/usettings.h"
-
+//------------------------------------------------------------------------------
 class TSettings: public QObject {
     Q_OBJECT
 public:
@@ -20,5 +19,6 @@ public:
     void Load();
 
 private:
-    USettings* Settings;
+    utils::USettings* Settings;
 };
+//------------------------------------------------------------------------------

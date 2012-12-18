@@ -12,10 +12,10 @@ const bool DEFAULT_WINDOW_FULLSCREEN = true;
 
 TSettings::TSettings(QObject* parent)
     : QObject(parent)
-    , Settings(new USettings(this))
+    , Settings(new utils::USettings(this))
 {
     // Define default parameters
-    USettings::TParametersHash params;
+    utils::USettings::TParametersHash params;
     params["nickname"] = QString(DEFAULT_PLAYER_NAME);
     params["server.address"] = QString(DEFAULT_SERVER_ADDRESS);
     params["server.port"] = QString().number(DEFAULT_SERVER_PORT);

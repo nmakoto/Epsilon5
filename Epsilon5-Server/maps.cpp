@@ -44,7 +44,7 @@ void TMaps::LoadNextMap() {
 }
 
 void TMaps::LoadConfig(const QString& fileName) {
-    USettings conf;
+    utils::USettings conf;
     conf.Load(fileName);
     bool ok = true;
     MapSize.setWidth(conf.GetParameter("width"));
