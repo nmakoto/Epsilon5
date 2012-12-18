@@ -4,7 +4,7 @@
 #include "maindisplay.h"
 #include "application.h"
 #include "network.h"
-
+//------------------------------------------------------------------------------
 TNetwork::TNetwork(QObject* parent)
     : QObject(parent)
     , Socket(new QUdpSocket(this))
@@ -18,12 +18,14 @@ TNetwork::TNetwork(QObject* parent)
     startTimer(500);
     LastPacketReceived.start();
 }
-
-const Epsilon5::World& TNetwork::GetWorld() const {
+//------------------------------------------------------------------------------
+const Epsilon5::World& TNetwork::GetWorld() const
+{
     return World;
 }
-
-void TNetwork::OnDataReceived() {
+//------------------------------------------------------------------------------
+void TNetwork::OnDataReceived()
+{
     LastPacketReceived.restart();
     QByteArray receivedPacket = Socket->readAll();
     EPacketType packetType;
@@ -39,18 +41,19 @@ void TNetwork::OnDataReceived() {
         while (receivedPacket.size() > 0) {
             packetType = (EPacketType)(char)(receivedPacket[0]);
             originDataSize = qFromBigEndian<quint16>(
-                        (const uchar*)receivedPacket.mid(posOrigin, midSize).constData());
+                    (const uchar*)receivedPacket.mid(posOrigin, midSize).constData());
             packedDataSize = qFromBigEndian<quint16>(
-                        (const uchar*)receivedPacket.mid(posPacked, midSize).constData());
+                    (const uchar*)receivedPacket.mid(posPacked, midSize).constData());
             packed = receivedPacket.mid(posContent, packedDataSize);
             content = qUncompress(packed);
             if (content.isEmpty() && (originDataSize || packedDataSize)) {
                 throw UException("Wrong packet: cannot unpack data");
             }
+
             // Retrieve another packet from current.
             // We can receive more than one packet at once
             receivedPacket = receivedPacket.mid(
-                        packedDataSize + sizeof(char) + 2 * midSize);
+                    packedDataSize + sizeof(char) + 2 * midSize);
             switch (packetType) {
             case PT_PlayerInfo: {
                 if (Status != PS_InfoWait) {
@@ -91,34 +94,40 @@ void TNetwork::OnDataReceived() {
         qDebug() << Q_FUNC_INFO << "Exception:" << e.what();
     }
 }
-
-void TNetwork::OnError(QAbstractSocket::SocketError socketError) {
+//------------------------------------------------------------------------------
+void TNetwork::OnError(QAbstractSocket::SocketError socketError)
+{
     qDebug() << Q_FUNC_INFO << "Socket error:" << socketError;
     Status = PS_NotConnected;
 }
-
-void TNetwork::OnConnected() {
+//------------------------------------------------------------------------------
+void TNetwork::OnConnected()
+{
     SendPlayerAuth();
     Application()->SetState(ST_LoadingMap);
 }
-
-TApplication* TNetwork::Application() {
+//------------------------------------------------------------------------------
+TApplication* TNetwork::Application()
+{
     return (TApplication*)(parent());
 }
-
-void TNetwork::Start() {
+//------------------------------------------------------------------------------
+void TNetwork::Start()
+{
     Application()->SetState(ST_Connecting);
     Socket->connectToHost(QHostAddress(
-                Application()->GetSettings()->GetServerAddr()),
-                Application()->GetSettings()->GetServerPort());
+            Application()->GetSettings()->GetServerAddr()),
+            Application()->GetSettings()->GetServerPort());
 }
-
-void TNetwork::Stop() {
+//------------------------------------------------------------------------------
+void TNetwork::Stop()
+{
     Socket->disconnectFromHost();
     emit Disconnected();
 }
-
-void TNetwork::SendControls(size_t packetnumber) {
+//------------------------------------------------------------------------------
+void TNetwork::SendControls(size_t packetnumber)
+{
     Epsilon5::Control control = Application()->GetMainDisplay()->GetControl();
     QByteArray message;
     control.set_packet_number(packetnumber);
@@ -126,8 +135,9 @@ void TNetwork::SendControls(size_t packetnumber) {
     control.SerializeToArray(message.data(), message.size());
     Send(message, PT_Control);
 }
-
-void TNetwork::SendPlayerAuth() {
+//------------------------------------------------------------------------------
+void TNetwork::SendPlayerAuth()
+{
     Epsilon5::Auth auth;
     QByteArray nickName = Application()->GetSettings()->GetNickname().toLocal8Bit();
     auth.set_name(nickName.data(), nickName.size());
@@ -137,10 +147,11 @@ void TNetwork::SendPlayerAuth() {
     Send(data, PT_PlayerAuth);
     Status = PS_InfoWait;
 }
-
+//------------------------------------------------------------------------------
 // Send packet to the server in form:
 // [PACKET_TYPE] [ORIGIN_DATA_SIZE] [PACKED_DATA_SIZE] [DATA]
-void TNetwork::Send(const QByteArray& originData, EPacketType packetType) {
+void TNetwork::Send(const QByteArray& originData, EPacketType packetType)
+{
     QByteArray sendPacket;
     QByteArray packedData = qCompress(originData, 5);
     quint16 originDataSize = qToBigEndian<quint16>(originData.size());
@@ -151,11 +162,13 @@ void TNetwork::Send(const QByteArray& originData, EPacketType packetType) {
     sendPacket += packedData;
     Socket->write(sendPacket);
 }
-
-void TNetwork::timerEvent(QTimerEvent *event){
+//------------------------------------------------------------------------------
+void TNetwork::timerEvent(QTimerEvent* event)
+{
     Q_UNUSED(event);
 
     if (LastPacketReceived.elapsed() > DEFAULT_SERVER_TIMEOUT) {
         Stop();
     }
 }
+//------------------------------------------------------------------------------
