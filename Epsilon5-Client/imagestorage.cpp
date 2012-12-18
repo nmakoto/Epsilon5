@@ -1,11 +1,13 @@
 #include "../utils/uexception.h"
 #include "imagestorage.h"
-
-TImageStorage::TImageStorage(QObject* parent) :
-    QObject(parent) {
+//------------------------------------------------------------------------------
+TImageStorage::TImageStorage(QObject* parent)
+    : QObject(parent)
+{
 }
-
-void TImageStorage::LoadAll() {
+//------------------------------------------------------------------------------
+void TImageStorage::LoadAll()
+{
     LoadImage("player", "resources/mad.png");
     LoadImage("enemy", "resources/peka.png");
     LoadImage("arbuz", "resources/arbuz.png");
@@ -22,25 +24,29 @@ void TImageStorage::LoadAll() {
     LoadImage("menu-exit", "resources/menu-exit.png");
     LoadImage("menu-exit-h", "resources/menu-exit-h.png");
 }
-
-const QImage& TImageStorage::GetImage(const QString& imageName) {
+//------------------------------------------------------------------------------
+const QImage& TImageStorage::GetImage(const QString& imageName)
+{
     auto it = Images.find(imageName);
     if (it == Images.end()) {
         throw UException("Image not found!");
     }
     return *it.value();
 }
-
-void TImageStorage::LoadImage(const QString& imageName, const QString& filename) {
+//------------------------------------------------------------------------------
+void TImageStorage::LoadImage(const QString& imageName, const QString& filename)
+{
     QImage* image = new QImage(filename);
     if (image->isNull()) {
         throw UException(QString("Loading failed: ") + filename);
     }
     Images.insert(imageName, image);
 }
-
-TImageStorage::~TImageStorage() {
+//------------------------------------------------------------------------------
+TImageStorage::~TImageStorage()
+{
     for (auto i = Images.begin(); i != Images.end(); i++) {
         delete i.value();
     }
 }
+//------------------------------------------------------------------------------
