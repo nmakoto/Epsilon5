@@ -1,5 +1,5 @@
 #include "application.h"
-
+//------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
     , MainDisplay(this)
@@ -10,11 +10,14 @@ TApplication::TApplication(int& argc, char* argv[])
     connect(Network, SIGNAL(WorldReceived()), &MainDisplay, SLOT(RedrawWorld()));
     connect(Network, SIGNAL(Disconnected()), SLOT(Disconnected()));
 }
-
-bool TApplication::Init() {
+//------------------------------------------------------------------------------
+bool TApplication::Init()
+{
     MainDisplay.Init();
     MainDisplay.show();
-    if( Settings->GetWindowFullscreen() )
+    if (Settings->GetWindowFullscreen()) {
         MainDisplay.toggleFullscreen();
+    }
     return true; // TODO: normal initialisation
 }
+//------------------------------------------------------------------------------

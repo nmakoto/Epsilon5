@@ -1,11 +1,10 @@
 #pragma once
-
 #include <QApplication>
 #include <QDateTime>
 #include "maindisplay.h"
 #include "network.h"
 #include "settings.h"
-
+//------------------------------------------------------------------------------
 enum EState {
     ST_MainMenu,
     ST_Connecting,
@@ -13,7 +12,7 @@ enum EState {
     ST_SelectingResp,
     ST_InGame
 };
-
+//------------------------------------------------------------------------------
 class TApplication : public QApplication
 {
     Q_OBJECT
@@ -35,13 +34,16 @@ public:
     inline void SetState(EState state) {
         State = state;
     }
+
 public slots:
     inline void Disconnected() {
         State = ST_MainMenu;
     }
+
 private:
     TMainDisplay MainDisplay;
     TNetwork* Network;
     TSettings* Settings;
     EState State;
 };
+//------------------------------------------------------------------------------
