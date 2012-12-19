@@ -80,7 +80,7 @@ void TNetwork::OnDataReceived()
                 if (CurrentWorld->ParseFromArray(content.data(), content.size())) {
                     qint32 packetnumber = CurrentWorld->packet_number();
                     emit WorldReceived();
-                    if( Application->GetState() == ST_SelectingResp ) {
+                    if (Application->GetState() == ST_SelectingResp) {
                         // TODO: block controls when showing respawn menu
                     }
                     SendControls(packetnumber);
@@ -88,6 +88,7 @@ void TNetwork::OnDataReceived()
                     throw UException("Error parsing world");
                 }
             }
+            break;
             default:
                 throw UException("Unknown packet type");
                 break;
@@ -119,8 +120,9 @@ void TNetwork::Connect()
 //------------------------------------------------------------------------------
 void TNetwork::Disconnect()
 {
-    if( Status == PS_NotConnected )
+    if (Status == PS_NotConnected) {
         return;
+    }
 
     Socket->disconnectFromHost();
     Status = PS_NotConnected;
@@ -167,8 +169,9 @@ void TNetwork::Send(const QByteArray& originData, EPacketType packetType)
 void TNetwork::timerEvent(QTimerEvent* event)
 {
     Q_UNUSED(event);
-    if( Status == PS_NotConnected )
+    if (Status == PS_NotConnected) {
         return;
+    }
 
     if (LastPacketReceived.elapsed() > DEFAULT_SERVER_TIMEOUT) {
         Disconnect();

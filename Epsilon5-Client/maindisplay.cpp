@@ -142,7 +142,7 @@ void TMainDisplay::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
         // TODO: make better respawn action
-        if( Application->GetState() == ST_SelectingResp ) {
+        if (Application->GetState() == ST_SelectingResp) {
             emit RespawnSelectedAction();
             return;
         }

@@ -9,7 +9,7 @@ class TBasicItem
 public:
     TBasicItem();
 
-    virtual void paint(QPainter *painter) = 0;
+    virtual void paint(QPainter* painter) = 0;
 
 private:
     QPixmap pix;
@@ -23,10 +23,11 @@ public:
     {}
 
     void Anim() {
-        if (Ind == Frames.size()-1)
+        if (Ind == Frames.size() - 1) {
             Ind = 0;
-        else
+        } else {
             ++Ind;
+        }
     }
 
     QPixmap& GetPix() {
