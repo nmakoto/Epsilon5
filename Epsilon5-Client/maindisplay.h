@@ -48,6 +48,7 @@ public:
 signals:
     void QuitAction();
     void MainMenuAction();
+    void RespawnSelectedAction();
 
 public slots:
     void show();
@@ -63,7 +64,7 @@ private:
 
     QPoint GetPlayerCoordinatesAndPing();
     void DrawText(QPainter& painter, const QPoint& pos,
-            const QString& text, int FONT_SIZE_PT);
+            const QString& text, int fontSizePt = 10);
     void DrawFps(QPainter& painter);
     void DrawPing(QPainter& painter);
     void DrawWorld(QPainter& painter);

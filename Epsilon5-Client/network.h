@@ -28,9 +28,10 @@ public slots:
     void Disconnect();
 
 signals:
-    void WorldReceived();
+    void Connected();
     void Disconnected();
-    void PlayerInfoReceived(Epsilon5::PlayerInfo info);
+    void WorldReceived();
+    void PlayerInfoReceived(const Epsilon5::PlayerInfo& info);
 
 private slots:
     void OnDataReceived();

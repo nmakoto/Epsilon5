@@ -17,12 +17,14 @@ public:
 
     void LoadMap(const QString& mapName);
     const TMap* GetMap() const;
+    QString GetCurrentMapName() const;
 
     size_t GetPlayerId() const;
     void SetPlayerInfo(const Epsilon5::PlayerInfo& info);
     const Epsilon5::PlayerInfo* GetPlayerInfo() const;
 
-public slots:
+signals:
+    void MapLoaded();
 
 private:
     Epsilon5::World GameWorld;

@@ -141,6 +141,12 @@ void TMainDisplay::paintEvent(QPaintEvent*)
 void TMainDisplay::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
+        // TODO: make better respawn action
+        if( Application->GetState() == ST_SelectingResp ) {
+            emit RespawnSelectedAction();
+            return;
+        }
+
         Control.mutable_keystatus()->set_keyattack1(true);
     } else {
         Control.mutable_keystatus()->set_keyattack2(true);
@@ -288,10 +294,10 @@ void TMainDisplay::DrawPing(QPainter& painter)
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::DrawText(QPainter& painter, const QPoint& pos,
-        const QString& text, int FONT_SIZE_PT = 10)
+        const QString& text, int fontSizePt)
 {
     // Helvetica font present on all Systems
-    painter.setFont(QFont("Helvetica", FONT_SIZE_PT));
+    painter.setFont(QFont("Helvetica", fontSizePt));
     painter.setPen(Qt::black);
     painter.drawText(pos.x() + 1, pos.y() + 1, text);
     painter.setPen(Qt::darkGray);
@@ -563,7 +569,9 @@ void TMainDisplay::DrawWorld(QPainter& painter)
         painter.drawImage(10, 30, miniMapImg);
 
         if (Application->GetState() == ST_SelectingResp) {
-            // TODO: Draw resp menu
+            // TODO: Draw respawn menu
+            DrawText(painter, QPoint(10, 50),
+                    tr("TODO: Respawn menu. LMB to continue."), 14);
         }
 
         // Detect targeting angle for Control packet

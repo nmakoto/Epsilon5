@@ -22,6 +22,9 @@ public:
     void DrawBackground(const QPoint& playerPos, const QSize& frameSize,
             QPainter& painter) const;
 
+signals:
+    void MapLoaded();
+
 public slots:
     void LoadMap(QString map);
 

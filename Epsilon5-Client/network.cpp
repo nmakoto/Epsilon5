@@ -15,6 +15,8 @@ TNetwork::TNetwork(TApplication* application)
     connect(Socket, SIGNAL(error(QAbstractSocket::SocketError)),
             SLOT(OnError(QAbstractSocket::SocketError)));
     connect(Socket, SIGNAL(connected()), SLOT(OnConnected()));
+    connect(Socket, SIGNAL(disconnected()), SIGNAL(Disconnected()));
+
     Status = PS_NotConnected;
     startTimer(500);
     LastPacketReceived.start();
@@ -70,7 +72,6 @@ void TNetwork::OnDataReceived()
             }
             break;
             case PT_World: {
-                Application->SetState(ST_InGame);
                 if (Status != PS_Spawned) {
                     throw UException("Wrong packet: PT_World");
                 }
@@ -78,11 +79,14 @@ void TNetwork::OnDataReceived()
                 if (CurrentWorld->ParseFromArray(content.data(), content.size())) {
                     qint32 packetnumber = CurrentWorld->packet_number();
                     emit WorldReceived();
-                    SendControls(packetnumber);
+                    if( Application->GetState() != ST_SelectingResp ) {
+                        SendControls(packetnumber);
+                    }
                 } else {
                     throw UException("Error parsing world");
                 }
             }
+            // TODO: Make ping/pong packets type
             break;
             default:
                 throw UException("Unknown packet type");
@@ -103,12 +107,11 @@ void TNetwork::OnError(QAbstractSocket::SocketError socketError)
 void TNetwork::OnConnected()
 {
     SendPlayerAuth();
-    Application->SetState(ST_LoadingMap);
+    emit Connected();
 }
 //------------------------------------------------------------------------------
 void TNetwork::Connect()
 {
-    Application->SetState(ST_Connecting);
     Socket->connectToHost(QHostAddress(
             Application->GetSettings()->GetServerAddr()),
             Application->GetSettings()->GetServerPort());
@@ -160,7 +163,7 @@ void TNetwork::Send(const QByteArray& originData, EPacketType packetType)
 void TNetwork::timerEvent(QTimerEvent* event)
 {
     Q_UNUSED(event);
-    if( Application->GetState() != ST_InGame )
+    if( Status == PS_NotConnected )
         return;
 
     if (LastPacketReceived.elapsed() > DEFAULT_SERVER_TIMEOUT) {

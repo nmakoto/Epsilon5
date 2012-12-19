@@ -9,11 +9,14 @@ TApplication::TApplication(int& argc, char* argv[])
     , State(ST_MainMenu)
 {
     connect(Network, SIGNAL(WorldReceived()), SLOT(UpdateWorld()));
-    connect(Network, SIGNAL(PlayerInfoReceived(Epsilon5::PlayerInfo)),
-            SLOT(PrepareMap(Epsilon5::PlayerInfo)));
+    connect(Network, SIGNAL(PlayerInfoReceived(const Epsilon5::PlayerInfo&)),
+            SLOT(PrepareMap(const Epsilon5::PlayerInfo&)));
 
     connect(MainDisplay, SIGNAL(QuitAction()), SLOT(GameClose()));
-    connect(MainDisplay, SIGNAL(MainMenuAction()), SLOT(ShowMainMenu()));
+    connect(MainDisplay, SIGNAL(MainMenuAction()), SLOT(SetMainMenuState()));
+    connect(MainDisplay, SIGNAL(RespawnSelectedAction()), SLOT(SetInGameState()));
+
+    connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetSelectingRespawnState()));
 }
 //------------------------------------------------------------------------------
 TApplication::~TApplication()
@@ -31,26 +34,52 @@ bool TApplication::Init()
     return true;
 }
 //------------------------------------------------------------------------------
-void TApplication::ShowMainMenu()
+void TApplication::SetMainMenuState()
 {
-    Network->Disconnect();
+    qDebug() << Q_FUNC_INFO;
     State = ST_MainMenu;
-}
-//------------------------------------------------------------------------------
-void TApplication::GameClose()
-{
     Network->Disconnect();
-    MainDisplay->close();
 }
 //------------------------------------------------------------------------------
-void TApplication::PrepareMap(Epsilon5::PlayerInfo info)
+void TApplication::SetConnectingState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_Connecting;
+    Network->Connect();
+}
+//------------------------------------------------------------------------------
+void TApplication::SetLoadingMapState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_LoadingMap;
+    GameModel->LoadMap(GameModel->GetCurrentMapName());
+}
+//------------------------------------------------------------------------------
+void TApplication::SetSelectingRespawnState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_SelectingResp;
+}
+//------------------------------------------------------------------------------
+void TApplication::SetInGameState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_InGame;
+}
+//------------------------------------------------------------------------------
+void TApplication::PrepareMap(const Epsilon5::PlayerInfo& info)
 {
     GameModel->SetPlayerInfo(info);
-    GameModel->LoadMap(info.map().c_str());
+    SetLoadingMapState();
 }
 //------------------------------------------------------------------------------
 void TApplication::UpdateWorld()
 {
-
+}
+//------------------------------------------------------------------------------
+void TApplication::GameClose()
+{
+    SetMainMenuState();
+    MainDisplay->close();
 }
 //------------------------------------------------------------------------------

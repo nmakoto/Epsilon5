@@ -78,7 +78,8 @@ void TMenu::Init()
             Images->GetImage("menu-connect-h"),
             QPoint(0, -50),
             this));
-    connect(item, SIGNAL(Clicked()), Application()->GetNetwork(), SLOT(Connect()));
+//    connect(item, SIGNAL(Clicked()), Application()->GetNetwork(), SLOT(Connect()));
+    connect(item, SIGNAL(Clicked()), Application(), SLOT(SetConnectingState()));
 
     item = AddMenuItem(new TMenuItem(
             Images->GetImage("menu-exit"),

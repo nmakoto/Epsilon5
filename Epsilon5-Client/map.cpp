@@ -36,6 +36,7 @@ void TMap::LoadMap(QString map)
                 Width > Height ?  1.0 : (qreal)Width / Height,
                 Width > Height ? (qreal)Height / Width : 1.0);
     }
+    emit MapLoaded();
 }
 //------------------------------------------------------------------------------
 TMap::~TMap()

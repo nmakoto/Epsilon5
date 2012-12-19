@@ -39,15 +39,17 @@ public:
     inline EGameState GetState() {
         return State;
     }
-    inline void SetState(EGameState state) {
-        State = state;
-    }
 
 public slots:
-    void ShowMainMenu();
-    void GameClose();
-    void PrepareMap(Epsilon5::PlayerInfo info);
+    void SetMainMenuState();
+    void SetConnectingState();
+    void SetLoadingMapState();
+    void SetSelectingRespawnState();
+    void SetInGameState();
+
+    void PrepareMap(const Epsilon5::PlayerInfo& info);
     void UpdateWorld();
+    void GameClose();
 
 private:
     TSettings* Settings;

@@ -5,6 +5,7 @@ TGameModel::TGameModel(TApplication* parent)
     , WorldMap(new TMap(this))
     , PlayerId(0)
 {
+    connect(WorldMap, SIGNAL(MapLoaded()), SIGNAL(MapLoaded()));
 }
 //------------------------------------------------------------------------------
 void TGameModel::Init()
@@ -45,5 +46,10 @@ void TGameModel::SetPlayerInfo(const Epsilon5::PlayerInfo& info)
 const Epsilon5::PlayerInfo* TGameModel::GetPlayerInfo() const
 {
     return &PlayerInfo;
+}
+//------------------------------------------------------------------------------
+QString TGameModel::GetCurrentMapName() const
+{
+    return PlayerInfo.map().c_str();
 }
 //------------------------------------------------------------------------------
