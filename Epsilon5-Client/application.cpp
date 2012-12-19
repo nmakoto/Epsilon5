@@ -9,6 +9,7 @@ TApplication::TApplication(int& argc, char* argv[])
     , State(ST_MainMenu)
 {
     connect(Network, SIGNAL(WorldReceived()), SLOT(UpdateWorld()));
+    connect(Network, SIGNAL(Disconnected()), SLOT(SetMainMenuState()));
     connect(Network, SIGNAL(PlayerInfoReceived(const Epsilon5::PlayerInfo&)),
             SLOT(PrepareMap(const Epsilon5::PlayerInfo&)));
 

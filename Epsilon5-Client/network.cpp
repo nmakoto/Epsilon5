@@ -57,6 +57,7 @@ void TNetwork::OnDataReceived()
             // We can receive more than one packet at once
             receivedPacket = receivedPacket.mid(
                     packedDataSize + sizeof(char) + 2 * midSize);
+
             switch (packetType) {
             case PT_PlayerInfo: {
                 if (Status != PS_InfoWait) {
@@ -79,15 +80,14 @@ void TNetwork::OnDataReceived()
                 if (CurrentWorld->ParseFromArray(content.data(), content.size())) {
                     qint32 packetnumber = CurrentWorld->packet_number();
                     emit WorldReceived();
-                    if( Application->GetState() != ST_SelectingResp ) {
-                        SendControls(packetnumber);
+                    if( Application->GetState() == ST_SelectingResp ) {
+                        // TODO: block controls when showing respawn menu
                     }
+                    SendControls(packetnumber);
                 } else {
                     throw UException("Error parsing world");
                 }
             }
-            // TODO: Make ping/pong packets type
-            break;
             default:
                 throw UException("Unknown packet type");
                 break;
@@ -119,7 +119,11 @@ void TNetwork::Connect()
 //------------------------------------------------------------------------------
 void TNetwork::Disconnect()
 {
+    if( Status == PS_NotConnected )
+        return;
+
     Socket->disconnectFromHost();
+    Status = PS_NotConnected;
     emit Disconnected();
 }
 //------------------------------------------------------------------------------

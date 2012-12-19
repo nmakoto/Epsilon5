@@ -39,7 +39,7 @@ private slots:
     void OnConnected();
 
 private:
-    void SendControls(size_t packetnumber);
+    void SendControls(size_t packetNumber);
     void SendPlayerAuth();
     void Send(const QByteArray& data, EPacketType packetType);
 
