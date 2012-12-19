@@ -46,7 +46,7 @@ TMap::~TMap()
 }
 //------------------------------------------------------------------------------
 void TMap::DrawBackground(const QPoint& playerPos, const QSize& frameSize,
-        QPainter& painter)
+        QPainter& painter) const
 {
     if (!Loaded) {
         throw UException("Map not loaded!");
@@ -71,20 +71,20 @@ size_t TMap::GetHeight()
     return Height;
 }
 //------------------------------------------------------------------------------
-QSize TMap::GetMinimapSize(quint8 maxMinimapSize)
+QSize TMap::GetMinimapSize(quint8 maxMinimapSize) const
 {
     return QSize(maxMinimapSize * WHRatio.x(), maxMinimapSize * WHRatio.y());
 }
 //------------------------------------------------------------------------------
 QPoint TMap::GetObjectPosOnMinimap(int objectPosX, int objectPosY,
-        quint8 maxMinimapSize)
+        quint8 maxMinimapSize) const
 {
     return QPoint(
             ((qreal)objectPosX / Width + 0.5) * maxMinimapSize * WHRatio.x(),
             ((qreal)objectPosY / Height + 0.5) * maxMinimapSize * WHRatio.y());
 }
 //------------------------------------------------------------------------------
-QPoint TMap::GetObjectPosOnMinimap(QPoint objectPos, quint8 maxMinimapSize)
+QPoint TMap::GetObjectPosOnMinimap(QPoint objectPos, quint8 maxMinimapSize) const
 {
     return GetObjectPosOnMinimap(objectPos.x(), objectPos.y(), maxMinimapSize);
 }

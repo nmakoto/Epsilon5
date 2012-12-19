@@ -81,7 +81,7 @@ private:
     TImageStorage* Images;
     QQueue<Epsilon5::World> PacketsQueue;
     Epsilon5::Control Control;
-    TMap* Map;
+//    TMap* Map;
     TObjects* Objects;
     const Epsilon5::World* CurrentWorld;
     QHash<size_t, QString> PlayerNames;

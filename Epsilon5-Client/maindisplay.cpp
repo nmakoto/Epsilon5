@@ -57,7 +57,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QWidget* parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
     , Application(application)
     , Images(new TImageStorage(this))
-    , Map(new TMap(this))
+//    , Map(new TMap(this))
     , Objects(new TObjects(this))
     , CurrentWorld(NULL)
     , ShowStats(false)
@@ -90,8 +90,8 @@ void TMainDisplay::Init()
     Images->LoadAll();
     Objects->LoadObjects("objects/objects.txt");
 
-    connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
-            Map, SLOT(LoadMap(QString)));
+//    connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
+//            Map, SLOT(LoadMap(QString)));
 
     Menu.Init();
 }
@@ -104,8 +104,8 @@ TMainDisplay::~TMainDisplay()
 //------------------------------------------------------------------------------
 void TMainDisplay::RedrawWorld()
 {
-//    CurrentWorld = &((TNetwork*)(QObject::sender()))->GetWorld();
-    CurrentWorld = &Application->GetNetwork()->GetWorld();
+//    CurrentWorld = &Application->GetNetwork()->GetWorld();
+    CurrentWorld = Application->GetModel()->GetWorld();
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::timerEvent(QTimerEvent*)
@@ -387,7 +387,8 @@ void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
                 miniMap.setBrush(Qt::yellow);
             }
         }
-        miniMap.drawEllipse(Map->GetObjectPosOnMinimap(
+
+        miniMap.drawEllipse(Application->GetModel()->GetMap()->GetObjectPosOnMinimap(
                 QPoint(player.x(), player.y()), MAX_MINIMAP_SIZE), 1, 1);
 
         painter.drawImage(widgetCenter.x() + pos.x() - img->width() / 2,
@@ -455,7 +456,7 @@ void TMainDisplay::DrawObjects(QPainter& painter, QPainter& miniMap,
         painter.drawImage(widgetCenter.x() + pos.x() - rimg.width() / 2,
                 widgetCenter.y() + pos.y() - rimg.height() / 2, rimg);
 
-        QPoint posOnMinimap(Map->GetObjectPosOnMinimap(
+        QPoint posOnMinimap(Application->GetModel()->GetMap()->GetObjectPosOnMinimap(
                 currentObjectPos, MAX_MINIMAP_SIZE));
         miniMap.drawImage(posOnMinimap.x() - 4, posOnMinimap.y() - 4,
                 rimg.scaledToHeight(4));
@@ -489,7 +490,7 @@ void TMainDisplay::DrawRespPoints(QPainter& painter, QPainter& miniMap,
         QPoint pos = GetCorrect(playerPos, currentRespPos);
         painter.drawImage(widgetCenter.x() + pos.x() - img->width() / 2,
                 widgetCenter.y() + pos.y() - img->height() / 2, *img);
-        QPoint posOnMinimap(Map->GetObjectPosOnMinimap(
+        QPoint posOnMinimap(Application->GetModel()->GetMap()->GetObjectPosOnMinimap(
                 currentRespPos, MAX_MINIMAP_SIZE));
         miniMap.drawImage(posOnMinimap.x(), posOnMinimap.y() - 10,
                 (*img).scaled(10, 10));
@@ -551,12 +552,13 @@ void TMainDisplay::DrawWorld(QPainter& painter)
         QPoint widgetCenter(width() / 2, height() / 2);
         QPoint playerPos = GetPlayerCoordinatesAndPing();
 
-        Map->DrawBackground(playerPos, size(), painter);
+        const TMap* currentMap = Application->GetModel()->GetMap();
+        currentMap->DrawBackground(playerPos, size(), painter);
 
         // Prepare minimap painter
         // TODO: minimap image creation should be moved into new class
         //       and inited on map loading process (not every frame)
-        QImage miniMapImg(Map->GetMinimapSize(MAX_MINIMAP_SIZE),
+        QImage miniMapImg(currentMap->GetMinimapSize(MAX_MINIMAP_SIZE),
                 QImage::Format_ARGB32);
         miniMapImg.fill(qRgba(255, 255, 255, 100));
         QPainter miniMap(&miniMapImg);

@@ -13,14 +13,14 @@ public:
     ~TMap();
     size_t GetWidth();
     size_t GetHeight();
-    QSize GetMinimapSize(quint8 maxMinimapSize);
+    QSize GetMinimapSize(quint8 maxMinimapSize) const;
     QPoint GetObjectPosOnMinimap(int objectPosX, int objectPosY,
-            quint8 maxMinimapSize);
-    QPoint GetObjectPosOnMinimap(QPoint objectPos, quint8 maxMinimapSize);
+            quint8 maxMinimapSize) const;
+    QPoint GetObjectPosOnMinimap(QPoint objectPos, quint8 maxMinimapSize) const;
 
     // Draw background at correct position
     void DrawBackground(const QPoint& playerPos, const QSize& frameSize,
-            QPainter& painter);
+            QPainter& painter) const;
 
 public slots:
     void LoadMap(QString map);

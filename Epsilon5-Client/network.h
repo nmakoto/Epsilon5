@@ -16,8 +16,8 @@ class TNetwork : public QObject
 {
     Q_OBJECT
 public:
-    explicit TNetwork(QObject* parent = 0);
-    const Epsilon5::World& GetWorld() const;
+    explicit TNetwork(TApplication* parent = 0);
+    void Init();
     inline size_t GetId() {
         return Id;
     }
@@ -43,14 +43,14 @@ private:
     void SendControls(size_t packetnumber);
     void SendPlayerAuth();
     void Send(const QByteArray& data, EPacketType packetType);
-    TApplication* Application();
 
 private:
     void timerEvent(QTimerEvent* event);
 
 private:
+    TApplication* Application;
     QUdpSocket* Socket;
-    Epsilon5::World World;
+    Epsilon5::World* CurrentWorld;
     size_t Id;
     EPlayerStatus Status;
     QTime LastPacketReceived;

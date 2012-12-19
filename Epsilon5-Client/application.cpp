@@ -2,6 +2,7 @@
 //------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
+    , GameModel(new TGameModel(this))
     , MainDisplay(new TMainDisplay(this))
     , Network(new TNetwork(this))
     , Settings(new TSettings(this))
@@ -9,6 +10,7 @@ TApplication::TApplication(int& argc, char* argv[])
 {
     connect(Network, SIGNAL(WorldReceived()), MainDisplay, SLOT(RedrawWorld()));
     connect(Network, SIGNAL(Disconnected()), SLOT(Disconnected()));
+    connect(Network, SIGNAL(LoadMap(QString)), GameModel, SLOT(LoadMap(QString)));
 }
 //------------------------------------------------------------------------------
 TApplication::~TApplication()
@@ -19,11 +21,13 @@ TApplication::~TApplication()
 //------------------------------------------------------------------------------
 bool TApplication::Init()
 {
+    GameModel->Init();
+    Network->Init();
     MainDisplay->Init();
     MainDisplay->show();
     if (Settings->GetWindowFullscreen()) {
         MainDisplay->toggleFullscreen();
     }
-    return true; // TODO: normal initialisation
+    return true;
 }
 //------------------------------------------------------------------------------

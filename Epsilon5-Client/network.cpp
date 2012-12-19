@@ -5,9 +5,11 @@
 #include "application.h"
 #include "network.h"
 //------------------------------------------------------------------------------
-TNetwork::TNetwork(QObject* parent)
-    : QObject(parent)
+TNetwork::TNetwork(TApplication* application)
+    : QObject(application)
+    , Application(application)
     , Socket(new QUdpSocket(this))
+    , CurrentWorld(0)
     , Id(0)
 {
     connect(Socket, SIGNAL(readyRead()), SLOT(OnDataReceived()));
@@ -19,9 +21,9 @@ TNetwork::TNetwork(QObject* parent)
     LastPacketReceived.start();
 }
 //------------------------------------------------------------------------------
-const Epsilon5::World& TNetwork::GetWorld() const
+void TNetwork::Init()
 {
-    return World;
+    CurrentWorld = Application->GetModel()->GetWorld();
 }
 //------------------------------------------------------------------------------
 void TNetwork::OnDataReceived()
@@ -71,13 +73,13 @@ void TNetwork::OnDataReceived()
             }
             break;
             case PT_World: {
-                Application()->SetState(ST_InGame);
+                Application->SetState(ST_InGame);
                 if (Status != PS_Spawned) {
                     throw UException("Wrong packet: PT_World");
                 }
-                World.Clear();
-                if (World.ParseFromArray(content.data(), content.size())) {
-                    qint32 packetnumber = World.packet_number();
+                CurrentWorld->Clear();
+                if (CurrentWorld->ParseFromArray(content.data(), content.size())) {
+                    qint32 packetnumber = CurrentWorld->packet_number();
                     emit WorldReceived();
                     SendControls(packetnumber);
                 } else {
@@ -104,20 +106,15 @@ void TNetwork::OnError(QAbstractSocket::SocketError socketError)
 void TNetwork::OnConnected()
 {
     SendPlayerAuth();
-    Application()->SetState(ST_LoadingMap);
-}
-//------------------------------------------------------------------------------
-TApplication* TNetwork::Application()
-{
-    return (TApplication*)(parent());
+    Application->SetState(ST_LoadingMap);
 }
 //------------------------------------------------------------------------------
 void TNetwork::Start()
 {
-    Application()->SetState(ST_Connecting);
+    Application->SetState(ST_Connecting);
     Socket->connectToHost(QHostAddress(
-            Application()->GetSettings()->GetServerAddr()),
-            Application()->GetSettings()->GetServerPort());
+            Application->GetSettings()->GetServerAddr()),
+            Application->GetSettings()->GetServerPort());
 }
 //------------------------------------------------------------------------------
 void TNetwork::Stop()
@@ -128,7 +125,7 @@ void TNetwork::Stop()
 //------------------------------------------------------------------------------
 void TNetwork::SendControls(size_t packetnumber)
 {
-    Epsilon5::Control control = Application()->GetMainDisplay()->GetControl();
+    Epsilon5::Control control = Application->GetMainDisplay()->GetControl();
     QByteArray message;
     control.set_packet_number(packetnumber);
     message.resize(control.ByteSize());
@@ -139,7 +136,7 @@ void TNetwork::SendControls(size_t packetnumber)
 void TNetwork::SendPlayerAuth()
 {
     Epsilon5::Auth auth;
-    QByteArray nickName = Application()->GetSettings()->GetNickname().toLocal8Bit();
+    QByteArray nickName = Application->GetSettings()->GetNickname().toLocal8Bit();
     auth.set_name(nickName.data(), nickName.size());
     QByteArray data;
     data.resize(auth.ByteSize());
