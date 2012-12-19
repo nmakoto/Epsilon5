@@ -13,10 +13,10 @@ const char* SETTINGS_FILENAME = "settings.ini";
 //------------------------------------------------------------------------------
 TSettings::TSettings(QObject* parent)
     : QObject(parent)
-    , mSettings(new USettings(this))
+    , mSettings(new utils::USettings(this))
 {
     // Defining default parameters
-    USettings::TParametersHash parameters;
+    utils::USettings::TParametersHash parameters;
     parameters["window.width"] = QString().number(DEFAULT_WINDOW_WIDTH);
     parameters["window.height"] = QString().number(DEFAULT_WINDOW_HEIGHT);
     parameters["window.posx"] = QString().number(DEFAULT_WINDOW_POSX);

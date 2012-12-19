@@ -1,4 +1,5 @@
 #include <qmath.h>
+#include <QtOpenGL>
 #include <QTime>
 #include <QDesktopWidget>
 #include <QPainter>
@@ -6,26 +7,27 @@
 #include <QDebug>
 #include <QPixmap>
 #include <QMatrix>
-#include "../Epsilon5-Proto/Epsilon5.pb.h"
-#include "../utils/uexception.h"
 #include "../utils/usound.h"
-#include "network.h"
-#include "maindisplay.h"
-#include "application.h"
-#include <QtOpenGL>
-
 #ifdef Q_OS_UNIX
 #include <linux/input.h>
 #endif
 
+#include "../Epsilon5-Proto/Epsilon5.pb.h"
+#include "../utils/uexception.h"
+#include "network.h"
+#include "maindisplay.h"
+#include "application.h"
+//------------------------------------------------------------------------------
 const quint16 BASE_WINDOW_WIDTH = 800;
 const quint16 BASE_WINDOW_HEIGHT = 600;
-const quint8 MAX_MINIMAP_SIZE = 200;    // max points of width or height
-
-QPoint GetCorrect(QPoint playerPos, QPoint objectPos) {
+// Minimap max points of width or height
+const quint8 MAX_MINIMAP_SIZE = 200;
+//------------------------------------------------------------------------------
+QPoint GetCorrect(QPoint playerPos, QPoint objectPos)
+{
     return objectPos - playerPos;
 }
-
+//------------------------------------------------------------------------------
 // Transform direction vector into angle
 static double getAngle(const QPoint& point)
 {
@@ -45,13 +47,11 @@ static double getAngle(const QPoint& point)
     }
     return -angle;
 }
-
-TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
-    , UFullscreenWrapper(this)
+//------------------------------------------------------------------------------
+TMainDisplay::TMainDisplay(TApplication* application)
+    : QGLWidget(QGLFormat(QGL::SampleBuffers))
     , Application(application)
     , Images(new TImageStorage(this))
-    , Map(new TMap(this))
     , Objects(new TObjects(this))
     , CurrentWorld(NULL)
     , ShowStats(false)
@@ -60,6 +60,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
+
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);
     QGLFormat f = QGLFormat::defaultFormat();
@@ -68,6 +69,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
     f.setSamples(4);
     f.setVersion(QGLFormat::OpenGL_Version_4_0, QGLFormat::OpenGL_Version_4_0);
     QGLFormat::setDefaultFormat(f);
+
     Control.set_angle(0);
     Control.mutable_keystatus()->set_keyattack1(false);
     Control.mutable_keystatus()->set_keyattack2(false);
@@ -79,33 +81,31 @@ TMainDisplay::TMainDisplay(TApplication* application, QGLWidget* parent)
 
     startTimer(20);
 }
-
-void TMainDisplay::Init() {
+//------------------------------------------------------------------------------
+void TMainDisplay::Init()
+{
     Images->LoadAll();
     Objects->LoadObjects("objects/objects.txt");
-
-    connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
-            Map, SLOT(LoadMap(QString)));
+    CurrentWorld = Application->GetModel()->GetWorld();
 
     Menu.Init();
 }
-
-TMainDisplay::~TMainDisplay() {
+//------------------------------------------------------------------------------
+TMainDisplay::~TMainDisplay()
+{
     CurrentWorld = NULL;
     Application->GetSettings()->SetWindowFullscreen(isFullScreen());
 }
-
-void TMainDisplay::RedrawWorld() {
-    CurrentWorld = &((TNetwork*)(QObject::sender()))->GetWorld();
-}
-
-void TMainDisplay::timerEvent(QTimerEvent*) {
+//------------------------------------------------------------------------------
+void TMainDisplay::timerEvent(QTimerEvent*)
+{
     this->update();
 }
+//------------------------------------------------------------------------------
+void TMainDisplay::paintEvent(QPaintEvent*)
+{
 
-void TMainDisplay::paintEvent(QPaintEvent*) {
-
-    EState state = Application->GetState();
+    EGameState state = Application->GetState();
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -115,86 +115,106 @@ void TMainDisplay::paintEvent(QPaintEvent*) {
     switch (state) {
     case ST_Connecting : {
         painter.fillRect(0, 0, width(), height(), Qt::black);
-    } break;
+    }
+    break;
     case ST_LoadingMap: {
         painter.fillRect(0, 0, width(), height(), Qt::black);
-    } break;
+    }
+    break;
     case ST_MainMenu : {
         Menu.paint(&painter);
-    } break;
+    }
+    break;
     default:
         DrawWorld(painter);
         DrawFps(painter);
         DrawPing(painter);
 
-        if( !Application->GetNetwork()->IsServerAlive() )
+        if (!Application->GetNetwork()->IsServerAlive())
             DrawText(painter, QPoint(width() / 2 - 50, height() / 2 - 5),
-                     tr("Connection lost..."), 28);
+                    tr("Connection lost..."), 28);
         break;
     }
-            painter.end();
+    painter.end();
 }
-
-void TMainDisplay::mousePressEvent(QMouseEvent* event) {
+//------------------------------------------------------------------------------
+void TMainDisplay::mousePressEvent(QMouseEvent* event)
+{
     if (event->button() == Qt::LeftButton) {
+        // TODO: make better respawn action
+        if( Application->GetState() == ST_SelectingResp ) {
+            emit RespawnSelectedAction();
+            return;
+        }
+
         Control.mutable_keystatus()->set_keyattack1(true);
     } else {
         Control.mutable_keystatus()->set_keyattack2(true);
     }
     qApp->sendEvent(&Menu, event);
 }
-
-void TMainDisplay::mouseReleaseEvent(QMouseEvent* event) {
+//------------------------------------------------------------------------------
+void TMainDisplay::mouseReleaseEvent(QMouseEvent* event)
+{
     if (event->button() == Qt::LeftButton) {
         Control.mutable_keystatus()->set_keyattack1(false);
     } else {
         Control.mutable_keystatus()->set_keyattack2(false);
     }
 }
-
-void TMainDisplay::SetMovementKeysState(bool state, const QKeyEvent *event)
+//------------------------------------------------------------------------------
+void TMainDisplay::SetMovementKeysState(bool state, const QKeyEvent* event)
 {
 #ifdef Q_OS_UNIX
-    // TEST: Codes in input.h differ from event->scancodes by MAGIC_NUMBER.
-    // Need some checks
+    // NOTE: Codes in input.h differ from event->scancodes by MAGIC_NUMBER.
+    //       Need some checks
     const int MAGIC_NUMBER = 8;
-    if( event->nativeScanCode() == (KEY_W + MAGIC_NUMBER))
+    if (event->nativeScanCode() == (KEY_W + MAGIC_NUMBER)) {
         Control.mutable_keystatus()->set_keyup(state);
-    if( event->nativeScanCode() == (KEY_S + MAGIC_NUMBER))
+    }
+    if (event->nativeScanCode() == (KEY_S + MAGIC_NUMBER)) {
         Control.mutable_keystatus()->set_keydown(state);
-    if( event->nativeScanCode() == (KEY_A + MAGIC_NUMBER))
+    }
+    if (event->nativeScanCode() == (KEY_A + MAGIC_NUMBER)) {
         Control.mutable_keystatus()->set_keyleft(state);
-    if( event->nativeScanCode() == (KEY_D + MAGIC_NUMBER))
+    }
+    if (event->nativeScanCode() == (KEY_D + MAGIC_NUMBER)) {
         Control.mutable_keystatus()->set_keyright(state);
+    }
 #endif
 #ifdef Q_OS_WIN
-    if( event->key() == Qt::Key_W || event->nativeVirtualKey() == Qt::Key_W )
+    if (event->key() == Qt::Key_W || event->nativeVirtualKey() == Qt::Key_W) {
         Control.mutable_keystatus()->set_keyup(state);
-    if( event->key() == Qt::Key_S || event->nativeVirtualKey() == Qt::Key_S )
+    }
+    if (event->key() == Qt::Key_S || event->nativeVirtualKey() == Qt::Key_S) {
         Control.mutable_keystatus()->set_keydown(state);
-    if( event->key() == Qt::Key_A || event->nativeVirtualKey() == Qt::Key_A )
+    }
+    if (event->key() == Qt::Key_A || event->nativeVirtualKey() == Qt::Key_A) {
         Control.mutable_keystatus()->set_keyleft(state);
-    if( event->key() == Qt::Key_D || event->nativeVirtualKey() == Qt::Key_D )
+    }
+    if (event->key() == Qt::Key_D || event->nativeVirtualKey() == Qt::Key_D) {
         Control.mutable_keystatus()->set_keyright(state);
+    }
 #endif
-    if( event->key() == Qt::Key_Up )
+    if (event->key() == Qt::Key_Up) {
         Control.mutable_keystatus()->set_keyup(state);
-    if( event->key() == Qt::Key_Down )
+    }
+    if (event->key() == Qt::Key_Down) {
         Control.mutable_keystatus()->set_keydown(state);
-    if( event->key() == Qt::Key_Left )
+    }
+    if (event->key() == Qt::Key_Left) {
         Control.mutable_keystatus()->set_keyleft(state);
-    if( event->key() == Qt::Key_Right )
+    }
+    if (event->key() == Qt::Key_Right) {
         Control.mutable_keystatus()->set_keyright(state);
+    }
 }
-
-void TMainDisplay::keyPressEvent(QKeyEvent *event)
+//------------------------------------------------------------------------------
+void TMainDisplay::keyPressEvent(QKeyEvent* event)
 {
-    if( Application->GetState() != ST_InGame )
-        return;
-
     SetMovementKeysState(true, event);
 
-    switch(event->key()) {
+    switch (event->key()) {
     case '1':
         Control.set_weapon(Epsilon5::Pistol);
         break;
@@ -211,23 +231,22 @@ void TMainDisplay::keyPressEvent(QKeyEvent *event)
         break;
     }
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
 {
     SetMovementKeysState(false, event);
 
     switch (event->key()) {
     case Qt::Key_F11:
-        toggleFullscreen();
+        ToggleFullscreen();
         break;
 #ifdef QT_DEBUG
     case Qt::Key_F12:
-        Application->GetNetwork()->Stop();
-        close();
+        emit QuitAction();
         break;
 #endif
     case Qt::Key_Escape:
-        Application->GetNetwork()->Stop();
+        emit MainMenuAction();
         break;
     case Qt::Key_Tab:
         ShowStats = false;
@@ -236,8 +255,9 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
         break;
     }
 }
-
-void TMainDisplay::toggleFullscreen() {
+//------------------------------------------------------------------------------
+void TMainDisplay::ToggleFullscreen()
+{
     if (isFullScreen()) {
         this->showNormal();
         setFixedSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
@@ -248,7 +268,7 @@ void TMainDisplay::toggleFullscreen() {
         this->showFullScreen();
     }
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawFps(QPainter& painter)
 {
     // TODO: move fps calculation to another place, here must be only drawing
@@ -267,29 +287,30 @@ void TMainDisplay::DrawFps(QPainter& painter)
     DrawText(painter, QPoint(0, 10), QString("Fps: %1").arg(fps), 10);
     ++frames;
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawPing(QPainter& painter)
 {
     DrawText(painter, QPoint(0, 24), QString("Ping: %1").arg(Ping), 10);
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawText(QPainter& painter, const QPoint& pos,
-                            const QString& text, int FONT_SIZE_PT = 10)
+        const QString& text, int fontSizePt)
 {
     // Helvetica font present on all Systems
-    painter.setFont(QFont("Helvetica", FONT_SIZE_PT));
+    painter.setFont(QFont("Helvetica", fontSizePt));
     painter.setPen(Qt::black);
     painter.drawText(pos.x() + 1, pos.y() + 1, text);
     painter.setPen(Qt::darkGray);
     painter.drawText(pos.x(), pos.y(), text);
 }
-
+//------------------------------------------------------------------------------
 // Detecting our coordinates
-QPoint TMainDisplay::GetPlayerCoordinatesAndPing() {
+QPoint TMainDisplay::GetPlayerCoordinatesAndPing()
+{
     QPoint res;
-    size_t playerId = Application->GetNetwork()->GetId();
+    size_t playerId = Application->GetModel()->GetPlayerId();
     for (int i = 0; i != CurrentWorld->players_size(); i++) {
-        const Epsilon5::Player &player = CurrentWorld->players(i);
+        const Epsilon5::Player& player = CurrentWorld->players(i);
         if ((size_t)player.id() == playerId) {
             res.setX(player.x());
             res.setY(player.y());
@@ -300,18 +321,19 @@ QPoint TMainDisplay::GetPlayerCoordinatesAndPing() {
     }
     return res;
 }
-
+//------------------------------------------------------------------------------
 QPoint TMainDisplay::GetCursorPos()
 {
     return this->mapFromGlobal(QCursor::pos());
 }
-
-QPoint TMainDisplay::GetCenter() {
+//------------------------------------------------------------------------------
+QPoint TMainDisplay::GetCenter()
+{
     return QPoint(width() / 2, height() / 2);
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
-                               const QPoint& playerPos, const QPoint &widgetCenter)
+        const QPoint& playerPos, const QPoint& widgetCenter)
 {
     // Players drawing
     const int nickMaxWidth = 200;
@@ -322,10 +344,11 @@ void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
     nickFont.setBold(true);
     nickFont.setPointSize(12);
     for (int i = 0; i != CurrentWorld->players_size(); i++) {
-        const Epsilon5::Player &player = CurrentWorld->players(i);
+        const Epsilon5::Player& player = CurrentWorld->players(i);
         QPoint pos = QPoint(player.x(), player.y()) - playerPos;
         QString nickName;
-        if (player.has_name()) { // New player
+        if (player.has_name()) {
+            // New player
             nickName = player.name().c_str();
             PlayerNames[player.id()] = nickName;
         } else {
@@ -343,7 +366,7 @@ void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
         size_t hp = player.hp();
 
         // Set player or enemy image
-        if ((size_t)player.id() == Application->GetNetwork()->GetId()) {
+        if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
             img = &Images->GetImage("player");
             miniMap.setPen(Qt::red);
             miniMap.setBrush(Qt::red);
@@ -358,31 +381,32 @@ void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
                 miniMap.setBrush(Qt::yellow);
             }
         }
-        miniMap.drawEllipse(Map->GetObjectPosOnMinimap(
+
+        miniMap.drawEllipse(Application->GetModel()->GetMap()->GetObjectPosOnMinimap(
                 QPoint(player.x(), player.y()), MAX_MINIMAP_SIZE), 1, 1);
 
         painter.drawImage(widgetCenter.x() + pos.x() - img->width() / 2,
-                          widgetCenter.y() + pos.y() - img->height() / 2, *img);
+                widgetCenter.y() + pos.y() - img->height() / 2, *img);
 
         // Draw player name
         painter.setFont(nickFont);
-        QRect nickRect = QRect(widgetCenter.x() + pos.x() - nickMaxWidth/2,
-                        widgetCenter.y() + pos.y() - img->height()/2
-                               - painter.fontInfo().pixelSize()-5,
-                        nickMaxWidth, painter.fontInfo().pixelSize() + 2);
+        QRect nickRect = QRect(widgetCenter.x() + pos.x() - nickMaxWidth / 2,
+                widgetCenter.y() + pos.y() - img->height() / 2
+                - painter.fontInfo().pixelSize() - 5,
+                nickMaxWidth, painter.fontInfo().pixelSize() + 2);
 
         painter.drawText(nickRect, Qt::AlignTop | Qt::AlignHCenter, nickName);
         painter.setPen(oldPen);
         painter.setFont(oldFont);
     }
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawBullets(QPainter& painter, const QPoint& playerPos,
-                               const QPoint& widgetCenter)
+        const QPoint& widgetCenter)
 {
     const QImage* img;
     for (int i = 0; i != CurrentWorld->bullets_size(); i++) {
-        const Epsilon5::Bullet &bullet = CurrentWorld->bullets(i);
+        const Epsilon5::Bullet& bullet = CurrentWorld->bullets(i);
         QPoint currentBulletPos(bullet.x(), bullet.y());
         QPoint pos = GetCorrect(playerPos, currentBulletPos);
 
@@ -399,10 +423,10 @@ void TMainDisplay::DrawBullets(QPainter& painter, const QPoint& playerPos,
         }
 
         painter.drawImage(widgetCenter.x() + pos.x() - img->width() / 2,
-                          widgetCenter.y() + pos.y() - img->height() / 2, *img);
+                widgetCenter.y() + pos.y() - img->height() / 2, *img);
     }
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawObjects(QPainter& painter, QPainter& miniMap,
         const QPoint& playerPos, const QPoint& widgetCenter)
 {
@@ -414,8 +438,9 @@ void TMainDisplay::DrawObjects(QPainter& painter, QPainter& miniMap,
         QPoint pos = GetCorrect(playerPos, currentObjectPos);
 
         // BUG: Type of ID mismatch (int32 vs size_t on server)
-        if( object.id() < 0 )
+        if (object.id() < 0) {
             continue;
+        }
 
         img = Objects->GetImageById(object.id());
         QTransform transform;
@@ -423,15 +448,15 @@ void TMainDisplay::DrawObjects(QPainter& painter, QPainter& miniMap,
         QImage rimg = img->transformed(transform);
 
         painter.drawImage(widgetCenter.x() + pos.x() - rimg.width() / 2,
-                          widgetCenter.y() + pos.y() - rimg.height() / 2, rimg);
+                widgetCenter.y() + pos.y() - rimg.height() / 2, rimg);
 
-        QPoint posOnMinimap(Map->GetObjectPosOnMinimap(
+        QPoint posOnMinimap(Application->GetModel()->GetMap()->GetObjectPosOnMinimap(
                 currentObjectPos, MAX_MINIMAP_SIZE));
         miniMap.drawImage(posOnMinimap.x() - 4, posOnMinimap.y() - 4,
                 rimg.scaledToHeight(4));
     }
 }
-
+//------------------------------------------------------------------------------
 void TMainDisplay::DrawRespPoints(QPainter& painter, QPainter& miniMap,
         const QPoint& playerPos, const QPoint& widgetCenter)
 {
@@ -458,15 +483,16 @@ void TMainDisplay::DrawRespPoints(QPainter& painter, QPainter& miniMap,
         QPoint currentRespPos(RespPoints[i].X, RespPoints[i].Y);
         QPoint pos = GetCorrect(playerPos, currentRespPos);
         painter.drawImage(widgetCenter.x() + pos.x() - img->width() / 2,
-                          widgetCenter.y() + pos.y() - img->height() / 2, *img);
-        QPoint posOnMinimap(Map->GetObjectPosOnMinimap(
+                widgetCenter.y() + pos.y() - img->height() / 2, *img);
+        QPoint posOnMinimap(Application->GetModel()->GetMap()->GetObjectPosOnMinimap(
                 currentRespPos, MAX_MINIMAP_SIZE));
         miniMap.drawImage(posOnMinimap.x(), posOnMinimap.y() - 10,
                 (*img).scaled(10, 10));
     }
 }
-
-void TMainDisplay::DrawStats(QPainter& painter) {
+//------------------------------------------------------------------------------
+void TMainDisplay::DrawStats(QPainter& painter)
+{
     if (CurrentWorld->players_stat_size() > 0) {
         Stats.clear();
         for (int i = 0; i < CurrentWorld->players_stat_size(); i++) {
@@ -484,7 +510,10 @@ void TMainDisplay::DrawStats(QPainter& painter) {
 
 
         QFont font("Helvetica", 18);
-        QImage statsImg(400, Stats.size() * font.weight() / 2 + font.weight() / 2, QImage::Format_ARGB32);
+        QImage statsImg(
+            400,
+            Stats.size() * font.weight() / 2 + font.weight() / 2,
+            QImage::Format_ARGB32);
         statsImg.fill(qRgba(255, 255, 255, 100));
         painter.drawImage(widgetCenter.x() - 200, widgetCenter.y() / 2 , statsImg);
 
@@ -499,25 +528,32 @@ void TMainDisplay::DrawStats(QPainter& painter) {
                     .arg(Stats[i].Score)
                     .arg(Stats[i].Kills)
                     .arg(Stats[i].Deaths);
-            painter.drawText(startPos.x(), startPos.y() + (i + 1) * font.weight() / 2 + 10, statStr);
+            painter.drawText(
+                startPos.x(),
+                startPos.y() + (i + 1) * font.weight() / 2 + 10,
+                statStr);
         }
     }
 }
-
-void TMainDisplay::DrawWorld(QPainter& painter){
-    if( !CurrentWorld )
+//------------------------------------------------------------------------------
+void TMainDisplay::DrawWorld(QPainter& painter)
+{
+    if (!CurrentWorld) {
         return;
+    }
 
     try {
         QPoint widgetCenter(width() / 2, height() / 2);
         QPoint playerPos = GetPlayerCoordinatesAndPing();
 
-        Map->DrawBackground(playerPos, size(), painter);
+        const TMap* currentMap = Application->GetModel()->GetMap();
+        currentMap->DrawBackground(playerPos, size(), painter);
 
         // Prepare minimap painter
         // TODO: minimap image creation should be moved into new class
         //       and inited on map loading process (not every frame)
-        QImage miniMapImg(Map->GetMinimapSize(MAX_MINIMAP_SIZE), QImage::Format_ARGB32);
+        QImage miniMapImg(currentMap->GetMinimapSize(MAX_MINIMAP_SIZE),
+                QImage::Format_ARGB32);
         miniMapImg.fill(qRgba(255, 255, 255, 100));
         QPainter miniMap(&miniMapImg);
         miniMap.drawRect(0, 0, miniMapImg.width() - 1, miniMapImg.height() - 1);
@@ -533,7 +569,9 @@ void TMainDisplay::DrawWorld(QPainter& painter){
         painter.drawImage(10, 30, miniMapImg);
 
         if (Application->GetState() == ST_SelectingResp) {
-            // TODO - Draw resp menu
+            // TODO: Draw respawn menu
+            DrawText(painter, QPoint(10, 50),
+                    tr("TODO: Respawn menu. LMB to continue."), 14);
         }
 
         // Detect targeting angle for Control packet
@@ -546,3 +584,12 @@ void TMainDisplay::DrawWorld(QPainter& painter){
         qDebug() << Q_FUNC_INFO << ": " << e.what();
     }
 }
+//------------------------------------------------------------------------------
+void TMainDisplay::show()
+{
+    QGLWidget::show();
+    if (Application->GetSettings()->GetWindowFullscreen()) {
+        ToggleFullscreen();
+    }
+}
+//------------------------------------------------------------------------------

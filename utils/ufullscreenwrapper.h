@@ -1,13 +1,14 @@
 #pragma once
-
 #include <QSize>
 #include <QList>
 //------------------------------------------------------------------------------
 class QWidget;
 //------------------------------------------------------------------------------
-namespace utils {
+namespace utils
+{
 //------------------------------------------------------------------------------
-class DisplayMode {
+class DisplayMode
+{
 public:
     DisplayMode(int width, int height)
         : m_size(QSize(width, height))
@@ -31,7 +32,8 @@ private:
     QSize m_size;
 };
 //------------------------------------------------------------------------------
-class UFullscreenWrapper {
+class UFullscreenWrapper
+{
 public:
     typedef QList<DisplayMode> DisplayModes;
 public:
@@ -42,16 +44,16 @@ public:
     bool changeToMode(int width, int height);
     bool restoreMode();
 
-#if defined(Q_WS_X11) && defined(USE_XRANDR)
+#if defined(Q_OS_UNIX) && defined(USE_XRANDR)
 private:
     int findModeId(int width, int height);
 #endif
 
 private:
-    DisplayModes m_displayModes;
-    QWidget* m_parent;
-#if defined(Q_WS_X11) && defined(USE_XRANDR)
-    bool m_extensionFound;
+    DisplayModes mDisplayModes;
+    QWidget* mParent;
+#if defined(Q_OS_UNIX) && defined(USE_XRANDR)
+    bool mExtensionFound;
 #endif
 };
 //------------------------------------------------------------------------------

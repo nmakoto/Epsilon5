@@ -1,13 +1,18 @@
-#include "uexception.h"
-
+#include "../utils/uexception.h"
+//------------------------------------------------------------------------------
+using namespace utils;
+//------------------------------------------------------------------------------
 UException::UException(const QString& message) throw()
     : Message(message.toLocal8Bit())
 {
 }
-
-UException::~UException() throw () {
+//------------------------------------------------------------------------------
+UException::~UException() throw()
+{
 }
-
-const char* UException::what() const throw () {
+//------------------------------------------------------------------------------
+const char* UException::what() const throw()
+{
     return Message.data();
 }
+//------------------------------------------------------------------------------

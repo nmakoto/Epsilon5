@@ -1,24 +1,88 @@
 #include "application.h"
 #include "sound.h"
-
+//------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
     , Sound(new TSound(this, this))
-    , MainDisplay(this)
-    , Network(new TNetwork(this))
     , Settings(new TSettings(this))
+    , GameModel(new TGameModel(this))
+    , Network(new TNetwork(this))
+    , MainDisplay(new TMainDisplay(this))
     , State(ST_MainMenu)
 {
-    connect(Network, SIGNAL(WorldReceived()), &MainDisplay, SLOT(RedrawWorld()));
+    connect(Network, SIGNAL(WorldReceived()), SLOT(UpdateWorld()));
     connect(Network, SIGNAL(WorldReceived()), Sound, SLOT(UpdateSounds()));
-    connect(Network, SIGNAL(Disconnected()), SLOT(Disconnected()));
-}
+    connect(Network, SIGNAL(PlayerInfoReceived(const Epsilon5::PlayerInfo&)),
+            SLOT(PrepareMap(const Epsilon5::PlayerInfo&)));
 
-bool TApplication::Init() {
-    Sound->Init();
-    MainDisplay.Init();
-    MainDisplay.show();
-    if( Settings->GetWindowFullscreen() )
-        MainDisplay.toggleFullscreen();
-    return true; // TODO: normal initialisation
+    connect(MainDisplay, SIGNAL(QuitAction()), SLOT(GameClose()));
+    connect(MainDisplay, SIGNAL(MainMenuAction()), SLOT(SetMainMenuState()));
+    connect(MainDisplay, SIGNAL(RespawnSelectedAction()), SLOT(SetInGameState()));
+
+    connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetSelectingRespawnState()));
 }
+//------------------------------------------------------------------------------
+TApplication::~TApplication()
+{
+    // Delete MainDisplay here because it has no any QWidget parent
+    delete MainDisplay;
+}
+//------------------------------------------------------------------------------
+bool TApplication::Init()
+{
+    GameModel->Init();
+    Network->Init();
+    MainDisplay->Init();
+    MainDisplay->show();
+    return true;
+}
+//------------------------------------------------------------------------------
+void TApplication::SetMainMenuState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_MainMenu;
+    Network->Disconnect();
+}
+//------------------------------------------------------------------------------
+void TApplication::SetConnectingState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_Connecting;
+    Network->Connect();
+}
+//------------------------------------------------------------------------------
+void TApplication::SetLoadingMapState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_LoadingMap;
+    GameModel->LoadMap(GameModel->GetCurrentMapName());
+}
+//------------------------------------------------------------------------------
+void TApplication::SetSelectingRespawnState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_SelectingResp;
+}
+//------------------------------------------------------------------------------
+void TApplication::SetInGameState()
+{
+    qDebug() << Q_FUNC_INFO;
+    State = ST_InGame;
+}
+//------------------------------------------------------------------------------
+void TApplication::PrepareMap(const Epsilon5::PlayerInfo& info)
+{
+    GameModel->SetPlayerInfo(info);
+    SetLoadingMapState();
+}
+//------------------------------------------------------------------------------
+void TApplication::UpdateWorld()
+{
+}
+//------------------------------------------------------------------------------
+void TApplication::GameClose()
+{
+    SetMainMenuState();
+    MainDisplay->close();
+}
+//------------------------------------------------------------------------------

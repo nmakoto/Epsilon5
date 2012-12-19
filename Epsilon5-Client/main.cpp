@@ -1,7 +1,8 @@
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "application.h"
-
-int main(int argc, char* argv[]) {
+//------------------------------------------------------------------------------
+int main(int argc, char* argv[])
+{
     GOOGLE_PROTOBUF_VERIFY_VERSION;
     TApplication app(argc, argv);
     if (!app.Init()) {
@@ -9,3 +10,4 @@ int main(int argc, char* argv[]) {
     }
     return app.exec();
 }
+//------------------------------------------------------------------------------

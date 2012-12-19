@@ -51,7 +51,7 @@ void TSound::Init()
 //------------------------------------------------------------------------------
 void TSound::UpdateSounds()
 {
-    CurrentWorld = &Application->GetNetwork()->GetWorld();
+    CurrentWorld = Application->GetModel()->GetWorld();
 }
 //------------------------------------------------------------------------------
 void TSound::MenuItemClicked()
@@ -82,7 +82,7 @@ void TSound::timerEvent(QTimerEvent* event)
         auto it = CurrentWorld->players().begin();
         for ( ; it != CurrentWorld->players().end(); ++it) {
             const Epsilon5::Player& player = (*it);
-            if ((size_t)player.id() == Application->GetNetwork()->GetId()) {
+            if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
                 // player walking
                 QPoint delta = QPoint(player.x(), player.y()) - LastPlayerPos;
                 if (abs(delta.x()) > 2 || abs(delta.y()) > 2) {
@@ -93,6 +93,7 @@ void TSound::timerEvent(QTimerEvent* event)
                 LastPlayerPos = QPoint(player.x(), player.y());
 
                 // player bullets
+                // TODO: rewrite this code -- it's durty hack
                 for (int i = 0; i != CurrentWorld->bullets_size(); i++) {
                     const Epsilon5::Bullet& bullet = CurrentWorld->bullets(i);
 

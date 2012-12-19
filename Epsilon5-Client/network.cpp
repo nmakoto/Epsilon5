@@ -4,26 +4,31 @@
 #include "maindisplay.h"
 #include "application.h"
 #include "network.h"
-
-TNetwork::TNetwork(QObject* parent)
-    : QObject(parent)
+//------------------------------------------------------------------------------
+TNetwork::TNetwork(TApplication* application)
+    : QObject(application)
+    , Application(application)
     , Socket(new QUdpSocket(this))
-    , Id(0)
+    , CurrentWorld(0)
 {
     connect(Socket, SIGNAL(readyRead()), SLOT(OnDataReceived()));
     connect(Socket, SIGNAL(error(QAbstractSocket::SocketError)),
             SLOT(OnError(QAbstractSocket::SocketError)));
     connect(Socket, SIGNAL(connected()), SLOT(OnConnected()));
+    connect(Socket, SIGNAL(disconnected()), SIGNAL(Disconnected()));
+
     Status = PS_NotConnected;
     startTimer(500);
     LastPacketReceived.start();
 }
-
-const Epsilon5::World& TNetwork::GetWorld() const {
-    return World;
+//------------------------------------------------------------------------------
+void TNetwork::Init()
+{
+    CurrentWorld = Application->GetModel()->GetWorld();
 }
-
-void TNetwork::OnDataReceived() {
+//------------------------------------------------------------------------------
+void TNetwork::OnDataReceived()
+{
     LastPacketReceived.restart();
     QByteArray receivedPacket = Socket->readAll();
     EPacketType packetType;
@@ -39,18 +44,19 @@ void TNetwork::OnDataReceived() {
         while (receivedPacket.size() > 0) {
             packetType = (EPacketType)(char)(receivedPacket[0]);
             originDataSize = qFromBigEndian<quint16>(
-                        (const uchar*)receivedPacket.mid(posOrigin, midSize).constData());
+                    (const uchar*)receivedPacket.mid(posOrigin, midSize).constData());
             packedDataSize = qFromBigEndian<quint16>(
-                        (const uchar*)receivedPacket.mid(posPacked, midSize).constData());
+                    (const uchar*)receivedPacket.mid(posPacked, midSize).constData());
             packed = receivedPacket.mid(posContent, packedDataSize);
             content = qUncompress(packed);
             if (content.isEmpty() && (originDataSize || packedDataSize)) {
                 throw UException("Wrong packet: cannot unpack data");
             }
+
             // Retrieve another packet from current.
             // We can receive more than one packet at once
             receivedPacket = receivedPacket.mid(
-                        packedDataSize + sizeof(char) + 2 * midSize);
+                    packedDataSize + sizeof(char) + 2 * midSize);
             switch (packetType) {
             case PT_PlayerInfo: {
                 if (Status != PS_InfoWait) {
@@ -58,9 +64,7 @@ void TNetwork::OnDataReceived() {
                 }
                 Epsilon5::PlayerInfo info;
                 if (info.ParseFromArray(content.data(), content.size())) {
-                    Id = info.id();
-                    QString map = info.map().c_str();
-                    emit LoadMap(map);
+                    emit PlayerInfoReceived(info);
                     Status = PS_Spawned;
                 } else {
                     throw UException("Error parsing player info");
@@ -68,19 +72,21 @@ void TNetwork::OnDataReceived() {
             }
             break;
             case PT_World: {
-                Application()->SetState(ST_InGame);
                 if (Status != PS_Spawned) {
                     throw UException("Wrong packet: PT_World");
                 }
-                World.Clear();
-                if (World.ParseFromArray(content.data(), content.size())) {
-                    qint32 packetnumber = World.packet_number();
+                CurrentWorld->Clear();
+                if (CurrentWorld->ParseFromArray(content.data(), content.size())) {
+                    qint32 packetnumber = CurrentWorld->packet_number();
                     emit WorldReceived();
-                    SendControls(packetnumber);
+                    if( Application->GetState() != ST_SelectingResp ) {
+                        SendControls(packetnumber);
+                    }
                 } else {
                     throw UException("Error parsing world");
                 }
             }
+            // TODO: Make ping/pong packets type
             break;
             default:
                 throw UException("Unknown packet type");
@@ -91,45 +97,46 @@ void TNetwork::OnDataReceived() {
         qDebug() << Q_FUNC_INFO << "Exception:" << e.what();
     }
 }
-
-void TNetwork::OnError(QAbstractSocket::SocketError socketError) {
+//------------------------------------------------------------------------------
+void TNetwork::OnError(QAbstractSocket::SocketError socketError)
+{
     qDebug() << Q_FUNC_INFO << "Socket error:" << socketError;
     Status = PS_NotConnected;
 }
-
-void TNetwork::OnConnected() {
+//------------------------------------------------------------------------------
+void TNetwork::OnConnected()
+{
     SendPlayerAuth();
-    Application()->SetState(ST_LoadingMap);
+    emit Connected();
 }
-
-TApplication* TNetwork::Application() {
-    return (TApplication*)(parent());
-}
-
-void TNetwork::Start() {
-    Application()->SetState(ST_Connecting);
+//------------------------------------------------------------------------------
+void TNetwork::Connect()
+{
     Socket->connectToHost(QHostAddress(
-                Application()->GetSettings()->GetServerAddr()),
-                Application()->GetSettings()->GetServerPort());
+            Application->GetSettings()->GetServerAddr()),
+            Application->GetSettings()->GetServerPort());
 }
-
-void TNetwork::Stop() {
+//------------------------------------------------------------------------------
+void TNetwork::Disconnect()
+{
     Socket->disconnectFromHost();
     emit Disconnected();
 }
-
-void TNetwork::SendControls(size_t packetnumber) {
-    Epsilon5::Control control = Application()->GetMainDisplay()->GetControl();
+//------------------------------------------------------------------------------
+void TNetwork::SendControls(size_t packetnumber)
+{
+    Epsilon5::Control control = Application->GetMainDisplay()->GetControl();
     QByteArray message;
     control.set_packet_number(packetnumber);
     message.resize(control.ByteSize());
     control.SerializeToArray(message.data(), message.size());
     Send(message, PT_Control);
 }
-
-void TNetwork::SendPlayerAuth() {
+//------------------------------------------------------------------------------
+void TNetwork::SendPlayerAuth()
+{
     Epsilon5::Auth auth;
-    QByteArray nickName = Application()->GetSettings()->GetNickname().toLocal8Bit();
+    QByteArray nickName = Application->GetSettings()->GetNickname().toLocal8Bit();
     auth.set_name(nickName.data(), nickName.size());
     QByteArray data;
     data.resize(auth.ByteSize());
@@ -137,10 +144,11 @@ void TNetwork::SendPlayerAuth() {
     Send(data, PT_PlayerAuth);
     Status = PS_InfoWait;
 }
-
+//------------------------------------------------------------------------------
 // Send packet to the server in form:
 // [PACKET_TYPE] [ORIGIN_DATA_SIZE] [PACKED_DATA_SIZE] [DATA]
-void TNetwork::Send(const QByteArray& originData, EPacketType packetType) {
+void TNetwork::Send(const QByteArray& originData, EPacketType packetType)
+{
     QByteArray sendPacket;
     QByteArray packedData = qCompress(originData, 5);
     quint16 originDataSize = qToBigEndian<quint16>(originData.size());
@@ -151,11 +159,15 @@ void TNetwork::Send(const QByteArray& originData, EPacketType packetType) {
     sendPacket += packedData;
     Socket->write(sendPacket);
 }
-
-void TNetwork::timerEvent(QTimerEvent *event){
+//------------------------------------------------------------------------------
+void TNetwork::timerEvent(QTimerEvent* event)
+{
     Q_UNUSED(event);
+    if( Status == PS_NotConnected )
+        return;
 
     if (LastPacketReceived.elapsed() > DEFAULT_SERVER_TIMEOUT) {
-        Stop();
+        Disconnect();
     }
 }
+//------------------------------------------------------------------------------

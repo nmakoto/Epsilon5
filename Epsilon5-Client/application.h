@@ -4,25 +4,29 @@
 #include "maindisplay.h"
 #include "network.h"
 #include "settings.h"
-
+#include "gamemodel.h"
+//------------------------------------------------------------------------------
+class TGameModel;
 class TSound;
-
-enum EState {
+//------------------------------------------------------------------------------
+enum EGameState {
     ST_MainMenu,
     ST_Connecting,
     ST_LoadingMap,
     ST_SelectingResp,
     ST_InGame
 };
-
+//------------------------------------------------------------------------------
 class TApplication : public QApplication
 {
     Q_OBJECT
 public:
     TApplication(int& argc, char* argv[]);
+    ~TApplication();
     bool Init();
+
     inline TMainDisplay* GetMainDisplay() {
-        return &MainDisplay;
+        return MainDisplay;
     }
     inline TNetwork* GetNetwork() {
         return Network;
@@ -30,25 +34,33 @@ public:
     inline TSettings* GetSettings() {
         return Settings;
     }
-    inline EState GetState() {
-        return State;
+    inline TGameModel* GetModel() {
+        return GameModel;
     }
     inline TSound* GetSound() {
         return Sound;
     }
-    inline void SetState(EState state) {
-        State = state;
+    inline EGameState GetState() {
+        return State;
     }
 
 public slots:
-    inline void Disconnected() {
-        State = ST_MainMenu;
-    }
+    void SetMainMenuState();
+    void SetConnectingState();
+    void SetLoadingMapState();
+    void SetSelectingRespawnState();
+    void SetInGameState();
+
+    void PrepareMap(const Epsilon5::PlayerInfo& info);
+    void UpdateWorld();
+    void GameClose();
 
 private:
     TSound* Sound;
-    TMainDisplay MainDisplay;
-    TNetwork* Network;
     TSettings* Settings;
-    EState State;
+    TGameModel* GameModel;
+    TNetwork* Network;
+    TMainDisplay* MainDisplay;
+    EGameState State;
 };
+//------------------------------------------------------------------------------

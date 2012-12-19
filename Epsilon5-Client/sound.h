@@ -33,7 +33,7 @@ private:
     TSoundObject* PlayerSounds;
     TSoundObject* AmbientSounds;
     TSoundInfo CurrentMusic;
-    EState lastState;
+    EGameState lastState;
     QPoint LastPlayerPos;
 };
 //------------------------------------------------------------------------------

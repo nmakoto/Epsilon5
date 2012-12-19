@@ -176,8 +176,8 @@ void TMapContainer::saveMapList(const QString& listFileName,
 //------------------------------------------------------------------------------
 TMapInfo TMapContainer::mapInfoFromFile(const QString& fileName)
 {
-    USettings settings;
-    USettings::TParametersHash params;
+    utils::USettings settings;
+    utils::USettings::TParametersHash params;
     params["name"] = "";
     params["width"] = "";
     params["height"] = "";
@@ -186,7 +186,7 @@ TMapInfo TMapContainer::mapInfoFromFile(const QString& fileName)
         settings.DefineParams(params);
         settings.Load(fileName,
             QStringList() << "name" << "width" << "height" << "color");
-    } catch (USettings& ex) {
+    } catch (utils::USettings& ex) {
         throw UException(QString(Q_FUNC_INFO)
                 .append(":: illegal map config detected in '%1'").arg(fileName));
     }
@@ -201,8 +201,8 @@ TMapInfo TMapContainer::mapInfoFromFile(const QString& fileName)
 //------------------------------------------------------------------------------
 void TMapContainer::mapInfoToFile(const QString& fileName, const TMapInfo& info)
 {
-    USettings settings;
-    USettings::TParametersHash params;
+    utils::USettings settings;
+    utils::USettings::TParametersHash params;
     params["name"] = info.name;
     params["width"] = QString().number(info.width);
     params["height"] = QString().number(info.height);
@@ -210,7 +210,7 @@ void TMapContainer::mapInfoToFile(const QString& fileName, const TMapInfo& info)
     try {
         settings.DefineParams(params);
         settings.Save(fileName);
-    } catch (USettings& ex) {
+    } catch (utils::USettings& ex) {
         throw UException(QString(Q_FUNC_INFO)
                 .append(":: illegal map config detected in '%1'").arg(fileName));
     }

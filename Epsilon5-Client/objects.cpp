@@ -3,12 +3,14 @@
 #include <QStringList>
 #include "../utils/uexception.h"
 #include "objects.h"
-
+//------------------------------------------------------------------------------
 TObjects::TObjects(QObject* parent)
-    : QObject(parent) {
+    : QObject(parent)
+{
 }
-
-void TObjects::LoadObjects(const QString& fileName) {
+//------------------------------------------------------------------------------
+void TObjects::LoadObjects(const QString& fileName)
+{
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         throw UException("Error opening file " + fileName);
@@ -35,23 +37,27 @@ void TObjects::LoadObjects(const QString& fileName) {
         ImagesById.insert(id, image);
     }
 }
-
-QImage* TObjects::GetImageById(size_t id) {
+//------------------------------------------------------------------------------
+QImage* TObjects::GetImageById(size_t id)
+{
     if (ImagesById.find(id) == ImagesById.end()) {
         throw UException("Image not found");
     }
     return ImagesById[id];
 }
-
-QImage* TObjects::GetImageByName(const QString& imageName) {
+//------------------------------------------------------------------------------
+QImage* TObjects::GetImageByName(const QString& imageName)
+{
     if (Images.find(imageName) == Images.end()) {
         throw UException("Image not found");
     }
     return Images[imageName];
 }
-
-TObjects::~TObjects() {
+//------------------------------------------------------------------------------
+TObjects::~TObjects()
+{
     for (auto i = Images.begin(); i != Images.end(); i++) {
         delete i.value();
     }
 }
+//------------------------------------------------------------------------------

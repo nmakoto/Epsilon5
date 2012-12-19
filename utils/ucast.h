@@ -1,16 +1,18 @@
 #pragma once
-
 #include <QString>
-#include "uexception.h"
-
+#include "../utils/uexception.h"
+//------------------------------------------------------------------------------
+namespace utils
+{
+//------------------------------------------------------------------------------
 template<typename T>
 T FromString(const QString& str);
-
-class UFromStringFormat {
+//------------------------------------------------------------------------------
+class UFromStringFormat
+{
 public:
     UFromStringFormat(const QString& str)
-        : Str(str)
-    {
+        : Str(str) {
     }
     template <typename T>
     inline operator T() const {
@@ -19,16 +21,22 @@ public:
 private:
     const QString& Str;
 };
-
-inline UFromStringFormat FromString(const QString& str) {
+//------------------------------------------------------------------------------
+inline UFromStringFormat FromString(const QString& str)
+{
     return UFromStringFormat(str);
 }
-
+//------------------------------------------------------------------------------
 template <typename T>
-inline QString ToString(const T& t) {
+inline QString ToString(const T& t)
+{
     return QString::number(t);
 }
-
-inline QString ToString(const QByteArray& byteArray) {
+//------------------------------------------------------------------------------
+inline QString ToString(const QByteArray& byteArray)
+{
     return QString::fromUtf8(byteArray);
 }
+//------------------------------------------------------------------------------
+}
+//------------------------------------------------------------------------------

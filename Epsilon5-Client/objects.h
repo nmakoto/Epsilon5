@@ -1,11 +1,13 @@
 #pragma once
-
 #include <QObject>
 #include <QHash>
 #include <QImage>
-
-class TObjects : public QObject {
+//------------------------------------------------------------------------------
+class TObjects : public QObject
+{
     Q_OBJECT
+    typedef QHash<QString, QImage*> TImageHash;
+    typedef QHash<size_t, QImage*> TImageIdHash;
 public:
     explicit TObjects(QObject* parent = 0);
     ~TObjects();
@@ -13,6 +15,7 @@ public:
     QImage* GetImageById(size_t id);
     QImage* GetImageByName(const QString& imageName);
 private:
-    QHash<QString, QImage*> Images;
-    QHash<size_t, QImage*> ImagesById;
+    TImageHash Images;
+    TImageIdHash ImagesById;
 };
+//------------------------------------------------------------------------------

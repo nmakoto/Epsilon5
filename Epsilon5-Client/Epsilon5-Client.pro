@@ -27,6 +27,7 @@ SOURCES += \
     ../utils/ucast.cpp \
     graphics/basicitem.cpp \
     menu.cpp \
+    gamemodel.cpp \
     ../utils/usound.cpp \
     ../utils/usoundcontainer.cpp \
     sound.cpp
@@ -47,6 +48,7 @@ HEADERS  += \
     ../utils/ucast.h \
     graphics/basicitem.h \
     menu.h \
+    gamemodel.h \
     ../utils/usound.h \
     ../utils/usoundcontainer.h \
     sound.h

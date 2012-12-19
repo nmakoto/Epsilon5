@@ -3,19 +3,19 @@
 #include <QTextStream>
 #include <QStringList>
 #include "settings.h"
-
+//------------------------------------------------------------------------------
 const char* SETTINGS_FILENAME = "settings.ini";
 const char* DEFAULT_PLAYER_NAME = "player";
 const char* DEFAULT_SERVER_ADDRESS = "127.0.0.1";
 const quint16 DEFAULT_SERVER_PORT = 14567;
 const bool DEFAULT_WINDOW_FULLSCREEN = true;
-
+//------------------------------------------------------------------------------
 TSettings::TSettings(QObject* parent)
     : QObject(parent)
-    , Settings(new USettings(this))
+    , Settings(new utils::USettings(this))
 {
     // Define default parameters
-    USettings::TParametersHash params;
+    utils::USettings::TParametersHash params;
     params["nickname"] = QString(DEFAULT_PLAYER_NAME);
     params["server.address"] = QString(DEFAULT_SERVER_ADDRESS);
     params["server.port"] = QString().number(DEFAULT_SERVER_PORT);
@@ -23,34 +23,37 @@ TSettings::TSettings(QObject* parent)
     Settings->DefineParams(params);
     Load();
 }
-
+//------------------------------------------------------------------------------
 TSettings::~TSettings()
 {
     Save();
 }
-
-QString TSettings::GetNickname() {
+//------------------------------------------------------------------------------
+QString TSettings::GetNickname()
+{
     return Settings->GetParameter("nickname");
 }
-
-QString TSettings::GetServerAddr() {
+//------------------------------------------------------------------------------
+QString TSettings::GetServerAddr()
+{
     return Settings->GetParameter("server.address");
 }
-
-quint16 TSettings::GetServerPort() {
+//------------------------------------------------------------------------------
+quint16 TSettings::GetServerPort()
+{
     return Settings->GetParameter("server.port");
 }
-
+//------------------------------------------------------------------------------
 bool TSettings::GetWindowFullscreen()
 {
     return Settings->GetParameter("window.fullscreen");
 }
-
+//------------------------------------------------------------------------------
 void TSettings::SetWindowFullscreen(bool value)
 {
     Settings->SetParameter("window.fullscreen", QString().number(value));
 }
-
+//------------------------------------------------------------------------------
 void TSettings::Load()
 {
     try {
@@ -59,7 +62,7 @@ void TSettings::Load()
         qWarning() << ex.what();
     }
 }
-
+//------------------------------------------------------------------------------
 void TSettings::Save(bool keepOrigin)
 {
     try {
@@ -68,3 +71,4 @@ void TSettings::Save(bool keepOrigin)
         qWarning() << ex.what();
     }
 }
+//------------------------------------------------------------------------------

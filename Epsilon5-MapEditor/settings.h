@@ -27,6 +27,6 @@ public:
     void Load();
 
 private:
-    USettings* mSettings;
+    utils::USettings* mSettings;
 };
 //------------------------------------------------------------------------------

@@ -1,16 +1,14 @@
+#include <QDebug>
 #include <QFile>
 #include <QTextStream>
 #include <QHash>
 #include <QImage>
 #include <QStringList>
-#include <QDebug>
 #include <QDir>
 #include "../utils/uexception.h"
 #include "../utils/usettings.h"
-
 #include "map.h"
-
-
+//------------------------------------------------------------------------------
 TMap::TMap(QObject* parent)
     : QObject(parent)
     , Width(0)
@@ -20,9 +18,10 @@ TMap::TMap(QObject* parent)
     , WHRatio(QPointF(1.0, 1.0))
 {
 }
-
-void TMap::LoadMap(QString map) {
-    USettings settings;
+//------------------------------------------------------------------------------
+void TMap::LoadMap(QString map)
+{
+    utils::USettings settings;
     settings.Load("maps/" + map + "/config.ini");
     QString color = settings.GetParameter("color");
     Color = QColor(color);
@@ -31,20 +30,25 @@ void TMap::LoadMap(QString map) {
     Height = settings.GetParameter("height");
     Loaded = true;
     WHRatio = QPointF(1.0, 1.0);
-    if( Width && Height ) {
+    if (Width && Height) {
         // 1.0 means max size, other always less than 1
-        WHRatio = QPointF(Width > Height ?  1.0 : (qreal)Width / Height,
-                          Width > Height ? (qreal)Height / Width : 1.0);
+        WHRatio = QPointF(
+                Width > Height ?  1.0 : (qreal)Width / Height,
+                Width > Height ? (qreal)Height / Width : 1.0);
     }
+    emit MapLoaded();
 }
-
-TMap::~TMap() {
+//------------------------------------------------------------------------------
+TMap::~TMap()
+{
     if (Background) {
         delete Background;
     }
 }
-
-void TMap::DrawBackground(const QPoint& playerPos, const QSize& frameSize, QPainter& painter) {
+//------------------------------------------------------------------------------
+void TMap::DrawBackground(const QPoint& playerPos, const QSize& frameSize,
+        QPainter& painter) const
+{
     if (!Loaded) {
         throw UException("Map not loaded!");
     }
@@ -57,30 +61,32 @@ void TMap::DrawBackground(const QPoint& playerPos, const QSize& frameSize, QPain
     painter.fillRect(0, 0, frameSize.width(), frameSize.height(), Color);
     painter.drawImage(-cutX, -cutY, *Background);
 }
-
+//------------------------------------------------------------------------------
 size_t TMap::GetWidth()
 {
     return Width;
 }
-
+//------------------------------------------------------------------------------
 size_t TMap::GetHeight()
 {
     return Height;
 }
-
-QSize TMap::GetMinimapSize(quint8 maxMinimapSize)
+//------------------------------------------------------------------------------
+QSize TMap::GetMinimapSize(quint8 maxMinimapSize) const
 {
     return QSize(maxMinimapSize * WHRatio.x(), maxMinimapSize * WHRatio.y());
 }
-
-QPoint TMap::GetObjectPosOnMinimap(int objectPosX, int objectPosY, quint8 maxMinimapSize)
+//------------------------------------------------------------------------------
+QPoint TMap::GetObjectPosOnMinimap(int objectPosX, int objectPosY,
+        quint8 maxMinimapSize) const
 {
     return QPoint(
-        ((qreal)objectPosX / Width + 0.5) * maxMinimapSize * WHRatio.x(),
-        ((qreal)objectPosY / Height + 0.5) * maxMinimapSize * WHRatio.y());
+            ((qreal)objectPosX / Width + 0.5) * maxMinimapSize * WHRatio.x(),
+            ((qreal)objectPosY / Height + 0.5) * maxMinimapSize * WHRatio.y());
 }
-
-QPoint TMap::GetObjectPosOnMinimap(QPoint objectPos, quint8 maxMinimapSize)
+//------------------------------------------------------------------------------
+QPoint TMap::GetObjectPosOnMinimap(QPoint objectPos, quint8 maxMinimapSize) const
 {
     return GetObjectPosOnMinimap(objectPos.x(), objectPos.y(), maxMinimapSize);
 }
+//------------------------------------------------------------------------------
