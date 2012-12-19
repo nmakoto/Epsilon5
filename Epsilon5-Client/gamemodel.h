@@ -15,14 +15,19 @@ public:
     const Epsilon5::World& GetWorld() const;
     Epsilon5::World* GetWorld();
 
+    void LoadMap(const QString& mapName);
     const TMap* GetMap() const;
-//    TMap* GetMap();
+
+    size_t GetPlayerId() const;
+    void SetPlayerInfo(const Epsilon5::PlayerInfo& info);
+    const Epsilon5::PlayerInfo* GetPlayerInfo() const;
 
 public slots:
-    void LoadMap(QString mapName);
 
 private:
     Epsilon5::World GameWorld;
     TMap* WorldMap;
+    size_t PlayerId;
+    Epsilon5::PlayerInfo PlayerInfo;
 };
 //------------------------------------------------------------------------------

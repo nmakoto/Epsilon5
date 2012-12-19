@@ -37,7 +37,6 @@ class TMainDisplay : public QGLWidget
     Q_OBJECT
 public:
     explicit TMainDisplay(TApplication* application);
-    explicit TMainDisplay(TApplication* application, QWidget* parent);
     void Init();
     ~TMainDisplay();
     inline const Epsilon5::Control& GetControl() {
@@ -46,9 +45,13 @@ public:
     QPoint GetCenter();
     QPoint GetCursorPos();
 
+signals:
+    void QuitAction();
+    void MainMenuAction();
+
 public slots:
-    void RedrawWorld();
-    void toggleFullscreen();
+    void show();
+    void ToggleFullscreen();
 
 private:
     void paintEvent(QPaintEvent*);
@@ -81,7 +84,6 @@ private:
     TImageStorage* Images;
     QQueue<Epsilon5::World> PacketsQueue;
     Epsilon5::Control Control;
-//    TMap* Map;
     TObjects* Objects;
     const Epsilon5::World* CurrentWorld;
     QHash<size_t, QString> PlayerNames;

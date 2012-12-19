@@ -18,21 +18,19 @@ class TNetwork : public QObject
 public:
     explicit TNetwork(TApplication* parent = 0);
     void Init();
-    inline size_t GetId() {
-        return Id;
-    }
+
     inline bool IsServerAlive() {
         return LastPacketReceived.elapsed() < DEFAULT_SERVER_TIMEOUT_MESSAGE;
     }
 
 public slots:
-    void Start();
-    void Stop();
+    void Connect();
+    void Disconnect();
 
 signals:
     void WorldReceived();
-    void LoadMap(QString map);
     void Disconnected();
+    void PlayerInfoReceived(Epsilon5::PlayerInfo info);
 
 private slots:
     void OnDataReceived();
@@ -51,7 +49,6 @@ private:
     TApplication* Application;
     QUdpSocket* Socket;
     Epsilon5::World* CurrentWorld;
-    size_t Id;
     EPlayerStatus Status;
     QTime LastPacketReceived;
 };

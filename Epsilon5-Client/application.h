@@ -27,9 +27,9 @@ public:
     inline TMainDisplay* GetMainDisplay() {
         return MainDisplay;
     }
-//    inline TNetwork* GetNetwork() {
-//        return Network;
-//    }
+    inline TNetwork* GetNetwork() {
+        return Network;
+    }
     inline TSettings* GetSettings() {
         return Settings;
     }
@@ -44,15 +44,16 @@ public:
     }
 
 public slots:
-    inline void Disconnected() {
-        State = ST_MainMenu;
-    }
+    void ShowMainMenu();
+    void GameClose();
+    void PrepareMap(Epsilon5::PlayerInfo info);
+    void UpdateWorld();
 
 private:
-    TGameModel* GameModel;
-    TMainDisplay* MainDisplay;
-    TNetwork* Network;
     TSettings* Settings;
+    TGameModel* GameModel;
+    TNetwork* Network;
+    TMainDisplay* MainDisplay;
     EGameState State;
 };
 //------------------------------------------------------------------------------

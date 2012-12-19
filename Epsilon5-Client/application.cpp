@@ -2,15 +2,18 @@
 //------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
-    , GameModel(new TGameModel(this))
-    , MainDisplay(new TMainDisplay(this))
-    , Network(new TNetwork(this))
     , Settings(new TSettings(this))
+    , GameModel(new TGameModel(this))
+    , Network(new TNetwork(this))
+    , MainDisplay(new TMainDisplay(this))
     , State(ST_MainMenu)
 {
-    connect(Network, SIGNAL(WorldReceived()), MainDisplay, SLOT(RedrawWorld()));
-    connect(Network, SIGNAL(Disconnected()), SLOT(Disconnected()));
-    connect(Network, SIGNAL(LoadMap(QString)), GameModel, SLOT(LoadMap(QString)));
+    connect(Network, SIGNAL(WorldReceived()), SLOT(UpdateWorld()));
+    connect(Network, SIGNAL(PlayerInfoReceived(Epsilon5::PlayerInfo)),
+            SLOT(PrepareMap(Epsilon5::PlayerInfo)));
+
+    connect(MainDisplay, SIGNAL(QuitAction()), SLOT(GameClose()));
+    connect(MainDisplay, SIGNAL(MainMenuAction()), SLOT(ShowMainMenu()));
 }
 //------------------------------------------------------------------------------
 TApplication::~TApplication()
@@ -25,9 +28,29 @@ bool TApplication::Init()
     Network->Init();
     MainDisplay->Init();
     MainDisplay->show();
-    if (Settings->GetWindowFullscreen()) {
-        MainDisplay->toggleFullscreen();
-    }
     return true;
+}
+//------------------------------------------------------------------------------
+void TApplication::ShowMainMenu()
+{
+    Network->Disconnect();
+    State = ST_MainMenu;
+}
+//------------------------------------------------------------------------------
+void TApplication::GameClose()
+{
+    Network->Disconnect();
+    MainDisplay->close();
+}
+//------------------------------------------------------------------------------
+void TApplication::PrepareMap(Epsilon5::PlayerInfo info)
+{
+    GameModel->SetPlayerInfo(info);
+    GameModel->LoadMap(info.map().c_str());
+}
+//------------------------------------------------------------------------------
+void TApplication::UpdateWorld()
+{
+
 }
 //------------------------------------------------------------------------------

@@ -10,7 +10,6 @@ TNetwork::TNetwork(TApplication* application)
     , Application(application)
     , Socket(new QUdpSocket(this))
     , CurrentWorld(0)
-    , Id(0)
 {
     connect(Socket, SIGNAL(readyRead()), SLOT(OnDataReceived()));
     connect(Socket, SIGNAL(error(QAbstractSocket::SocketError)),
@@ -63,9 +62,7 @@ void TNetwork::OnDataReceived()
                 }
                 Epsilon5::PlayerInfo info;
                 if (info.ParseFromArray(content.data(), content.size())) {
-                    Id = info.id();
-                    QString map = info.map().c_str();
-                    emit LoadMap(map);
+                    emit PlayerInfoReceived(info);
                     Status = PS_Spawned;
                 } else {
                     throw UException("Error parsing player info");
@@ -109,7 +106,7 @@ void TNetwork::OnConnected()
     Application->SetState(ST_LoadingMap);
 }
 //------------------------------------------------------------------------------
-void TNetwork::Start()
+void TNetwork::Connect()
 {
     Application->SetState(ST_Connecting);
     Socket->connectToHost(QHostAddress(
@@ -117,7 +114,7 @@ void TNetwork::Start()
             Application->GetSettings()->GetServerPort());
 }
 //------------------------------------------------------------------------------
-void TNetwork::Stop()
+void TNetwork::Disconnect()
 {
     Socket->disconnectFromHost();
     emit Disconnected();
@@ -163,9 +160,11 @@ void TNetwork::Send(const QByteArray& originData, EPacketType packetType)
 void TNetwork::timerEvent(QTimerEvent* event)
 {
     Q_UNUSED(event);
+    if( Application->GetState() != ST_InGame )
+        return;
 
     if (LastPacketReceived.elapsed() > DEFAULT_SERVER_TIMEOUT) {
-        Stop();
+        Disconnect();
     }
 }
 //------------------------------------------------------------------------------

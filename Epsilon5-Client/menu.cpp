@@ -78,14 +78,14 @@ void TMenu::Init()
             Images->GetImage("menu-connect-h"),
             QPoint(0, -50),
             this));
-    connect(item, SIGNAL(Clicked()), Application()->GetNetwork(), SLOT(Start()));
+    connect(item, SIGNAL(Clicked()), Application()->GetNetwork(), SLOT(Connect()));
 
     item = AddMenuItem(new TMenuItem(
             Images->GetImage("menu-exit"),
             Images->GetImage("menu-exit-h"),
             QPoint(0, 50),
             this));
-    connect(item, SIGNAL(Clicked()), Application(), SLOT(quit()));
+    connect(item, SIGNAL(Clicked()), Application(), SLOT(GameClose()));
 }
 //------------------------------------------------------------------------------
 bool TMenu::event(QEvent* ev)

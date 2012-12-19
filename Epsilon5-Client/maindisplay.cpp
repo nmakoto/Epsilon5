@@ -49,22 +49,18 @@ static double getAngle(const QPoint& point)
 }
 //------------------------------------------------------------------------------
 TMainDisplay::TMainDisplay(TApplication* application)
-    : TMainDisplay(application, 0)
-{
-}
-//------------------------------------------------------------------------------
-TMainDisplay::TMainDisplay(TApplication* application, QWidget* parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+    : QGLWidget(QGLFormat(QGL::SampleBuffers))
     , Application(application)
     , Images(new TImageStorage(this))
-//    , Map(new TMap(this))
     , Objects(new TObjects(this))
     , CurrentWorld(NULL)
     , ShowStats(false)
+    , Ping(0)
     , Menu(Images)
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
+
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);
     QGLFormat f = QGLFormat::defaultFormat();
@@ -73,6 +69,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QWidget* parent)
     f.setSamples(4);
     f.setVersion(QGLFormat::OpenGL_Version_4_0, QGLFormat::OpenGL_Version_4_0);
     QGLFormat::setDefaultFormat(f);
+
     Control.set_angle(0);
     Control.mutable_keystatus()->set_keyattack1(false);
     Control.mutable_keystatus()->set_keyattack2(false);
@@ -89,9 +86,7 @@ void TMainDisplay::Init()
 {
     Images->LoadAll();
     Objects->LoadObjects("objects/objects.txt");
-
-//    connect(Application->GetNetwork(), SIGNAL(LoadMap(QString)),
-//            Map, SLOT(LoadMap(QString)));
+    CurrentWorld = Application->GetModel()->GetWorld();
 
     Menu.Init();
 }
@@ -100,12 +95,6 @@ TMainDisplay::~TMainDisplay()
 {
     CurrentWorld = NULL;
     Application->GetSettings()->SetWindowFullscreen(isFullScreen());
-}
-//------------------------------------------------------------------------------
-void TMainDisplay::RedrawWorld()
-{
-//    CurrentWorld = &Application->GetNetwork()->GetWorld();
-    CurrentWorld = Application->GetModel()->GetWorld();
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::timerEvent(QTimerEvent*)
@@ -243,15 +232,15 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
 
     switch (event->key()) {
     case Qt::Key_F11:
-        toggleFullscreen();
+        ToggleFullscreen();
         break;
 #ifdef QT_DEBUG
     case Qt::Key_F12:
-        Application->GetNetwork()->Stop();
-        close();
+        emit QuitAction();
+        break;
 #endif
     case Qt::Key_Escape:
-        Application->GetNetwork()->Stop();
+        emit MainMenuAction();
         break;
     case Qt::Key_Tab:
         ShowStats = false;
@@ -261,7 +250,7 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
     }
 }
 //------------------------------------------------------------------------------
-void TMainDisplay::toggleFullscreen()
+void TMainDisplay::ToggleFullscreen()
 {
     if (isFullScreen()) {
         this->showNormal();
@@ -295,9 +284,7 @@ void TMainDisplay::DrawFps(QPainter& painter)
 //------------------------------------------------------------------------------
 void TMainDisplay::DrawPing(QPainter& painter)
 {
-    if (Ping != 2686572) {
-        DrawText(painter, QPoint(0, 24), QString("Ping: %1").arg(Ping), 10);
-    }
+    DrawText(painter, QPoint(0, 24), QString("Ping: %1").arg(Ping), 10);
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::DrawText(QPainter& painter, const QPoint& pos,
@@ -315,7 +302,7 @@ void TMainDisplay::DrawText(QPainter& painter, const QPoint& pos,
 QPoint TMainDisplay::GetPlayerCoordinatesAndPing()
 {
     QPoint res;
-    size_t playerId = Application->GetNetwork()->GetId();
+    size_t playerId = Application->GetModel()->GetPlayerId();
     for (int i = 0; i != CurrentWorld->players_size(); i++) {
         const Epsilon5::Player& player = CurrentWorld->players(i);
         if ((size_t)player.id() == playerId) {
@@ -354,7 +341,8 @@ void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
         const Epsilon5::Player& player = CurrentWorld->players(i);
         QPoint pos = QPoint(player.x(), player.y()) - playerPos;
         QString nickName;
-        if (player.has_name()) { // New player
+        if (player.has_name()) {
+            // New player
             nickName = player.name().c_str();
             PlayerNames[player.id()] = nickName;
         } else {
@@ -372,7 +360,7 @@ void TMainDisplay::DrawPlayers(QPainter& painter, QPainter& miniMap,
         size_t hp = player.hp();
 
         // Set player or enemy image
-        if ((size_t)player.id() == Application->GetNetwork()->GetId()) {
+        if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
             img = &Images->GetImage("player");
             miniMap.setPen(Qt::red);
             miniMap.setBrush(Qt::red);
@@ -586,6 +574,14 @@ void TMainDisplay::DrawWorld(QPainter& painter)
         this->update();
     } catch (const std::exception& e) {
         qDebug() << Q_FUNC_INFO << ": " << e.what();
+    }
+}
+//------------------------------------------------------------------------------
+void TMainDisplay::show()
+{
+    QGLWidget::show();
+    if (Application->GetSettings()->GetWindowFullscreen()) {
+        ToggleFullscreen();
     }
 }
 //------------------------------------------------------------------------------
