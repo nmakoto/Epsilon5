@@ -21,9 +21,10 @@ protected:
 
     void paintEvent(QPaintEvent* event);
     void mousePressEvent(QMouseEvent* event);
-    bool eventFilter(QObject* object, QEvent* event);
+//    bool event(QEvent* event);
 
 protected:
     QImage* Background;
+    QPainter* painter;
 };
 //------------------------------------------------------------------------------

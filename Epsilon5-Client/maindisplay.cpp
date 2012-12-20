@@ -8,12 +8,15 @@
 #include <QPixmap>
 #include <QMatrix>
 
+#include <QGraphicsView>
+
 #ifdef Q_OS_UNIX
 #include <linux/input.h>
 #endif
 
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "../utils/uexception.h"
+#include "ui/framecontainer.h"
 #include "ui/respawnframe.h"
 #include "network.h"
 #include "maindisplay.h"
@@ -49,8 +52,8 @@ static double getAngle(const QPoint& point)
     return -angle;
 }
 //------------------------------------------------------------------------------
-TMainDisplay::TMainDisplay(TApplication* application)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers))
+TMainDisplay::TMainDisplay(TApplication* application, QWidget* parent)
+    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
     , Application(application)
     , Images(new TImageStorage(this))
     , Objects(new TObjects(this))
@@ -59,6 +62,7 @@ TMainDisplay::TMainDisplay(TApplication* application)
     , Ping(0)
     , Menu(Images)
     , RespawnFrame(new TRespawnFrame(this))
+//    , FrameContainer(new TFrameContainer(this))
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
@@ -83,7 +87,15 @@ TMainDisplay::TMainDisplay(TApplication* application)
 
     startTimer(20);
 
-    installEventFilter(RespawnFrame);
+//    QGraphicsScene * scene = new QGraphicsScene(rect(), this);
+//    view = new QGraphicsView(scene, this);
+//    view->setSceneRect(0, 0, 1000, 600);
+//    view->setViewport(new QGLWidget(this));
+//    scene->addWidget(RespawnFrame);
+
+//    installEventFilter(FrameContainer);
+//    FrameContainer->addWidget(RespawnFrame);
+//    setFocusProxy(RespawnFrame);
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::Init()
@@ -99,11 +111,14 @@ TMainDisplay::~TMainDisplay()
 {
     CurrentWorld = NULL;
     Application->GetSettings()->SetWindowFullscreen(isFullScreen());
+//    delete RespawnFrame;
+//    delete view;
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::timerEvent(QTimerEvent*)
 {
     this->update();
+    Application->processEvents();
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::paintEvent(QPaintEvent*)
@@ -592,10 +607,8 @@ void TMainDisplay::show()
 //------------------------------------------------------------------------------
 void TMainDisplay::PrepareMapDraw()
 {
-//    RespawnFrame->SetRect(QRect(width() / 8, height() / 8,
-    RespawnFrame->move(width() / 8, height() / 8);
     RespawnFrame->setFixedSize(width() * 3 / 4, height() * 3 / 4);
-
+    RespawnFrame->move(width() / 8, height() / 8);
     const QImage& image = *Application->GetModel()->GetMap()->GetBackground();
     RespawnFrame->SetBackgroundScaled(image, 220);
 }
@@ -606,6 +619,6 @@ void TMainDisplay::DrawRespawnMenu(QPainter &painter)
     DrawText(painter, QPoint(10, 50),
             tr("TODO: Respawn menu. F1 to continue."), 14);
 
-    RespawnFrame->Paint(painter);
+//    RespawnFrame->Paint(painter);
 }
 //------------------------------------------------------------------------------

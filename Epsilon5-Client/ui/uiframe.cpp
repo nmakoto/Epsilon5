@@ -4,20 +4,21 @@
 #include "uiframe.h"
 //------------------------------------------------------------------------------
 TUiFrame::TUiFrame(QWidget* parent)
-    : QWidget(0) //parent)
+    : QWidget(parent)
     , Background(new QImage())
 {
     setFixedSize(0, 0);
-    setAttribute(Qt::WA_DontShowOnScreen);
+//    setAttribute(Qt::WA_DontShowOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_NoBackground);
 //    setAttribute(Qt::WA_OutsideWSRange);
-//    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_TranslucentBackground);
 //    setAttribute(Qt::WA_NoMousePropagation);
 //    setAttribute(Qt::WA_MouseNoMask);
 //    setAttribute(Qt::WA_MouseTracking);
 //    setAttribute(Qt::WA_NoChildEventsForParent);
-    setAutoFillBackground(false);
+//    setAutoFillBackground(false);
 }
 //------------------------------------------------------------------------------
 TUiFrame::~TUiFrame()
@@ -25,31 +26,42 @@ TUiFrame::~TUiFrame()
     delete Background;
 }
 //------------------------------------------------------------------------------
-bool TUiFrame::eventFilter(QObject* object, QEvent* event)
-{
-    Q_UNUSED(object);
-    if( event->type() == QEvent::MouseButtonPress)
-    {
-    }
-    return false;
-}
-//------------------------------------------------------------------------------
 void TUiFrame::paintEvent(QPaintEvent* event)
 {
-    event->accept();
-    if( !paintingActive() )
-        return;
+//    event->ignore();
+//    if( !paintingActive() )
+//        return;
+
+//    qDebug() << "dsfsdf";
+
+//    if( !painter || !painter->isActive() )
+//        return;
+
+    QPainter painter(this);
+    painter.drawPixmap(0, 0, GetTransparentImage(*Background, 220));
+
 }
+//------------------------------------------------------------------------------
+//bool TUiFrame::event(QEvent *event)
+//{
+//    if( event->type() == QEvent::MouseButtonPress ||
+//            event->type() == QEvent::MouseButtonRelease ||
+//            event->type() == QEvent::MouseMove) {
+//        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+//        QPoint pp = mapFromGlobal(mouseEvent->pos());
+//        if( !rect().contains(pp) ) {
+//            event->ignore();
+//            return false;
+//        }
+//        return QWidget::event(event);
+//    }
+
+//    return QWidget::event(event);
+//}
 //------------------------------------------------------------------------------
 void TUiFrame::mousePressEvent(QMouseEvent *event)
 {
-    QPoint pp = mapFromGlobal(event->pos());
-    if( !rect().contains(pp) ) {
-        return;
-    }
-    qDebug() << rect() << pos();
-    qDebug("%d x %d | %d x %d", event->pos().x(), event->pos().y(), pp.x(), pp.y());
-    event->accept();
+    qDebug() << "At:" << this << rect() << pos();
 }
 //------------------------------------------------------------------------------
 void TUiFrame::SetBackground(const QImage &image, bool resizeFrame)

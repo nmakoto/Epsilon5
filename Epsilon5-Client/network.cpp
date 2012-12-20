@@ -176,5 +176,7 @@ void TNetwork::timerEvent(QTimerEvent* event)
     if (LastPacketReceived.elapsed() > DEFAULT_SERVER_TIMEOUT) {
         Disconnect();
     }
+
+    Application->processEvents();
 }
 //------------------------------------------------------------------------------

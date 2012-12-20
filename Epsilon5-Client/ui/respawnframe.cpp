@@ -1,22 +1,28 @@
+#include <QLineEdit>
 #include <QPaintEvent>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include "ui/uibutton.h"
 #include "ui/respawnframe.h"
+
 //------------------------------------------------------------------------------
 TRespawnFrame::TRespawnFrame(QWidget* parent)
     : TUiFrame(parent)
     , CloseButton(new TUiButton(this))
 {
     CloseButton->setText("Close");
+    QLineEdit* le = new QLineEdit("test string", this);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     QHBoxLayout* buttonLayout = new QHBoxLayout;
-    mainLayout->addStretch();
+//    mainLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
-    buttonLayout->addStretch();
+    mainLayout->addWidget(le);
+    mainLayout->addStretch();
+//    buttonLayout->addStretch();
     buttonLayout->addWidget(CloseButton);
     buttonLayout->addStretch();
+    connect(CloseButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 //------------------------------------------------------------------------------
 TRespawnFrame::~TRespawnFrame()
@@ -35,5 +41,10 @@ void TRespawnFrame::Paint(QPainter& painter)
     painter.setPen(oldPen);
 
     render(&painter, pos());
+}
+//------------------------------------------------------------------------------
+void TRespawnFrame::test()
+{
+    qDebug("Test message");
 }
 //------------------------------------------------------------------------------

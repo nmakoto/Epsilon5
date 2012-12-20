@@ -1,3 +1,4 @@
+#include <QDialog>
 #include "application.h"
 //------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
