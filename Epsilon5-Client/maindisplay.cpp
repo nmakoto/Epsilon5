@@ -14,6 +14,7 @@
 
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "../utils/uexception.h"
+#include "ui/respawnframe.h"
 #include "network.h"
 #include "maindisplay.h"
 #include "application.h"
@@ -57,6 +58,7 @@ TMainDisplay::TMainDisplay(TApplication* application)
     , ShowStats(false)
     , Ping(0)
     , Menu(Images)
+    , RespawnFrame(new TRespawnFrame(this))
 {
     setBaseSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     setFixedSize(baseSize());
@@ -127,6 +129,9 @@ void TMainDisplay::paintEvent(QPaintEvent*)
     break;
     default:
         DrawWorld(painter);
+        if (Application->GetState() == ST_SelectingResp) {
+            DrawRespawnMenu(painter);
+        }
         DrawFps(painter);
         DrawPing(painter);
 
@@ -141,11 +146,6 @@ void TMainDisplay::paintEvent(QPaintEvent*)
 void TMainDisplay::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
-//        // TODO: make better respawn action
-//        if (Application->GetState() == ST_SelectingResp) {
-//            emit RespawnSelectedAction();
-//            return;
-//        }
         Control.mutable_keystatus()->set_keyattack1(true);
     } else {
         Control.mutable_keystatus()->set_keyattack2(true);
@@ -570,12 +570,6 @@ void TMainDisplay::DrawWorld(QPainter& painter)
         // Minimap drawing
         painter.drawImage(10, 30, miniMapImg);
 
-        if (Application->GetState() == ST_SelectingResp) {
-            // TODO: Draw respawn menu
-            DrawText(painter, QPoint(10, 50),
-                    tr("TODO: Respawn menu. F1 to continue."), 14);
-        }
-
         // Detect targeting angle for Control packet
         QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
         double angle = getAngle(cursorPos - widgetCenter);
@@ -593,5 +587,33 @@ void TMainDisplay::show()
     if (Application->GetSettings()->GetWindowFullscreen()) {
         ToggleFullscreen();
     }
+}
+//------------------------------------------------------------------------------
+void TMainDisplay::PrepareMapDraw()
+{
+    RespawnFrame->SetRect(QRect(width() / 8, height() / 8,
+            width() * 3 / 4, height() * 3 / 4));
+
+    const QImage& image = *Application->GetModel()->GetMap()->GetBackground();
+    QPixmap trans(image.size());
+    trans.fill(Qt::transparent);
+    QPainter p;
+    p.begin(&trans);
+    p.setCompositionMode(QPainter::CompositionMode_Source);
+    p.drawPixmap(0, 0, QPixmap::fromImage(image));
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.fillRect(trans.rect(), QColor(0,0,0, 220));
+    p.end();
+
+    RespawnFrame->SetBackgroundScaled(trans.toImage());
+}
+//------------------------------------------------------------------------------
+void TMainDisplay::DrawRespawnMenu(QPainter &painter)
+{
+    // TODO: Draw respawn menu
+    DrawText(painter, QPoint(10, 50),
+            tr("TODO: Respawn menu. F1 to continue."), 14);
+
+    RespawnFrame->Paint(painter);
 }
 //------------------------------------------------------------------------------

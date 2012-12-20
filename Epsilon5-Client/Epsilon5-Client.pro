@@ -27,7 +27,8 @@ SOURCES += \
     ../utils/ucast.cpp \
     graphics/basicitem.cpp \
     menu.cpp \
-    gamemodel.cpp
+    gamemodel.cpp \
+    ui/respawnframe.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -45,7 +46,8 @@ HEADERS  += \
     ../utils/ucast.h \
     graphics/basicitem.h \
     menu.h \
-    gamemodel.h
+    gamemodel.h \
+    ui/respawnframe.h
 
 FORMS    +=
 

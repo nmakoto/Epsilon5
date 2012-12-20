@@ -62,6 +62,11 @@ void TMap::DrawBackground(const QPoint& playerPos, const QSize& frameSize,
     painter.drawImage(-cutX, -cutY, *Background);
 }
 //------------------------------------------------------------------------------
+const QImage* TMap::GetBackground() const
+{
+    return Background;
+}
+//------------------------------------------------------------------------------
 size_t TMap::GetWidth()
 {
     return Width;

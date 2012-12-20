@@ -22,6 +22,8 @@ public:
     void DrawBackground(const QPoint& playerPos, const QSize& frameSize,
             QPainter& painter) const;
 
+    const QImage* GetBackground() const;
+
 signals:
     void MapLoaded();
 

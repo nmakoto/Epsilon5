@@ -57,6 +57,7 @@ void TApplication::SetLoadingMapState()
     qDebug() << Q_FUNC_INFO;
     State = ST_LoadingMap;
     GameModel->LoadMap(GameModel->GetCurrentMapName());
+    MainDisplay->PrepareMapDraw();
 }
 //------------------------------------------------------------------------------
 void TApplication::SetSelectingRespawnState()

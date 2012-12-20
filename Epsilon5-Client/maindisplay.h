@@ -12,6 +12,7 @@
 #include "menu.h"
 //------------------------------------------------------------------------------
 class TApplication;
+class TRespawnFrame;
 //------------------------------------------------------------------------------
 enum ETeam {
     T_One,
@@ -44,6 +45,7 @@ public:
     }
     QPoint GetCenter();
     QPoint GetCursorPos();
+    void PrepareMapDraw();
 
 signals:
     void QuitAction();
@@ -52,7 +54,6 @@ signals:
 #ifdef QT_DEBUG
     void ToggleRespawnFrameAction();
 #endif
-
 
 public slots:
     void show();
@@ -72,6 +73,7 @@ private:
     void DrawFps(QPainter& painter);
     void DrawPing(QPainter& painter);
     void DrawWorld(QPainter& painter);
+    void DrawRespawnMenu(QPainter& painter);
     void DrawPlayers(QPainter& painter, QPainter& miniMap,
             const QPoint& playerPos, const QPoint& widgetCenter);
     void DrawBullets(QPainter& painter, const QPoint& playerPos,
@@ -97,5 +99,6 @@ private:
     bool ShowStats;
     int Ping;
     TMenu Menu;
+    TRespawnFrame* RespawnFrame;
 };
 //------------------------------------------------------------------------------
