@@ -82,6 +82,8 @@ TMainDisplay::TMainDisplay(TApplication* application)
     Control.set_weapon(Epsilon5::Pistol);
 
     startTimer(20);
+
+    installEventFilter(RespawnFrame);
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::Init()
@@ -106,7 +108,6 @@ void TMainDisplay::timerEvent(QTimerEvent*)
 //------------------------------------------------------------------------------
 void TMainDisplay::paintEvent(QPaintEvent*)
 {
-
     EGameState state = Application->GetState();
     QPainter painter;
     painter.begin(this);
@@ -591,8 +592,9 @@ void TMainDisplay::show()
 //------------------------------------------------------------------------------
 void TMainDisplay::PrepareMapDraw()
 {
-    RespawnFrame->SetRect(QRect(width() / 8, height() / 8,
-            width() * 3 / 4, height() * 3 / 4));
+//    RespawnFrame->SetRect(QRect(width() / 8, height() / 8,
+    RespawnFrame->move(width() / 8, height() / 8);
+    RespawnFrame->setFixedSize(width() * 3 / 4, height() * 3 / 4);
 
     const QImage& image = *Application->GetModel()->GetMap()->GetBackground();
     RespawnFrame->SetBackgroundScaled(image, 220);
