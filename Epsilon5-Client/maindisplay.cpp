@@ -595,17 +595,7 @@ void TMainDisplay::PrepareMapDraw()
             width() * 3 / 4, height() * 3 / 4));
 
     const QImage& image = *Application->GetModel()->GetMap()->GetBackground();
-    QPixmap trans(image.size());
-    trans.fill(Qt::transparent);
-    QPainter p;
-    p.begin(&trans);
-    p.setCompositionMode(QPainter::CompositionMode_Source);
-    p.drawPixmap(0, 0, QPixmap::fromImage(image));
-    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    p.fillRect(trans.rect(), QColor(0,0,0, 220));
-    p.end();
-
-    RespawnFrame->SetBackgroundScaled(trans.toImage());
+    RespawnFrame->SetBackgroundScaled(image, 220);
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::DrawRespawnMenu(QPainter &painter)
