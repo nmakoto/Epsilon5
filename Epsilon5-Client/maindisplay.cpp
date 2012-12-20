@@ -141,12 +141,11 @@ void TMainDisplay::paintEvent(QPaintEvent*)
 void TMainDisplay::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
-        // TODO: make better respawn action
-        if (Application->GetState() == ST_SelectingResp) {
-            emit RespawnSelectedAction();
-            return;
-        }
-
+//        // TODO: make better respawn action
+//        if (Application->GetState() == ST_SelectingResp) {
+//            emit RespawnSelectedAction();
+//            return;
+//        }
         Control.mutable_keystatus()->set_keyattack1(true);
     } else {
         Control.mutable_keystatus()->set_keyattack2(true);
@@ -243,6 +242,9 @@ void TMainDisplay::keyReleaseEvent(QKeyEvent* event)
 #ifdef QT_DEBUG
     case Qt::Key_F12:
         emit QuitAction();
+        break;
+    case Qt::Key_F1:
+        emit ToggleRespawnFrameAction();
         break;
 #endif
     case Qt::Key_Escape:
@@ -571,7 +573,7 @@ void TMainDisplay::DrawWorld(QPainter& painter)
         if (Application->GetState() == ST_SelectingResp) {
             // TODO: Draw respawn menu
             DrawText(painter, QPoint(10, 50),
-                    tr("TODO: Respawn menu. LMB to continue."), 14);
+                    tr("TODO: Respawn menu. F1 to continue."), 14);
         }
 
         // Detect targeting angle for Control packet

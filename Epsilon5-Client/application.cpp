@@ -16,6 +16,9 @@ TApplication::TApplication(int& argc, char* argv[])
     connect(MainDisplay, SIGNAL(QuitAction()), SLOT(GameClose()));
     connect(MainDisplay, SIGNAL(MainMenuAction()), SLOT(SetMainMenuState()));
     connect(MainDisplay, SIGNAL(RespawnSelectedAction()), SLOT(SetInGameState()));
+#ifdef QT_DEBUG
+    connect(MainDisplay, SIGNAL(ToggleRespawnFrameAction()), SLOT(ToggleRespawnFrame()));
+#endif
 
     connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetSelectingRespawnState()));
 }
@@ -83,4 +86,18 @@ void TApplication::GameClose()
     SetMainMenuState();
     MainDisplay->close();
 }
+//------------------------------------------------------------------------------
+#ifdef QT_DEBUG
+void TApplication::ToggleRespawnFrame()
+{
+    if(State == ST_InGame) {
+        SetSelectingRespawnState();
+        return;
+    }
+    if(State == ST_SelectingResp) {
+        SetInGameState();
+        return;
+    }
+}
+#endif
 //------------------------------------------------------------------------------

@@ -49,6 +49,10 @@ signals:
     void QuitAction();
     void MainMenuAction();
     void RespawnSelectedAction();
+#ifdef QT_DEBUG
+    void ToggleRespawnFrameAction();
+#endif
+
 
 public slots:
     void show();

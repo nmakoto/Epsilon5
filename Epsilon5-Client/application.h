@@ -47,6 +47,10 @@ public slots:
     void SetSelectingRespawnState();
     void SetInGameState();
 
+#ifdef QT_DEBUG
+    void ToggleRespawnFrame();
+#endif
+
     void PrepareMap(const Epsilon5::PlayerInfo& info);
     void UpdateWorld();
     void GameClose();
