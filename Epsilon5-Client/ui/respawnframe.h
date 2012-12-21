@@ -12,7 +12,7 @@ class TRespawnFrame : public TUiFrame
 {
     Q_OBJECT
 public:
-    explicit TRespawnFrame(QWidget* parent = 0);
+    explicit TRespawnFrame(QWidget* parent, QGLWidget* shared = 0);
     ~TRespawnFrame();
 
     void Paint(QPainter& painter);

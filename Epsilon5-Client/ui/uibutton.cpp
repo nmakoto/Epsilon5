@@ -9,10 +9,10 @@ TUiButton::TUiButton(QWidget *parent)
     setStyleSheet("* { background: transparent; border: 2px solid black; }");
 }
 //------------------------------------------------------------------------------
-void TUiButton::mousePressEvent(QMouseEvent *event)
-{
-//    emit clicked();
-}
+//void TUiButton::mousePressEvent(QMouseEvent *event)
+//{
+////    emit clicked();
+//}
 //------------------------------------------------------------------------------
 //bool TUiButton::event(QEvent *event)
 //{

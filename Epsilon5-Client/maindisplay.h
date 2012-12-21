@@ -15,6 +15,7 @@ class TApplication;
 class TRespawnFrame;
 class TFrameContainer;
 class QGraphicsView;
+class QQuickPaintedItem;
 //------------------------------------------------------------------------------
 enum ETeam {
     T_One,
@@ -100,9 +101,10 @@ private:
     QVector<TPlayerStat> Stats;
     bool ShowStats;
     int Ping;
-    TMenu Menu;
+//    TMenu Menu;
     TRespawnFrame* RespawnFrame;
 //    TFrameContainer* FrameContainer;
 //    QGraphicsView* view;
+    QQuickPaintedItem* pitem;
 };
 //------------------------------------------------------------------------------

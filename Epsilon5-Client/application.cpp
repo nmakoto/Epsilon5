@@ -36,6 +36,7 @@ bool TApplication::Init()
     Network->Init();
     MainDisplay->Init();
     MainDisplay->show();
+    SetConnectingState();
     return true;
 }
 //------------------------------------------------------------------------------

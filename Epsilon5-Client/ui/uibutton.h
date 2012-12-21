@@ -8,7 +8,7 @@ public:
     explicit TUiButton(QWidget *parent = 0);
 
 protected:
-    void mousePressEvent(QMouseEvent* event);
+//    void mousePressEvent(QMouseEvent* event);
 //    bool event(QEvent *event);
 };
 //------------------------------------------------------------------------------

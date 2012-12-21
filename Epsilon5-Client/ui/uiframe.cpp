@@ -3,15 +3,15 @@
 #include <QMouseEvent>
 #include "uiframe.h"
 //------------------------------------------------------------------------------
-TUiFrame::TUiFrame(QWidget* parent)
-    : QWidget(parent)
+TUiFrame::TUiFrame(QWidget* parent, QGLWidget* shared = 0)
+    : QGLWidget(parent, shared)
     , Background(new QImage())
 {
     setFixedSize(0, 0);
 //    setAttribute(Qt::WA_DontShowOnScreen);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_NoBackground);
+//    setAttribute(Qt::WA_OpaquePaintEvent);
+//    setAttribute(Qt::WA_NoSystemBackground);
+//    setAttribute(Qt::WA_NoBackground);
 //    setAttribute(Qt::WA_OutsideWSRange);
     setAttribute(Qt::WA_TranslucentBackground);
 //    setAttribute(Qt::WA_NoMousePropagation);
@@ -19,6 +19,7 @@ TUiFrame::TUiFrame(QWidget* parent)
 //    setAttribute(Qt::WA_MouseTracking);
 //    setAttribute(Qt::WA_NoChildEventsForParent);
 //    setAutoFillBackground(false);
+//    setStyleSheet("background: transparent;");
 }
 //------------------------------------------------------------------------------
 TUiFrame::~TUiFrame()
@@ -38,8 +39,12 @@ void TUiFrame::paintEvent(QPaintEvent* event)
 //        return;
 
     QPainter painter(this);
-    painter.drawPixmap(0, 0, GetTransparentImage(*Background, 220));
+    painter.drawImage(0, 0, *Background);
+//    QColor bgColor = palette().light().color();
+//    bgColor.setAlpha(220);
+//    painter.fillRect(rect(), QColor(0,0,0,220));
 
+//    painter.drawEllipse(10,10, 10,10);
 }
 //------------------------------------------------------------------------------
 //bool TUiFrame::event(QEvent *event)

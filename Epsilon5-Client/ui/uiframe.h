@@ -1,12 +1,12 @@
 #pragma once
-#include <QWidget>
+#include <QGLWidget>
 #include <QPainter>
 //------------------------------------------------------------------------------
-class TUiFrame : public QWidget
+class TUiFrame : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit TUiFrame(QWidget* parent);
+    explicit TUiFrame(QWidget* parent, QGLWidget* widget);
     ~TUiFrame();
 
     virtual void Paint(QPainter& painter) = 0;

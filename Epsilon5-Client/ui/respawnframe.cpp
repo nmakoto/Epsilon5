@@ -6,8 +6,8 @@
 #include "ui/respawnframe.h"
 
 //------------------------------------------------------------------------------
-TRespawnFrame::TRespawnFrame(QWidget* parent)
-    : TUiFrame(parent)
+TRespawnFrame::TRespawnFrame(QWidget* parent, QGLWidget* shared)
+    : TUiFrame(parent, shared)
     , CloseButton(new TUiButton(this))
 {
     CloseButton->setText("Close");
