@@ -58,7 +58,7 @@ TMainDisplay::TMainDisplay(TApplication* application, QWidget* parent)
     , CurrentWorld(NULL)
     , ShowStats(false)
     , Ping(0)
-//    , Menu(Images)
+    , Menu(Images)
     , RespawnFrame(new TRespawnFrame(this, this))
 //    , FrameContainer(new TFrameContainer(this))
 {
@@ -102,7 +102,7 @@ void TMainDisplay::Init()
     Objects->LoadObjects("objects/objects.txt");
     CurrentWorld = Application->GetModel()->GetWorld();
 
-//    Menu.Init();
+    Menu.Init();
 }
 //------------------------------------------------------------------------------
 TMainDisplay::~TMainDisplay()
@@ -138,7 +138,7 @@ void TMainDisplay::paintEvent(QPaintEvent*)
     }
     break;
     case ST_MainMenu : {
-//        Menu.paint(&painter);
+        Menu.paint(&painter);
     }
     break;
     default:
@@ -164,7 +164,7 @@ void TMainDisplay::mousePressEvent(QMouseEvent* event)
     } else {
         Control.mutable_keystatus()->set_keyattack2(true);
     }
-//    qApp->sendEvent(&Menu, event);
+    qApp->sendEvent(&Menu, event);
 }
 //------------------------------------------------------------------------------
 void TMainDisplay::mouseReleaseEvent(QMouseEvent* event)

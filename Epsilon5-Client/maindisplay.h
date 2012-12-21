@@ -101,7 +101,7 @@ private:
     QVector<TPlayerStat> Stats;
     bool ShowStats;
     int Ping;
-//    TMenu Menu;
+    TMenu Menu;
     TRespawnFrame* RespawnFrame;
 //    TFrameContainer* FrameContainer;
 //    QGraphicsView* view;
