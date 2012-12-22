@@ -17,7 +17,7 @@ SOURCES += \
     ../utils/uexception.cpp \
     ../utils/ufullscreenwrapper.cpp \
     main.cpp\
-    maindisplay.cpp \
+#    maindisplay.cpp \
     application.cpp \
     network.cpp \
     imagestorage.cpp \
@@ -26,9 +26,10 @@ SOURCES += \
     objects.cpp \
     ../utils/ucast.cpp \
     graphics/basicitem.cpp \
-    menu.cpp \
+#    menu.cpp \
     gamemodel.cpp \
-    ui/respawnframe.cpp
+    ui/respawnframe.cpp \
+    gameview.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -36,7 +37,7 @@ HEADERS  += \
     ../utils/usettings.h \
     ../utils/uexception.h \
     ../utils/ufullscreenwrapper.h \
-    maindisplay.h \
+#    maindisplay.h \
     application.h \
     network.h \
     imagestorage.h \
@@ -45,9 +46,10 @@ HEADERS  += \
     objects.h \
     ../utils/ucast.h \
     graphics/basicitem.h \
-    menu.h \
+#    menu.h \
     gamemodel.h \
-    ui/respawnframe.h
+    ui/respawnframe.h \
+    gameview.h
 
 FORMS    +=
 

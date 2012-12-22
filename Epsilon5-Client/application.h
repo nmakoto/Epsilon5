@@ -1,12 +1,13 @@
 #pragma once
 #include <QApplication>
 #include <QDateTime>
-#include "maindisplay.h"
+//#include "maindisplay.h"
 #include "network.h"
 #include "settings.h"
 #include "gamemodel.h"
 //------------------------------------------------------------------------------
 class TGameModel;
+class TGameView;
 //------------------------------------------------------------------------------
 enum EGameState {
     ST_MainMenu,
@@ -24,9 +25,9 @@ public:
     ~TApplication();
     bool Init();
 
-    inline TMainDisplay* GetMainDisplay() {
-        return MainDisplay;
-    }
+//    inline TMainDisplay* GetMainDisplay() {
+//        return MainDisplay;
+//    }
     inline TNetwork* GetNetwork() {
         return Network;
     }
@@ -59,7 +60,8 @@ private:
     TSettings* Settings;
     TGameModel* GameModel;
     TNetwork* Network;
-    TMainDisplay* MainDisplay;
+//    TMainDisplay* MainDisplay;
     EGameState State;
+    TGameView* GameView;
 };
 //------------------------------------------------------------------------------
