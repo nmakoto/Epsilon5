@@ -23,6 +23,8 @@ public:
     void SetPlayerInfo(const Epsilon5::PlayerInfo& info);
     const Epsilon5::PlayerInfo* GetPlayerInfo() const;
 
+    Epsilon5::Control* GetPlayerControl();
+
 signals:
     void MapLoaded();
 
@@ -31,5 +33,6 @@ private:
     TMap* WorldMap;
     size_t PlayerId;
     Epsilon5::PlayerInfo PlayerInfo;
+    Epsilon5::Control PlayerControl;
 };
 //------------------------------------------------------------------------------

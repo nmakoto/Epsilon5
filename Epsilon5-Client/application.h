@@ -30,7 +30,7 @@ public:
 //        return MainDisplay;
 //    }
     inline TGameWindow* GetGameView() {
-        return GameView;
+        return GameWindow;
     }
     inline TNetwork* GetNetwork() {
         return Network;
@@ -38,7 +38,7 @@ public:
     inline TSettings* GetSettings() {
         return Settings;
     }
-    inline TGameModel* GetModel() {
+    inline TGameModel* GetModel() const {
         return GameModel;
     }
     inline EGameState GetState() {
@@ -63,7 +63,7 @@ public slots:
 private:
     TSettings* Settings;
     TGameModel* GameModel;
-    TGameWindow* GameView;
+    TGameWindow* GameWindow;
     TNetwork* Network;
 //    TMainDisplay* MainDisplay;
     EGameState State;

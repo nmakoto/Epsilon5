@@ -77,6 +77,11 @@ size_t TMap::GetHeight() const
     return Height;
 }
 //------------------------------------------------------------------------------
+QColor TMap::GetBackgroundColor() const
+{
+    return Color;
+}
+//------------------------------------------------------------------------------
 QSize TMap::GetMinimapSize(quint8 maxMinimapSize) const
 {
     return QSize(maxMinimapSize * WHRatio.x(), maxMinimapSize * WHRatio.y());

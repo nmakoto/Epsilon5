@@ -6,6 +6,15 @@ TGameModel::TGameModel(TApplication* parent)
     , PlayerId(0)
 {
     connect(WorldMap, SIGNAL(MapLoaded()), SIGNAL(MapLoaded()));
+
+    PlayerControl.set_angle(0);
+    PlayerControl.mutable_keystatus()->set_keyattack1(false);
+    PlayerControl.mutable_keystatus()->set_keyattack2(false);
+    PlayerControl.mutable_keystatus()->set_keyleft(false);
+    PlayerControl.mutable_keystatus()->set_keyright(false);
+    PlayerControl.mutable_keystatus()->set_keyup(false);
+    PlayerControl.mutable_keystatus()->set_keydown(false);
+    PlayerControl.set_weapon(Epsilon5::Pistol);
 }
 //------------------------------------------------------------------------------
 void TGameModel::Init()
@@ -51,5 +60,10 @@ const Epsilon5::PlayerInfo* TGameModel::GetPlayerInfo() const
 QString TGameModel::GetCurrentMapName() const
 {
     return PlayerInfo.map().c_str();
+}
+//------------------------------------------------------------------------------
+Epsilon5::Control* TGameModel::GetPlayerControl()
+{
+    return &PlayerControl;
 }
 //------------------------------------------------------------------------------

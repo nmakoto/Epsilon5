@@ -5,7 +5,7 @@ TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
     , Settings(new TSettings(this))
     , GameModel(new TGameModel(this))
-    , GameView(new TGameWindow(this))
+    , GameWindow(new TGameWindow(this))
     , Network(new TNetwork(this))
 //    , MainDisplay(new TMainDisplay(this))
     , State(ST_MainMenu)
@@ -21,6 +21,7 @@ TApplication::TApplication(int& argc, char* argv[])
 #ifdef QT_DEBUG
 //    connect(MainDisplay, SIGNAL(ToggleRespawnFrameAction()), SLOT(ToggleRespawnFrame()));
 #endif
+    connect(GameWindow, SIGNAL(QuitAction()), SLOT(GameClose()));
 
 //    connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetSelectingRespawnState()));
     connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetInGameState()));
@@ -30,7 +31,7 @@ TApplication::~TApplication()
 {
     // Delete MainDisplay here because it has no any QWidget parent
 //    delete MainDisplay;
-    delete GameView;
+    delete GameWindow;
 }
 //------------------------------------------------------------------------------
 bool TApplication::Init()
@@ -39,6 +40,7 @@ bool TApplication::Init()
     Network->Init();
 //    MainDisplay->Init();
 //    MainDisplay->show();
+    GameWindow->Init();
 
     SetConnectingState();
     return true;
@@ -64,7 +66,7 @@ void TApplication::SetLoadingMapState()
     State = ST_LoadingMap;
     GameModel->LoadMap(GameModel->GetCurrentMapName());
 //    MainDisplay->PrepareMapDraw();
-    GameView->PrepareView();
+    GameWindow->PrepareView();
 }
 //------------------------------------------------------------------------------
 void TApplication::SetSelectingRespawnState()

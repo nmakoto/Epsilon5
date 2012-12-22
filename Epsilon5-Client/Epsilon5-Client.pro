@@ -28,7 +28,8 @@ SOURCES += \
 #    graphics/basicitem.cpp \
 #    menu.cpp \
     gamemodel.cpp \
-    gamewindow.cpp
+    gamewindow.cpp \
+    gameview.cpp
 #    ui/respawnframe.cpp \
 
 HEADERS  += \
@@ -48,7 +49,8 @@ HEADERS  += \
 #    graphics/basicitem.h \
 #    menu.h \
     gamemodel.h \
-    gamewindow.h
+    gamewindow.h \
+    gameview.h
 #    ui/respawnframe.h \
 
 FORMS    +=

@@ -13,6 +13,7 @@ public:
     ~TMap();
     size_t GetWidth() const;
     size_t GetHeight() const;
+    QColor GetBackgroundColor() const;
     QSize GetMinimapSize(quint8 maxMinimapSize) const;
     QPoint GetObjectPosOnMinimap(int objectPosX, int objectPosY,
             quint8 maxMinimapSize) const;

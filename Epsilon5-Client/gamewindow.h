@@ -5,45 +5,39 @@
 #include "application.h"
 //------------------------------------------------------------------------------
 class QGraphicsScene;
-class QGraphicsView;
+class TGameView;
 class QGLWidget;
 class TApplication;
 class TMap;
 class TObjects;
 class TImageStorage;
 //------------------------------------------------------------------------------
-class TGameWindow : public QWidget
+class TGameWindow: public QObject
 {
     Q_OBJECT
 public:
-    explicit TGameWindow(TApplication* app, QWidget* parent = 0);
+    explicit TGameWindow(TApplication* app);
     ~TGameWindow();
-    inline const Epsilon5::Control& GetControl() {
-        return Control;
-    }
+    void Init();
     void PrepareView();
+    void UpdateView();
 
+signals:
+    void QuitAction();
 
 protected:
     void timerEvent(QTimerEvent* event);
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
-    void Fps();
 
 private:
     TApplication* Application;
     QGLWidget* Render;
-    QGraphicsScene* BattlefieldScene;
-    QGraphicsScene* MenuScene;
-    QGraphicsView* RenderView;
+    QGraphicsScene* GameScene;
+    TGameView* GameView;
     TImageStorage* Images;
     TObjects* Objects;
-    Epsilon5::Control Control;
     const TMap* CurrentMap;
     const Epsilon5::World* CurrentWorld;
 };
