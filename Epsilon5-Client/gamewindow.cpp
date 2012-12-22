@@ -3,9 +3,9 @@
 #include <QKeyEvent>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QGraphicsPixmapItem>
 #include <QGLWidget>
 #include <QVBoxLayout>
+#include "ui/objectitem.h"
 #include "gameview.h"
 #include "map.h"
 #include "imagestorage.h"
@@ -83,7 +83,7 @@ void TGameWindow::PrepareView()
             CurrentMap->GetWidth(), CurrentMap->GetHeight());
 }
 //------------------------------------------------------------------------------
-void TGameWindow::timerEvent(QTimerEvent* event)
+void TGameWindow::timerEvent(QTimerEvent*)
 {
     if( !CurrentWorld || !GameView )
         return;
@@ -94,10 +94,11 @@ void TGameWindow::timerEvent(QTimerEvent* event)
         if( object.id() < 0 )
             continue;
 
-        QGraphicsPixmapItem* item = GameScene->addPixmap(
+        TObjectItem* item = new TObjectItem(
                 QPixmap::fromImage(*Objects->GetImageById(object.id())));
+        GameScene->addItem(item);
         item->setPos(object.x(), object.y());
-        item->setRotation(object.angle());
+        item->setRotationRad(object.angle());
     }
 
     const QImage* img;
@@ -115,8 +116,8 @@ void TGameWindow::timerEvent(QTimerEvent* event)
             break;
         }
 
-        QGraphicsPixmapItem* item = GameScene->addPixmap(
-                QPixmap::fromImage(*img));
+        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
+        GameScene->addItem(item);
         item->setPos(bullet.x(), bullet.y());
     }
 
@@ -137,9 +138,9 @@ void TGameWindow::timerEvent(QTimerEvent* event)
                 img = &Images->GetImage("peka_t1");
             }
         }
-        QGraphicsPixmapItem* playerItem = GameScene->addPixmap(
-                QPixmap::fromImage(*img));
-        playerItem->setPos(player.x(), player.y());
+        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
+        GameScene->addItem(item);
+        item->setPos(player.x(), player.y());
     }
 
     QPoint cursorPos = GameView->mapFromGlobal(QCursor::pos());

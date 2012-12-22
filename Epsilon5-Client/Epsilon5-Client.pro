@@ -29,7 +29,8 @@ SOURCES += \
 #    menu.cpp \
     gamemodel.cpp \
     gamewindow.cpp \
-    gameview.cpp
+    gameview.cpp \
+    ui/objectitem.cpp
 #    ui/respawnframe.cpp \
 
 HEADERS  += \
@@ -50,7 +51,8 @@ HEADERS  += \
 #    menu.h \
     gamemodel.h \
     gamewindow.h \
-    gameview.h
+    gameview.h \
+    ui/objectitem.h
 #    ui/respawnframe.h \
 
 FORMS    +=
