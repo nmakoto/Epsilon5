@@ -1,13 +1,11 @@
 #pragma once
-#include <QWidget>
-#include <QGLWidget>
-#include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "application.h"
 //------------------------------------------------------------------------------
 class QGraphicsScene;
-class TGameView;
 class QGLWidget;
+class QKeyEvent;
 class TApplication;
+class TGameView;
 class TMap;
 class TObjects;
 class TImageStorage;

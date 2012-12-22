@@ -1,15 +1,10 @@
 #pragma once
 #include <QGraphicsView>
 //------------------------------------------------------------------------------
-class QGraphicsScene;
 class TApplication;
-class TObjects;
-class TImageStorage;
-class TMap;
 //------------------------------------------------------------------------------
 namespace Epsilon5
 {
-class World;
 class Control;
 }
 //------------------------------------------------------------------------------
@@ -17,7 +12,8 @@ class TGameView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit TGameView(TApplication* app, QGraphicsScene* scene, QWidget* parent = 0);
+    explicit TGameView(TApplication* app, QGraphicsScene* scene,
+            QWidget* parent = 0);
     void PrepareView();
 
 signals:

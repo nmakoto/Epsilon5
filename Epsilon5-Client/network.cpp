@@ -131,7 +131,6 @@ void TNetwork::Disconnect()
 //------------------------------------------------------------------------------
 void TNetwork::SendControls(size_t packetnumber)
 {
-//    Epsilon5::Control control = Application->GetMainDisplay()->GetControl();
     Epsilon5::Control control = *Application->GetModel()->GetPlayerControl();
     QByteArray message;
     control.set_packet_number(packetnumber);

@@ -79,8 +79,6 @@ void TGameView::mousePressEvent(QMouseEvent* event)
     } else {
         PlayerControl->mutable_keystatus()->set_keyattack2(true);
     }
-//    qDebug() << "press event";
-//    qApp->sendEvent(&Menu, event);
 }
 //------------------------------------------------------------------------------
 void TGameView::mouseReleaseEvent(QMouseEvent* event)
@@ -97,8 +95,6 @@ void TGameView::mouseReleaseEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void TGameView::keyPressEvent(QKeyEvent *event)
 {
-//    qDebug() << Q_FUNC_INFO;
-//    QGraphicsView::keyPressEvent(event);
     SetMovementKeysState(true, event);
 
     switch (event->key()) {
@@ -121,8 +117,6 @@ void TGameView::keyPressEvent(QKeyEvent *event)
 //------------------------------------------------------------------------------
 void TGameView::keyReleaseEvent(QKeyEvent *event)
 {
-//    qDebug() << Q_FUNC_INFO;
-//    QGraphicsView::keyReleaseEvent(event);
     SetMovementKeysState(false, event);
 
     switch (event->key()) {
@@ -200,7 +194,6 @@ void TGameView::DrawText(QPainter* painter, const QPoint& pos,
 void TGameView::calcFps()
 {
     static int frames = 0;
-//    static int fps = 0;
     static QTime lasttime = QTime::currentTime();
 
     const QTime& time = QTime::currentTime();

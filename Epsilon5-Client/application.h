@@ -1,7 +1,6 @@
 #pragma once
 #include <QApplication>
 #include <QDateTime>
-//#include "maindisplay.h"
 #include "network.h"
 #include "settings.h"
 #include "gamemodel.h"
@@ -24,11 +23,9 @@ class TApplication : public QApplication
 public:
     TApplication(int& argc, char* argv[]);
     ~TApplication();
+
     bool Init();
 
-//    inline TMainDisplay* GetMainDisplay() {
-//        return MainDisplay;
-//    }
     inline TGameWindow* GetGameView() {
         return GameWindow;
     }
@@ -65,7 +62,6 @@ private:
     TGameModel* GameModel;
     TGameWindow* GameWindow;
     TNetwork* Network;
-//    TMainDisplay* MainDisplay;
     EGameState State;
 };
 //------------------------------------------------------------------------------

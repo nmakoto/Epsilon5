@@ -1,10 +1,9 @@
 #include <qglobal.h>
 #include <QDebug>
+#include <QGLWidget>
 #include <QKeyEvent>
 #include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QGLWidget>
-#include <QVBoxLayout>
+#include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "ui/objectitem.h"
 #include "gameview.h"
 #include "map.h"
