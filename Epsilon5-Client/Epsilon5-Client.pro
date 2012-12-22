@@ -25,11 +25,11 @@ SOURCES += \
     settings.cpp \
     objects.cpp \
     ../utils/ucast.cpp \
-    graphics/basicitem.cpp \
+#    graphics/basicitem.cpp \
 #    menu.cpp \
     gamemodel.cpp \
-    ui/respawnframe.cpp \
-    gameview.cpp
+    gamewindow.cpp
+#    ui/respawnframe.cpp \
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -45,11 +45,11 @@ HEADERS  += \
     settings.h \
     objects.h \
     ../utils/ucast.h \
-    graphics/basicitem.h \
+#    graphics/basicitem.h \
 #    menu.h \
     gamemodel.h \
-    ui/respawnframe.h \
-    gameview.h
+    gamewindow.h
+#    ui/respawnframe.h \
 
 FORMS    +=
 
@@ -71,4 +71,10 @@ win32 {
 }
 
 OTHER_FILES += \
-    ../Epsilon5-Proto/Epsilon5.proto
+    ../Epsilon5-Proto/Epsilon5.proto \
+    maindisplay.h \
+    maindisplay.cpp \
+    ui/respawnframe.h \
+    ui/respawnframe.cpp \
+    graphics/basicitem.h \
+    graphics/basicitem.cpp

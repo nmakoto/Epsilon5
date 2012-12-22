@@ -1,14 +1,14 @@
-#include "gameview.h"
+#include "gamewindow.h"
 #include "application.h"
 //------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
     : QApplication(argc, argv)
     , Settings(new TSettings(this))
     , GameModel(new TGameModel(this))
+    , GameView(new TGameWindow(this))
     , Network(new TNetwork(this))
 //    , MainDisplay(new TMainDisplay(this))
     , State(ST_MainMenu)
-    , GameView(new TGameView(this))
 {
     connect(Network, SIGNAL(WorldReceived()), SLOT(UpdateWorld()));
     connect(Network, SIGNAL(Disconnected()), SLOT(SetMainMenuState()));
@@ -22,7 +22,8 @@ TApplication::TApplication(int& argc, char* argv[])
 //    connect(MainDisplay, SIGNAL(ToggleRespawnFrameAction()), SLOT(ToggleRespawnFrame()));
 #endif
 
-    connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetSelectingRespawnState()));
+//    connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetSelectingRespawnState()));
+    connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetInGameState()));
 }
 //------------------------------------------------------------------------------
 TApplication::~TApplication()
@@ -38,6 +39,8 @@ bool TApplication::Init()
     Network->Init();
 //    MainDisplay->Init();
 //    MainDisplay->show();
+
+    SetConnectingState();
     return true;
 }
 //------------------------------------------------------------------------------
@@ -61,6 +64,7 @@ void TApplication::SetLoadingMapState()
     State = ST_LoadingMap;
     GameModel->LoadMap(GameModel->GetCurrentMapName());
 //    MainDisplay->PrepareMapDraw();
+    GameView->PrepareView();
 }
 //------------------------------------------------------------------------------
 void TApplication::SetSelectingRespawnState()
@@ -105,4 +109,3 @@ void TApplication::ToggleRespawnFrame()
 }
 #endif
 //------------------------------------------------------------------------------
-

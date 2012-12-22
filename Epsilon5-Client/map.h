@@ -11,8 +11,8 @@ class TMap : public QObject
 public:
     TMap(QObject* parent = 0);
     ~TMap();
-    size_t GetWidth();
-    size_t GetHeight();
+    size_t GetWidth() const;
+    size_t GetHeight() const;
     QSize GetMinimapSize(quint8 maxMinimapSize) const;
     QPoint GetObjectPosOnMinimap(int objectPosX, int objectPosY,
             quint8 maxMinimapSize) const;

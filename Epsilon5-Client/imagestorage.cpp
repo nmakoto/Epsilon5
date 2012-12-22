@@ -29,7 +29,7 @@ const QImage& TImageStorage::GetImage(const QString& imageName)
 {
     auto it = Images.find(imageName);
     if (it == Images.end()) {
-        throw UException("Image not found!");
+        throw UException("Image not found:" + imageName);
     }
     return *it.value();
 }

@@ -5,9 +5,10 @@
 #include "network.h"
 #include "settings.h"
 #include "gamemodel.h"
+#include "gamewindow.h"
 //------------------------------------------------------------------------------
 class TGameModel;
-class TGameView;
+class TGameWindow;
 //------------------------------------------------------------------------------
 enum EGameState {
     ST_MainMenu,
@@ -28,6 +29,9 @@ public:
 //    inline TMainDisplay* GetMainDisplay() {
 //        return MainDisplay;
 //    }
+    inline TGameWindow* GetGameView() {
+        return GameView;
+    }
     inline TNetwork* GetNetwork() {
         return Network;
     }
@@ -59,9 +63,9 @@ public slots:
 private:
     TSettings* Settings;
     TGameModel* GameModel;
+    TGameWindow* GameView;
     TNetwork* Network;
 //    TMainDisplay* MainDisplay;
     EGameState State;
-    TGameView* GameView;
 };
 //------------------------------------------------------------------------------

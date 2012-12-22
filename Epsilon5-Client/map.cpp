@@ -67,12 +67,12 @@ const QImage* TMap::GetBackground() const
     return Background;
 }
 //------------------------------------------------------------------------------
-size_t TMap::GetWidth()
+size_t TMap::GetWidth() const
 {
     return Width;
 }
 //------------------------------------------------------------------------------
-size_t TMap::GetHeight()
+size_t TMap::GetHeight() const
 {
     return Height;
 }
