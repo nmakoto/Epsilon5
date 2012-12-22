@@ -49,8 +49,11 @@ TGameWindow::TGameWindow(TApplication *app)
 {
     GameView->setViewport(Render);
     GameView->setMinimumSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
+    GameView->resize(Application->GetSettings()->GetWindowSize());
+    GameView->move(Application->GetSettings()->GetWindowPos());
     if( Application->GetSettings()->GetWindowFullscreen() )
         GameView->showFullScreen();
+
 
     connect(GameView, SIGNAL(QuitAction()), SIGNAL(QuitAction()));
     startTimer(DEFAULT_UPDATE_VIEW_TIME);
