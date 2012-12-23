@@ -3,8 +3,10 @@
 #include <QGLWidget>
 #include <QKeyEvent>
 #include <QGraphicsScene>
+#include <QGraphicsBlurEffect>
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "ui/objectitem.h"
+#include "ui/formitem.h"
 #include "gameview.h"
 #include "map.h"
 #include "imagestorage.h"
@@ -38,14 +40,16 @@ static double getAngle(const QPoint& point)
 TGameWindow::TGameWindow(TApplication *app)
     : QObject(app)
     , Application(app)
-    , Render(new QGLWidget(
-            QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel | QGL::Rgba)))
+    , Render(new QGLWidget)
+//    , Render(new QGLWidget(
+//            QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel | QGL::Rgba)))
     , GameScene(new QGraphicsScene(this))
     , GameView(new TGameView(app, GameScene))
     , Images(new TImageStorage(this))
     , Objects(new TObjects(this))
     , CurrentMap(NULL)
     , CurrentWorld(NULL)
+    , MainMenu(new TFormItem)
 {
     GameView->setViewport(Render);
     GameView->setMinimumSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
@@ -54,6 +58,10 @@ TGameWindow::TGameWindow(TApplication *app)
     if( Application->GetSettings()->GetWindowFullscreen() )
         GameView->showFullScreen();
 
+    GameView->setMouseTracking(true);
+//    Render->setMouseTracking(true);
+//    MainMenu->resize(300, 100);
+//    MainMenu->setPos(0,0);
 
     connect(GameView, SIGNAL(QuitAction()), SIGNAL(QuitAction()));
     startTimer(DEFAULT_UPDATE_VIEW_TIME);
@@ -83,6 +91,10 @@ void TGameWindow::PrepareView()
             (qreal)CurrentMap->GetWidth() / -2,
             (qreal)CurrentMap->GetHeight() / -2,
             CurrentMap->GetWidth(), CurrentMap->GetHeight());
+
+    MainMenu->resize(GameView->size());
+    MainMenu->setParent(GameView);
+    GameScene->addItem(MainMenu);
 }
 //------------------------------------------------------------------------------
 void TGameWindow::timerEvent(QTimerEvent*)
@@ -90,7 +102,9 @@ void TGameWindow::timerEvent(QTimerEvent*)
     if( !CurrentWorld || !GameView )
         return;
 
+    GameScene->removeItem(MainMenu);
     GameScene->clear();
+
     for(int i = 0; i < CurrentWorld->objects_size(); ++i) {
         const Epsilon5::Object& object = CurrentWorld->objects(i);
         if( object.id() < 0 )
@@ -145,8 +159,15 @@ void TGameWindow::timerEvent(QTimerEvent*)
         item->setPos(player.x(), player.y());
     }
 
+    GameScene->addItem(MainMenu);
+    MainMenu->resize(GameView->sceneRect().size());
+    MainMenu->setPos(GameView->sceneRect().topLeft());// + QPoint(10, 30));
+//    qDebug() << GameView->size() << GameView->sceneRect().size();
+//    qDebug() << GameView->sceneRect().topLeft() << GameView->mapToScene(GameView->pos());
+
     QPoint cursorPos = GameView->mapFromGlobal(QCursor::pos());
     double angle = getAngle(cursorPos - GameView->rect().center());
     GameView->PlayerControl->set_angle(angle);
 }
 //------------------------------------------------------------------------------
+

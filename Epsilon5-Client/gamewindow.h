@@ -9,6 +9,8 @@ class TGameView;
 class TMap;
 class TObjects;
 class TImageStorage;
+class TFormItem;
+class QGraphicsBlurEffect;
 //------------------------------------------------------------------------------
 class TGameWindow: public QObject
 {
@@ -38,5 +40,8 @@ private:
     TObjects* Objects;
     const TMap* CurrentMap;
     const Epsilon5::World* CurrentWorld;
+
+    TFormItem* MainMenu;
+    QGraphicsBlurEffect* BlurEffect;
 };
 //------------------------------------------------------------------------------
