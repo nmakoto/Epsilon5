@@ -3,12 +3,12 @@
 //------------------------------------------------------------------------------
 const qreal RAD_CONVERT = 180 / M_PI;
 //------------------------------------------------------------------------------
-TObjectItem::TObjectItem(QGraphicsItem *parent)
+TObjectItem::TObjectItem(QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent)
 {
 }
 //------------------------------------------------------------------------------
-TObjectItem::TObjectItem(const QPixmap &pixmap, QGraphicsItem *parent)
+TObjectItem::TObjectItem(const QPixmap& pixmap, QGraphicsItem* parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {
 }

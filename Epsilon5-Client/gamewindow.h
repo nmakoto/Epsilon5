@@ -9,8 +9,11 @@ class TGameView;
 class TMap;
 class TObjects;
 class TImageStorage;
-class TFormItem;
 class QGraphicsBlurEffect;
+namespace ui
+{
+class UIMenu;
+}
 //------------------------------------------------------------------------------
 class TGameWindow: public QObject
 {
@@ -24,12 +27,17 @@ public:
 
 signals:
     void QuitAction();
+    void ConnectAction();
+    void MainMenuAction();
 
 protected:
     void timerEvent(QTimerEvent* event);
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
+
+private slots:
+    void menuItemClicked(const QString& name);
 
 private:
     TApplication* Application;
@@ -41,7 +49,7 @@ private:
     const TMap* CurrentMap;
     const Epsilon5::World* CurrentWorld;
 
-    TFormItem* MainMenu;
+    ui::UIMenu* MainMenu;
     QGraphicsBlurEffect* BlurEffect;
 };
 //------------------------------------------------------------------------------

@@ -13,8 +13,9 @@ TRespawnFrame::~TRespawnFrame()
 //------------------------------------------------------------------------------
 void TRespawnFrame::Paint(QPainter& painter)
 {
-    if( !painter.isActive() )
+    if (!painter.isActive()) {
         return;
+    }
 
     painter.drawImage(FrameRect, *Background);
     QPen oldPen = painter.pen();
@@ -23,15 +24,16 @@ void TRespawnFrame::Paint(QPainter& painter)
     painter.setPen(oldPen);
 }
 //------------------------------------------------------------------------------
-void TRespawnFrame::SetBackground(const QImage &image, bool resizeFrame)
+void TRespawnFrame::SetBackground(const QImage& image, bool resizeFrame)
 {
     *Background = image;
-    if( !resizeFrame )
+    if (!resizeFrame) {
         return;
+    }
     FrameRect.setSize(Background->size());
 }
 //------------------------------------------------------------------------------
-void TRespawnFrame::SetBackgroundScaled(const QImage &image)
+void TRespawnFrame::SetBackgroundScaled(const QImage& image)
 {
     *Background = image.scaled(FrameRect.width(), FrameRect.height());
 }

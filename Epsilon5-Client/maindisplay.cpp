@@ -602,13 +602,13 @@ void TMainDisplay::PrepareMapDraw()
     p.setCompositionMode(QPainter::CompositionMode_Source);
     p.drawPixmap(0, 0, QPixmap::fromImage(image));
     p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    p.fillRect(trans.rect(), QColor(0,0,0, 220));
+    p.fillRect(trans.rect(), QColor(0, 0, 0, 220));
     p.end();
 
     RespawnFrame->SetBackgroundScaled(trans.toImage());
 }
 //------------------------------------------------------------------------------
-void TMainDisplay::DrawRespawnMenu(QPainter &painter)
+void TMainDisplay::DrawRespawnMenu(QPainter& painter)
 {
     // TODO: Draw respawn menu
     DrawText(painter, QPoint(10, 50),

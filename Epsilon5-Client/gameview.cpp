@@ -12,10 +12,11 @@
 #include "map.h"
 #include "gameview.h"
 //------------------------------------------------------------------------------
-TGameView::TGameView(TApplication* app, QGraphicsScene *scene, QWidget *parent)
+TGameView::TGameView(TApplication* app, QGraphicsScene* scene, QWidget* parent)
     : QGraphicsView(scene, parent)
     , App(app)
     , Fps(0)
+    , PlayerControl(NULL)
 {
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -71,7 +72,7 @@ void TGameView::SetMovementKeysState(bool state, const QKeyEvent* event)
 //------------------------------------------------------------------------------
 void TGameView::mousePressEvent(QMouseEvent* event)
 {
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
     QGraphicsView::mousePressEvent(event);
 
     if (event->button() == Qt::LeftButton) {
@@ -83,7 +84,7 @@ void TGameView::mousePressEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void TGameView::mouseReleaseEvent(QMouseEvent* event)
 {
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
     QGraphicsView::mouseReleaseEvent(event);
 
     if (event->button() == Qt::LeftButton) {
@@ -93,7 +94,7 @@ void TGameView::mouseReleaseEvent(QMouseEvent* event)
     }
 }
 //------------------------------------------------------------------------------
-void TGameView::keyPressEvent(QKeyEvent *event)
+void TGameView::keyPressEvent(QKeyEvent* event)
 {
     SetMovementKeysState(true, event);
 
@@ -115,7 +116,7 @@ void TGameView::keyPressEvent(QKeyEvent *event)
     }
 }
 //------------------------------------------------------------------------------
-void TGameView::keyReleaseEvent(QKeyEvent *event)
+void TGameView::keyReleaseEvent(QKeyEvent* event)
 {
     SetMovementKeysState(false, event);
 
@@ -136,7 +137,7 @@ void TGameView::keyReleaseEvent(QKeyEvent *event)
         break;
 #endif
     case Qt::Key_Escape:
-//        emit MainMenuAction();
+        emit MainMenuAction();
         break;
     case Qt::Key_Tab:
 //        ShowStats = false;
@@ -146,13 +147,13 @@ void TGameView::keyReleaseEvent(QKeyEvent *event)
     }
 }
 //------------------------------------------------------------------------------
-void TGameView::paintEvent(QPaintEvent *event)
+void TGameView::paintEvent(QPaintEvent* event)
 {
     QGraphicsView::paintEvent(event);
     calcFps();
 }
 //------------------------------------------------------------------------------
-void TGameView::drawBackground(QPainter *painter, const QRectF &rect)
+void TGameView::drawBackground(QPainter* painter, const QRectF& rect)
 {
     const QImage* image = App->GetModel()->GetMap()->GetBackground();
     QRectF drawingRect = QRectF(image->rect().center() + rect.topLeft(), rect.size());
@@ -169,8 +170,9 @@ void TGameView::drawBackground(QPainter *painter, const QRectF &rect)
     painter->setPen(oldPen);
 }
 //------------------------------------------------------------------------------
-void TGameView::drawForeground(QPainter *painter, const QRectF &rect)
+void TGameView::drawForeground(QPainter* painter, const QRectF& rect)
 {
+
     DrawText(painter, QPoint(rect.topLeft().toPoint().x(),
             rect.topLeft().y() + 10),
             QString("FPS: ").append(QString::number(Fps)), 10);

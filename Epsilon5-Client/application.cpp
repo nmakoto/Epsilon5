@@ -15,6 +15,8 @@ TApplication::TApplication(int& argc, char* argv[])
     connect(Network, SIGNAL(PlayerInfoReceived(const Epsilon5::PlayerInfo&)),
             SLOT(PrepareMap(const Epsilon5::PlayerInfo&)));
 
+    connect(GameWindow, SIGNAL(MainMenuAction()), SLOT(SetMainMenuState()));
+    connect(GameWindow, SIGNAL(ConnectAction()), SLOT(SetConnectingState()));
     connect(GameWindow, SIGNAL(QuitAction()), SLOT(GameClose()));
 
     connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetInGameState()));
@@ -32,7 +34,7 @@ bool TApplication::Init()
     Network->Init();
     GameWindow->Init();
 
-    SetConnectingState();
+//    SetConnectingState();
     return true;
 }
 //------------------------------------------------------------------------------
@@ -88,11 +90,11 @@ void TApplication::GameClose()
 #ifdef QT_DEBUG
 void TApplication::ToggleRespawnFrame()
 {
-    if(State == ST_InGame) {
+    if (State == ST_InGame) {
         SetSelectingRespawnState();
         return;
     }
-    if(State == ST_SelectingResp) {
+    if (State == ST_SelectingResp) {
         SetInGameState();
         return;
     }
