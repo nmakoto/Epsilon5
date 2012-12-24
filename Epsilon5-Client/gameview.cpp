@@ -156,6 +156,11 @@ void TGameView::paintEvent(QPaintEvent* event)
 void TGameView::drawBackground(QPainter* painter, const QRectF& rect)
 {
     const QImage* image = App->GetModel()->GetMap()->GetBackground();
+    if( !image ) {
+        painter->fillRect(rect, Qt::black);
+        return;
+    }
+
     QRectF drawingRect = QRectF(image->rect().center() + rect.topLeft(), rect.size());
 
     painter->fillRect(rect, App->GetModel()->GetMap()->GetBackgroundColor());

@@ -9,11 +9,10 @@
 #include "ui/uimenu.h"
 #include "gameview.h"
 #include "map.h"
+#include "application.h"
 #include "imagestorage.h"
 #include "objects.h"
 #include "gamewindow.h"
-//------------------------------------------------------------------------------
-#define UI_TEST_SHOWMENU 1
 //------------------------------------------------------------------------------
 const quint16 BASE_WINDOW_WIDTH = 800;
 const quint16 BASE_WINDOW_HEIGHT = 600;
@@ -46,6 +45,7 @@ TGameWindow::TGameWindow(TApplication* app)
 //    , Render(new QGLWidget(
 //            QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel | QGL::Rgba)))
     , GameScene(new QGraphicsScene(this))
+    , MenuScene(new QGraphicsScene(this))
     , GameView(new TGameView(app, GameScene))
     , Images(new TImageStorage(this))
     , Objects(new TObjects(this))
@@ -68,6 +68,7 @@ TGameWindow::TGameWindow(TApplication* app)
     startTimer(DEFAULT_UPDATE_VIEW_TIME);
 
     GameView->PlayerControl = Application->GetModel()->GetPlayerControl();
+    MainMenu->setParent(GameView);
 }
 //------------------------------------------------------------------------------
 TGameWindow::~TGameWindow()
@@ -88,11 +89,11 @@ void TGameWindow::Init()
             QPixmap::fromImage(Images->GetImage("menu-connect")),
             QPixmap::fromImage(Images->GetImage("menu-connect-h")));
 
+    MenuScene->addItem(MainMenu);
+    MainMenu->grabChildrenEvents();
+
     Render->show();
     GameView->show();
-    MainMenu->setParent(GameView);
-    GameScene->addItem(MainMenu);
-    MainMenu->grabChildrenEvents();
 }
 //------------------------------------------------------------------------------
 void TGameWindow::PrepareView()
@@ -104,26 +105,65 @@ void TGameWindow::PrepareView()
         (qreal)CurrentMap->GetWidth() / -2,
         (qreal)CurrentMap->GetHeight() / -2,
         CurrentMap->GetWidth(), CurrentMap->GetHeight());
-
-    MainMenu->resize(GameView->size());
 }
 //------------------------------------------------------------------------------
 void TGameWindow::timerEvent(QTimerEvent*)
 {
-    if (Application->GetState() == ST_MainMenu) {
-        MainMenu->show();
-    } else {
-        MainMenu->hide();
+    switch( Application->GetState() ) {
+    case ST_LoadingMap:
+        ShowLoading();
+        return;
+    case ST_Connecting:
+        ShowConnecting();
+        return;
+    case ST_InGame:
+        ShowInGame();
+        return;
+    case ST_MainMenu:
+    default:
+        ShowMainMenu();
     }
-
-    if (!CurrentWorld || !GameView || Application->GetState() != ST_InGame) {
+}
+//------------------------------------------------------------------------------
+void TGameWindow::menuItemClicked(const QString& name)
+{
+    if (name == "quit") {
+        emit QuitAction();
+        GameView->close();
+    }
+    if (name == "connect") {
+        emit ConnectAction();
+    }
+}
+//------------------------------------------------------------------------------
+void TGameWindow::ShowMainMenu()
+{
+    GameView->setScene(MenuScene);
+    GameView->setSceneRect(MenuScene->sceneRect());
+    GameView->centerOn(MenuScene->sceneRect().center());
+    MainMenu->update(GameView->rect());
+}
+//------------------------------------------------------------------------------
+void TGameWindow::ShowConnecting()
+{
+    GameView->setScene(MenuScene);
+    GameView->centerOn(MenuScene->sceneRect().center());
+}
+//------------------------------------------------------------------------------
+void TGameWindow::ShowLoading()
+{
+    GameView->setScene(MenuScene);
+    GameView->centerOn(MenuScene->sceneRect().center());
+}
+//------------------------------------------------------------------------------
+void TGameWindow::ShowInGame()
+{
+    if( !CurrentWorld ) {
+        emit MainMenuAction();
         return;
     }
 
-#if UI_TEST_SHOWMENU
-    MainMenu->ungrabChildrenEvents();
-    GameScene->removeItem(MainMenu);
-#endif
+    GameView->setScene(GameScene);
     GameScene->clear();
 
     for (int i = 0; i < CurrentWorld->objects_size(); ++i) {
@@ -181,26 +221,8 @@ void TGameWindow::timerEvent(QTimerEvent*)
         item->setPos(player.x(), player.y());
     }
 
-#if UI_TEST_SHOWMENU
-    GameScene->addItem(MainMenu);
-    MainMenu->grabChildrenEvents();
-    MainMenu->resize(GameView->sceneRect().size());
-    MainMenu->setPos(GameView->sceneRect().topLeft());
-#endif
-
     QPoint cursorPos = GameView->mapFromGlobal(QCursor::pos());
     double angle = getAngle(cursorPos - GameView->rect().center());
     GameView->PlayerControl->set_angle(angle);
-}
-//------------------------------------------------------------------------------
-void TGameWindow::menuItemClicked(const QString& name)
-{
-    if (name == "quit") {
-        emit QuitAction();
-        GameView->close();
-    }
-    if (name == "connect") {
-        emit ConnectAction();
-    }
 }
 //------------------------------------------------------------------------------

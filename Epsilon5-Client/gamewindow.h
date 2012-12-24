@@ -1,5 +1,6 @@
 #pragma once
-#include "application.h"
+#include <QObject>
+//#include "application.h"
 //------------------------------------------------------------------------------
 class QGraphicsScene;
 class QGLWidget;
@@ -10,6 +11,12 @@ class TMap;
 class TObjects;
 class TImageStorage;
 class QGraphicsBlurEffect;
+//------------------------------------------------------------------------------
+namespace Epsilon5
+{
+class World;
+}
+//------------------------------------------------------------------------------
 namespace ui
 {
 class UIMenu;
@@ -35,6 +42,10 @@ protected:
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
+    void ShowMainMenu();
+    void ShowLoading();
+    void ShowConnecting();
+    void ShowInGame();
 
 private slots:
     void menuItemClicked(const QString& name);
@@ -43,6 +54,7 @@ private:
     TApplication* Application;
     QGLWidget* Render;
     QGraphicsScene* GameScene;
+    QGraphicsScene* MenuScene;
     TGameView* GameView;
     TImageStorage* Images;
     TObjects* Objects;

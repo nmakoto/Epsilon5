@@ -1,5 +1,4 @@
 #include <QDebug>
-#include "gamewindow.h"
 #include "application.h"
 //------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
@@ -33,8 +32,6 @@ bool TApplication::Init()
     GameModel->Init();
     Network->Init();
     GameWindow->Init();
-
-//    SetConnectingState();
     return true;
 }
 //------------------------------------------------------------------------------
