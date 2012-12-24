@@ -10,28 +10,11 @@
 #include "map.h"
 #include "objects.h"
 #include "menu.h"
+#include "gameview.h"
+#include "gamemodel.h"
 //------------------------------------------------------------------------------
 class TApplication;
 class TRespawnFrame;
-//------------------------------------------------------------------------------
-enum ETeam {
-    T_One,
-    T_Second,
-    T_Neutral
-};
-//------------------------------------------------------------------------------
-struct TRespPoint {
-    int X;
-    int Y;
-    ETeam Team;
-};
-//------------------------------------------------------------------------------
-struct TPlayerStat {
-    size_t Id;
-    size_t Score;
-    size_t Deaths;
-    size_t Kills;
-};
 //------------------------------------------------------------------------------
 class TMainDisplay : public QGLWidget
 {

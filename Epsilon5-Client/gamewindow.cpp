@@ -166,6 +166,7 @@ void TGameWindow::ShowInGame()
     GameView->setScene(GameScene);
     GameScene->clear();
 
+    // Add objects
     for (int i = 0; i < CurrentWorld->objects_size(); ++i) {
         const Epsilon5::Object& object = CurrentWorld->objects(i);
         if (object.id() < 0) {
@@ -179,6 +180,7 @@ void TGameWindow::ShowInGame()
         item->setRotationRad(object.angle());
     }
 
+    // Add bullets
     const QImage* img;
     for (int i = 0; i != CurrentWorld->bullets_size(); i++) {
         const Epsilon5::Bullet& bullet = CurrentWorld->bullets(i);
@@ -199,6 +201,7 @@ void TGameWindow::ShowInGame()
         item->setPos(bullet.x(), bullet.y());
     }
 
+    // Add players
     for (int i = 0; i != CurrentWorld->players_size(); i++) {
         const Epsilon5::Player& player = CurrentWorld->players(i);
         if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
@@ -221,6 +224,34 @@ void TGameWindow::ShowInGame()
         item->setPos(player.x(), player.y());
     }
 
+    // Add respawns
+    static QVector<TRespPoint> RespPoints;
+    if (CurrentWorld->resp_points_size() > 0) {
+        RespPoints.clear();
+        for (int i = 0; i < CurrentWorld->resp_points_size(); i++) {
+            TRespPoint pos;
+            pos.X = CurrentWorld->resp_points(i).x();
+            pos.Y = CurrentWorld->resp_points(i).y();
+            pos.Team = (ETeam)(CurrentWorld->resp_points(i).team());
+            RespPoints.push_back(pos);
+        }
+    }
+
+    for (int i = 0; i < RespPoints.size(); i++) {
+        if (RespPoints[i].Team == T_One) {
+            img = &Images->GetImage("flag_t1");
+        } else if (RespPoints[i].Team == T_Second) {
+            img = &Images->GetImage("flag_t2");
+        } else {
+            img = &Images->GetImage("flag_tn");
+        }
+        QPoint currentRespPos(RespPoints[i].X, RespPoints[i].Y);
+        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
+        GameScene->addItem(item);
+        item->setPos(currentRespPos.x(), currentRespPos.y());
+    }
+
+    // Update player crosshair position
     QPoint cursorPos = GameView->mapFromGlobal(QCursor::pos());
     double angle = getAngle(cursorPos - GameView->rect().center());
     GameView->PlayerControl->set_angle(angle);

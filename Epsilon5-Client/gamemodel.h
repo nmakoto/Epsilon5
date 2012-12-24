@@ -5,6 +5,25 @@
 #include "application.h"
 #include "map.h"
 //------------------------------------------------------------------------------
+enum ETeam {
+    T_One,
+    T_Second,
+    T_Neutral
+};
+//------------------------------------------------------------------------------
+struct TRespPoint {
+    int X;
+    int Y;
+    ETeam Team;
+};
+//------------------------------------------------------------------------------
+struct TPlayerStat {
+    size_t Id;
+    size_t Score;
+    size_t Deaths;
+    size_t Kills;
+};
+//------------------------------------------------------------------------------
 class TGameModel : public QObject
 {
     Q_OBJECT
