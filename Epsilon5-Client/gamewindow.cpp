@@ -4,6 +4,8 @@
 #include <QKeyEvent>
 #include <QGraphicsScene>
 #include <QGraphicsBlurEffect>
+#include <QGraphicsTextItem>
+#include <QFont>
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "ui/objectitem.h"
 #include "ui/uimenu.h"
@@ -46,6 +48,7 @@ TGameWindow::TGameWindow(TApplication* app)
 //            QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel | QGL::Rgba)))
     , GameScene(new QGraphicsScene(this))
     , MenuScene(new QGraphicsScene(this))
+    , LoadingItemText(NULL)
     , GameView(new TGameView(app, GameScene))
     , Images(new TImageStorage(this))
     , Objects(new TObjects(this))
@@ -69,6 +72,12 @@ TGameWindow::TGameWindow(TApplication* app)
 
     GameView->PlayerControl = Application->GetModel()->GetPlayerControl();
     MainMenu->setParent(GameView);
+
+    LoadingItemText = MenuScene->addText(tr("Loading..."),
+            QFont("Ubuntu", 28));
+    LoadingItemText->setPos(GameView->rect().bottomRight()
+            - LoadingItemText->boundingRect().bottomRight());
+    LoadingItemText->hide();
 }
 //------------------------------------------------------------------------------
 TGameWindow::~TGameWindow()
@@ -139,21 +148,26 @@ void TGameWindow::menuItemClicked(const QString& name)
 void TGameWindow::ShowMainMenu()
 {
     GameView->setScene(MenuScene);
-    GameView->setSceneRect(MenuScene->sceneRect());
-    GameView->centerOn(MenuScene->sceneRect().center());
+    GameView->setSceneRect(MainMenu->rect());
+    GameView->centerOn(MainMenu);
+    MainMenu->show();
     MainMenu->update(GameView->rect());
 }
 //------------------------------------------------------------------------------
 void TGameWindow::ShowConnecting()
 {
     GameView->setScene(MenuScene);
-    GameView->centerOn(MenuScene->sceneRect().center());
+    GameView->setSceneRect(GameView->rect());
+    MainMenu->hide();
+    LoadingItemText->show();
 }
 //------------------------------------------------------------------------------
 void TGameWindow::ShowLoading()
 {
     GameView->setScene(MenuScene);
-    GameView->centerOn(MenuScene->sceneRect().center());
+    GameView->setSceneRect(GameView->rect());
+    MainMenu->hide();
+    LoadingItemText->show();
 }
 //------------------------------------------------------------------------------
 void TGameWindow::ShowInGame()
@@ -163,6 +177,7 @@ void TGameWindow::ShowInGame()
         return;
     }
 
+    LoadingItemText->hide();
     GameView->setScene(GameScene);
     GameScene->clear();
 

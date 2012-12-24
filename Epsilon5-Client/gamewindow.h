@@ -11,6 +11,7 @@ class TMap;
 class TObjects;
 class TImageStorage;
 class QGraphicsBlurEffect;
+class QGraphicsTextItem;
 //------------------------------------------------------------------------------
 namespace Epsilon5
 {
@@ -37,15 +38,17 @@ signals:
     void ConnectAction();
     void MainMenuAction();
 
+public:
+    void ShowMainMenu();
+    void ShowLoading();
+    void ShowConnecting();
+    void ShowInGame();
+
 protected:
     void timerEvent(QTimerEvent* event);
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
-    void ShowMainMenu();
-    void ShowLoading();
-    void ShowConnecting();
-    void ShowInGame();
 
 private slots:
     void menuItemClicked(const QString& name);
@@ -55,6 +58,7 @@ private:
     QGLWidget* Render;
     QGraphicsScene* GameScene;
     QGraphicsScene* MenuScene;
+    QGraphicsTextItem* LoadingItemText;
     TGameView* GameView;
     TImageStorage* Images;
     TObjects* Objects;

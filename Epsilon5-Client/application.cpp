@@ -47,6 +47,7 @@ void TApplication::SetConnectingState()
     qDebug() << Q_FUNC_INFO;
     State = ST_Connecting;
     Network->Connect();
+    GameWindow->ShowConnecting();
 }
 //------------------------------------------------------------------------------
 void TApplication::SetLoadingMapState()
@@ -55,6 +56,7 @@ void TApplication::SetLoadingMapState()
     State = ST_LoadingMap;
     GameModel->LoadMap(GameModel->GetCurrentMapName());
     GameWindow->PrepareView();
+    GameWindow->ShowLoading();
 }
 //------------------------------------------------------------------------------
 void TApplication::SetSelectingRespawnState()
