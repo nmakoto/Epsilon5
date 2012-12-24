@@ -28,8 +28,11 @@ class TGameModel : public QObject
 {
     Q_OBJECT
 public:
+    typedef QVector<TPlayerStat> TStatVector;
+public:
     explicit TGameModel(TApplication* parent);
     void Init();
+    void Update();
 
     const Epsilon5::World& GetWorld() const;
     Epsilon5::World* GetWorld();
@@ -53,5 +56,6 @@ private:
     size_t PlayerId;
     Epsilon5::PlayerInfo PlayerInfo;
     Epsilon5::Control PlayerControl;
+    TStatVector Statistic;
 };
 //------------------------------------------------------------------------------
