@@ -12,29 +12,24 @@ TARGET = Epsilon5-Client
 TEMPLATE = app
 
 SOURCES += \
+    main.cpp\
     ../Epsilon5-Proto/Epsilon5.pb.cc \
     ../utils/usettings.cpp \
     ../utils/uexception.cpp \
     ../utils/ufullscreenwrapper.cpp \
-    main.cpp\
-#    maindisplay.cpp \
+    ../utils/ucast.cpp \
+    ui/objectitem.cpp \
+    ui/uimenu.cpp \
+    ui/uilayoutitem.cpp \
+    ui/uistatistic.cpp \
     application.cpp \
     network.cpp \
     imagestorage.cpp \
     map.cpp \
     settings.cpp \
     objects.cpp \
-    ../utils/ucast.cpp \
-#    graphics/basicitem.cpp \
-#    menu.cpp \
     gamemodel.cpp \
-    gamewindow.cpp \
-#    gameview.cpp \
-    ui/objectitem.cpp \
-    ui/uimenu.cpp \
-    ui/uilayoutitem.cpp \
-    ui/uistatistic.cpp
-#    ui/respawnframe.cpp \
+    gamewindow.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -42,24 +37,19 @@ HEADERS  += \
     ../utils/usettings.h \
     ../utils/uexception.h \
     ../utils/ufullscreenwrapper.h \
-#    maindisplay.h \
+    ../utils/ucast.h \
+    ui/objectitem.h \
+    ui/uimenu.h \
+    ui/uilayoutitem.h \
+    ui/uistatistic.h \
     application.h \
     network.h \
     imagestorage.h \
     map.h \
     settings.h \
     objects.h \
-    ../utils/ucast.h \
-#    graphics/basicitem.h \
-#    menu.h \
     gamemodel.h \
-    gamewindow.h \
-#    gameview.h \
-    ui/objectitem.h \
-    ui/uimenu.h \
-    ui/uilayoutitem.h \
-    ui/uistatistic.h
-#    ui/respawnframe.h \
+    gamewindow.h
 
 FORMS    +=
 
@@ -81,10 +71,4 @@ win32 {
 }
 
 OTHER_FILES += \
-    ../Epsilon5-Proto/Epsilon5.proto \
-    maindisplay.h \
-    maindisplay.cpp \
-    ui/respawnframe.h \
-    ui/respawnframe.cpp \
-    graphics/basicitem.h \
-    graphics/basicitem.cpp
+    ../Epsilon5-Proto/Epsilon5.proto
