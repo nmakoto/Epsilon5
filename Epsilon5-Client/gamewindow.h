@@ -42,7 +42,7 @@ protected:
 
 private:
     void DrawText(QPainter* painter, const QPoint& pos, const QString& text,
-            int fontSizePt);
+            int fontSizePt =  10);
     void calcFps();
 
 private:
@@ -52,7 +52,8 @@ private:
     TObjects* ResObjects;
     TBattlefieldScene* BattlefieldScene;
     TMenuScene* MenuScene;
-    int Fps;
+    int LastFps;
+    quint32 LastPing;
     EGameState LastState;
 };
 //------------------------------------------------------------------------------

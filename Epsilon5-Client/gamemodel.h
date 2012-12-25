@@ -44,6 +44,7 @@ public:
     size_t GetPlayerId() const;
     void SetPlayerInfo(const Epsilon5::PlayerInfo& info);
     const Epsilon5::PlayerInfo* GetPlayerInfo() const;
+    quint32 GetPlayerPing() const;
 
     Epsilon5::Control* GetPlayerControl();
 

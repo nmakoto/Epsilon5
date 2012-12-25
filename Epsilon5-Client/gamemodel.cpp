@@ -57,6 +57,21 @@ const Epsilon5::PlayerInfo* TGameModel::GetPlayerInfo() const
     return &PlayerInfo;
 }
 //------------------------------------------------------------------------------
+// TODO: This is ugly. Rewrite.
+quint32 TGameModel::GetPlayerPing() const
+{
+    for (int i = 0; i != GameWorld.players_size(); i++) {
+        const Epsilon5::Player& player = GameWorld.players(i);
+        if ((size_t)player.id() != PlayerId) {
+            continue;
+        }
+        if (player.has_ping()) {
+            return player.ping();
+        }
+    }
+    return 0;
+}
+//------------------------------------------------------------------------------
 QString TGameModel::GetCurrentMapName() const
 {
     return PlayerInfo.map().c_str();

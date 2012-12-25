@@ -53,7 +53,8 @@ TGameWindow::TGameWindow(TApplication* app, QWidget* parent)
     , ResObjects(new TObjects(this))
     , BattlefieldScene(new TBattlefieldScene(this))
     , MenuScene(new TMenuScene(this))
-    , Fps(0)
+    , LastFps(0)
+    , LastPing(0)
     , LastState(ST_MainMenu)
 {
     setViewport(Render);
@@ -141,9 +142,11 @@ void TGameWindow::drawBackground(QPainter* painter, const QRectF& rect)
 void TGameWindow::drawForeground(QPainter* painter, const QRectF& rect)
 {
     QGraphicsView::drawForeground(painter, rect);
-    DrawText(painter, QPoint(rect.topLeft().toPoint().x(),
-            rect.topLeft().y() + 10),
-            QString("FPS: ").append(QString::number(Fps)), 10);
+
+    DrawText(painter, QPoint(rect.bottomLeft().x(), rect.bottomLeft().y() - 10),
+            QString("FPS: ").append(QString::number(LastFps)));
+    DrawText(painter, QPoint(rect.bottomLeft().x(), rect.bottomLeft().y() - 24),
+            QString("Ping: ").append(QString::number(LastPing)));
 }
 //------------------------------------------------------------------------------
 void TGameWindow::DrawText(QPainter* painter, const QPoint& pos,
@@ -168,7 +171,7 @@ void TGameWindow::calcFps()
 
     const QTime& time = QTime::currentTime();
     if (lasttime.msecsTo(time) >= 1000) {
-        Fps = frames;
+        LastFps = frames;
         frames = 0;
         lasttime = time;
     }
@@ -181,6 +184,10 @@ void TGameWindow::timerEvent(QTimerEvent*)
         LastState = Application->GetState();
         PrepareView(LastState);
     }
+
+    quint32 ping = Application->GetModel()->GetPlayerPing();
+    if( ping )
+        LastPing = ping;
 
     UpdateView(LastState);
 }
