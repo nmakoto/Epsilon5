@@ -29,7 +29,9 @@ SOURCES += \
     settings.cpp \
     objects.cpp \
     gamemodel.cpp \
-    gamewindow.cpp
+    gamewindow.cpp \
+    menuscene.cpp \
+    battlefieldscene.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -49,7 +51,9 @@ HEADERS  += \
     settings.h \
     objects.h \
     gamemodel.h \
-    gamewindow.h
+    gamewindow.h \
+    menuscene.h \
+    battlefieldscene.h
 
 FORMS    +=
 

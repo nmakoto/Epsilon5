@@ -4,9 +4,6 @@
 #include "network.h"
 #include "settings.h"
 #include "gamemodel.h"
-#include "gamewindow.h"
-//------------------------------------------------------------------------------
-class TGameModel;
 //------------------------------------------------------------------------------
 enum EGameState {
     ST_MainMenu,
@@ -15,6 +12,9 @@ enum EGameState {
     ST_SelectingResp,
     ST_InGame
 };
+//------------------------------------------------------------------------------
+class TGameModel;
+class TGameWindow;
 //------------------------------------------------------------------------------
 class TApplication : public QApplication
 {

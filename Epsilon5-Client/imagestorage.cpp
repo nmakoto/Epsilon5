@@ -25,7 +25,7 @@ void TImageStorage::LoadAll()
     LoadImage("menu-exit-h", "resources/menu-exit-h.png");
 }
 //------------------------------------------------------------------------------
-const QImage& TImageStorage::GetImage(const QString& imageName)
+const QImage& TImageStorage::GetImage(const QString& imageName) const
 {
     auto it = Images.find(imageName);
     if (it == Images.end()) {

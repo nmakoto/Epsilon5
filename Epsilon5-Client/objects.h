@@ -12,8 +12,8 @@ public:
     explicit TObjects(QObject* parent = 0);
     ~TObjects();
     void LoadObjects(const QString& fileName);
-    QImage* GetImageById(size_t id);
-    QImage* GetImageByName(const QString& imageName);
+    QImage* GetImageById(size_t id) const;
+    QImage* GetImageByName(const QString& imageName) const;
 private:
     TImageHash Images;
     TImageIdHash ImagesById;

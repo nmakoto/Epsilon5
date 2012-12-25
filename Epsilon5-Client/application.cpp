@@ -1,4 +1,5 @@
 #include <QDebug>
+#include "gamewindow.h"
 #include "application.h"
 //------------------------------------------------------------------------------
 TApplication::TApplication(int& argc, char* argv[])
@@ -14,9 +15,9 @@ TApplication::TApplication(int& argc, char* argv[])
     connect(Network, SIGNAL(PlayerInfoReceived(const Epsilon5::PlayerInfo&)),
             SLOT(PrepareMap(const Epsilon5::PlayerInfo&)));
 
-    connect(GameWindow, SIGNAL(MainMenuAction()), SLOT(SetMainMenuState()));
-    connect(GameWindow, SIGNAL(ConnectAction()), SLOT(SetConnectingState()));
-    connect(GameWindow, SIGNAL(QuitAction()), SLOT(GameClose()));
+    connect(GameWindow, SIGNAL(ActionMainMenu()), SLOT(SetMainMenuState()));
+    connect(GameWindow, SIGNAL(ActionConnect()), SLOT(SetConnectingState()));
+    connect(GameWindow, SIGNAL(ActionQuit()), SLOT(GameClose()));
 
     connect(GameModel, SIGNAL(MapLoaded()), SLOT(SetInGameState()));
 }
@@ -55,7 +56,7 @@ void TApplication::SetLoadingMapState()
     qDebug() << Q_FUNC_INFO;
     State = ST_LoadingMap;
     GameModel->LoadMap(GameModel->GetCurrentMapName());
-    GameWindow->PrepareView();
+    GameWindow->PrepareView(State);
     GameWindow->ShowLoading();
 }
 //------------------------------------------------------------------------------

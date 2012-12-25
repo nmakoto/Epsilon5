@@ -11,7 +11,7 @@ public:
     TImageStorage(QObject* parent = 0);
     ~TImageStorage();
     void LoadAll();
-    const QImage& GetImage(const QString& imageName);
+    const QImage& GetImage(const QString& imageName) const;
 
 private:
     void LoadImage(const QString& imageName, const QString& fileName);

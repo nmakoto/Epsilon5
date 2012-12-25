@@ -38,7 +38,7 @@ void TObjects::LoadObjects(const QString& fileName)
     }
 }
 //------------------------------------------------------------------------------
-QImage* TObjects::GetImageById(size_t id)
+QImage* TObjects::GetImageById(size_t id) const
 {
     if (ImagesById.find(id) == ImagesById.end()) {
         throw UException("Image not found with id:" + QString::number(id));
@@ -46,7 +46,7 @@ QImage* TObjects::GetImageById(size_t id)
     return ImagesById[id];
 }
 //------------------------------------------------------------------------------
-QImage* TObjects::GetImageByName(const QString& imageName)
+QImage* TObjects::GetImageByName(const QString& imageName) const
 {
     if (Images.find(imageName) == Images.end()) {
         throw UException("Image not found with name:" + imageName);
