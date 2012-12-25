@@ -84,6 +84,7 @@ void TApplication::UpdateWorld()
 void TApplication::GameClose()
 {
     SetMainMenuState();
+    GameWindow->close();
 }
 //------------------------------------------------------------------------------
 #ifdef QT_DEBUG

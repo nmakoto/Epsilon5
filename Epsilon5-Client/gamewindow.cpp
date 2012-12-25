@@ -344,7 +344,6 @@ void TGameWindow::menuItemClicked(const QString& name)
 {
     if (name == "quit") {
         emit QuitAction();
-        close();
     }
     if (name == "connect") {
         emit ConnectAction();

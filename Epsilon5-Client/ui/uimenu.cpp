@@ -76,15 +76,17 @@ bool UIMenu::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
 //------------------------------------------------------------------------------
 void UIMenu::grabChildrenEvents()
 {
-for (auto child : childItems()) {
-        child->installSceneEventFilter(this);
+    auto it = childItems().constBegin();
+    for (; it != childItems().constEnd(); ++it) {
+        (*it)->installSceneEventFilter(this);
     }
 }
 //------------------------------------------------------------------------------
 void UIMenu::ungrabChildrenEvents()
 {
-for (auto child : childItems()) {
-        child->removeSceneEventFilter(this);
+    auto it = childItems().constBegin();
+    for (; it != childItems().constEnd(); ++it) {
+        (*it)->removeSceneEventFilter(this);
     }
 }
 //------------------------------------------------------------------------------
