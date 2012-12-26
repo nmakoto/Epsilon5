@@ -59,7 +59,7 @@ bool TSettings::GetWindowFullscreen()
 //------------------------------------------------------------------------------
 void TSettings::SetWindowFullscreen(bool value)
 {
-    Settings->SetParameter("window.fullscreen", QString().number(value));
+    Settings->SetParameter("window.fullscreen", QString::number(value));
 }
 //------------------------------------------------------------------------------
 int TSettings::GetWindowPosX() const
@@ -69,7 +69,7 @@ int TSettings::GetWindowPosX() const
 //------------------------------------------------------------------------------
 void TSettings::SetWindowPosX(int value)
 {
-    Settings->SetParameter("window.posx", QString().number(value));
+    Settings->SetParameter("window.posx", QString::number(value));
 }
 //------------------------------------------------------------------------------
 int TSettings::GetWindowPosY() const
@@ -79,7 +79,7 @@ int TSettings::GetWindowPosY() const
 //------------------------------------------------------------------------------
 void TSettings::SetWindowPosY(int value)
 {
-    Settings->SetParameter("window.posy", QString().number(value));
+    Settings->SetParameter("window.posy", QString::number(value));
 }
 //------------------------------------------------------------------------------
 int TSettings::GetWindowWidth() const
@@ -89,7 +89,7 @@ int TSettings::GetWindowWidth() const
 //------------------------------------------------------------------------------
 void TSettings::SetWindowWidth(int value)
 {
-    Settings->SetParameter("window.width", QString().number(value));
+    Settings->SetParameter("window.width", QString::number(value));
 }
 //------------------------------------------------------------------------------
 int TSettings::GetWindowHeight() const
@@ -99,7 +99,7 @@ int TSettings::GetWindowHeight() const
 //------------------------------------------------------------------------------
 void TSettings::SetWindowHeight(int value)
 {
-    Settings->SetParameter("window.height", QString().number(value));
+    Settings->SetParameter("window.height", QString::number(value));
 }
 //------------------------------------------------------------------------------
 QPoint TSettings::GetWindowPos() const

@@ -9,9 +9,9 @@
 //------------------------------------------------------------------------------
 TMenuScene::TMenuScene(QObject* parent)
     : QGraphicsScene(parent)
-    , Application(NULL)
-    , ResImages(NULL)
-    , ResObjects(NULL)
+    , Application(nullptr)
+    , ResImages(nullptr)
+    , ResObjects(nullptr)
     , MainMenu(new ui::UIMenu)
     , LoadingItemText(new QGraphicsTextItem())
 {

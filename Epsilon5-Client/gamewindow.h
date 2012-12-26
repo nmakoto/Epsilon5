@@ -42,7 +42,7 @@ protected:
 
 private:
     void DrawText(QPainter* painter, const QPoint& pos, const QString& text,
-            int fontSizePt =  10);
+            int fontSizePt = 10);
     void calcFps();
 
 private:

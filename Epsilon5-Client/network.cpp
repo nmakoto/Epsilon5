@@ -5,11 +5,13 @@
 #include "application.h"
 #include "network.h"
 //------------------------------------------------------------------------------
+#define SHOW_PACKETS 0
+//------------------------------------------------------------------------------
 TNetwork::TNetwork(TApplication* application)
     : QObject(application)
     , Application(application)
     , Socket(new QUdpSocket(this))
-    , CurrentWorld(0)
+    , CurrentWorld(nullptr)
 {
     connect(Socket, SIGNAL(readyRead()), SLOT(OnDataReceived()));
     connect(Socket, SIGNAL(error(QAbstractSocket::SocketError)),
@@ -57,6 +59,10 @@ void TNetwork::OnDataReceived()
             // We can receive more than one packet at once
             receivedPacket = receivedPacket.mid(
                     packedDataSize + sizeof(char) + 2 * midSize);
+
+#if SHOW_PACKETS && defined(QT_DEBUG)
+            qDebug() << content.toHex();
+#endif
 
             switch (packetType) {
             case PT_PlayerInfo: {
