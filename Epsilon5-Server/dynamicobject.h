@@ -63,6 +63,12 @@ public:
         Body->SetTransform(Body->GetPosition(), angle);
     }
     virtual void ApplyCustomPhysics() {}
+    inline void SetResourceId(size_t id) {
+        ResourceId = id;
+    }
+    inline size_t GetResourceId() {
+        return ResourceId;
+    }
     inline void SetId(size_t id) {
         Id = id;
     }
@@ -75,9 +81,13 @@ public:
         pos.setY(Body->GetPosition()(1));
         return pos;
     }
+    inline bool IsMoving() {
+        return Body->GetLinearVelocity().Length() != 0;
+    }
 protected:
     b2World* B2World();
 protected:
     b2Body* Body;
+    size_t ResourceId = 0;
     size_t Id = 0;
 };

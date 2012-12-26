@@ -105,8 +105,9 @@ void protobuf_AssignDesc_Epsilon5_2eproto() {
       sizeof(Bullet));
   Bullet_Type_descriptor_ = Bullet_descriptor_->enum_type(0);
   Object_descriptor_ = file->message_type(2);
-  static const int Object_offsets_[4] = {
+  static const int Object_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Object, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Object, resource_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Object, x_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Object, y_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Object, angle_),
@@ -328,30 +329,30 @@ void protobuf_AddDesc_Epsilon5_2eproto() {
     "\002vx\030\003 \001(\001\022\n\n\002vy\030\004 \001(\001\0221\n\013bullet_type\030\005 \001"
     "(\0162\025.Epsilon5.Bullet.Type:\005ARBUZ\022\014\n\004team"
     "\030\006 \002(\010\"0\n\004Type\022\t\n\005ARBUZ\020\000\022\021\n\rLITTLE_BULL"
-    "ET\020\001\022\n\n\006ROCKET\020\002\"9\n\006Object\022\n\n\002id\030\001 \002(\005\022\t"
-    "\n\001x\030\002 \002(\005\022\t\n\001y\030\003 \002(\005\022\r\n\005angle\030\004 \002(\001\"@\n\tR"
-    "espPoint\022\t\n\001x\030\001 \002(\005\022\t\n\001y\030\002 \002(\005\022\014\n\004team\030\003"
-    " \002(\005\022\017\n\007is_main\030\004 \002(\010\"F\n\nPlayerStat\022\n\n\002i"
-    "d\030\001 \002(\005\022\r\n\005score\030\002 \002(\005\022\r\n\005kills\030\003 \002(\005\022\016\n"
-    "\006deaths\030\004 \002(\005\"T\n\nPlayerInfo\022\n\n\002id\030\001 \001(\005\022"
-    "\013\n\003map\030\002 \001(\t\022\016\n\006weapon\030\003 \001(\005\022\017\n\007bullets\030"
-    "\004 \001(\005\022\014\n\004cage\030\005 \001(\005\"\210\002\n\005World\022!\n\007players"
-    "\030\001 \003(\0132\020.Epsilon5.Player\022!\n\007bullets\030\002 \003("
-    "\0132\020.Epsilon5.Bullet\022!\n\007objects\030\003 \003(\0132\020.E"
-    "psilon5.Object\022(\n\013resp_points\030\004 \003(\0132\023.Ep"
-    "silon5.RespPoint\022\025\n\rpacket_number\030\005 \002(\r\022"
-    "*\n\014players_stat\030\006 \003(\0132\024.Epsilon5.PlayerS"
-    "tat\022)\n\013player_info\030\007 \001(\0132\024.Epsilon5.Play"
-    "erInfo\"\214\002\n\007Control\022.\n\tkeyStatus\030\001 \002(\0132\033."
-    "Epsilon5.Control.KeyStatus\022\r\n\005angle\030\002 \002("
-    "\001\022 \n\006weapon\030\003 \002(\0162\020.Epsilon5.Weapon\022\025\n\rp"
-    "acket_number\030\004 \002(\r\022\021\n\tneed_full\030\005 \001(\010\032v\n"
-    "\tKeyStatus\022\r\n\005keyUp\030\001 \002(\010\022\017\n\007keyDown\030\002 \002"
-    "(\010\022\017\n\007keyLeft\030\003 \002(\010\022\020\n\010keyRight\030\004 \002(\010\022\022\n"
-    "\nkeyAttack1\030\005 \002(\010\022\022\n\nkeyAttack2\030\006 \002(\010\"&\n"
-    "\004Auth\022\014\n\004name\030\001 \002(\t\022\020\n\010password\030\002 \001(\t*1\n"
-    "\006Weapon\022\n\n\006Pistol\020\000\022\016\n\nMachinegun\020\001\022\013\n\007S"
-    "hotgun\020\002", 1248);
+    "ET\020\001\022\n\n\006ROCKET\020\002\"N\n\006Object\022\n\n\002id\030\001 \002(\r\022\023"
+    "\n\013resource_id\030\002 \001(\005\022\t\n\001x\030\003 \001(\005\022\t\n\001y\030\004 \001("
+    "\005\022\r\n\005angle\030\005 \001(\001\"@\n\tRespPoint\022\t\n\001x\030\001 \002(\005"
+    "\022\t\n\001y\030\002 \002(\005\022\014\n\004team\030\003 \002(\005\022\017\n\007is_main\030\004 \002"
+    "(\010\"F\n\nPlayerStat\022\n\n\002id\030\001 \002(\005\022\r\n\005score\030\002 "
+    "\002(\005\022\r\n\005kills\030\003 \002(\005\022\016\n\006deaths\030\004 \002(\005\"T\n\nPl"
+    "ayerInfo\022\n\n\002id\030\001 \001(\005\022\013\n\003map\030\002 \001(\t\022\016\n\006wea"
+    "pon\030\003 \001(\005\022\017\n\007bullets\030\004 \001(\005\022\014\n\004cage\030\005 \001(\005"
+    "\"\210\002\n\005World\022!\n\007players\030\001 \003(\0132\020.Epsilon5.P"
+    "layer\022!\n\007bullets\030\002 \003(\0132\020.Epsilon5.Bullet"
+    "\022!\n\007objects\030\003 \003(\0132\020.Epsilon5.Object\022(\n\013r"
+    "esp_points\030\004 \003(\0132\023.Epsilon5.RespPoint\022\025\n"
+    "\rpacket_number\030\005 \002(\r\022*\n\014players_stat\030\006 \003"
+    "(\0132\024.Epsilon5.PlayerStat\022)\n\013player_info\030"
+    "\007 \001(\0132\024.Epsilon5.PlayerInfo\"\214\002\n\007Control\022"
+    ".\n\tkeyStatus\030\001 \002(\0132\033.Epsilon5.Control.Ke"
+    "yStatus\022\r\n\005angle\030\002 \002(\001\022 \n\006weapon\030\003 \002(\0162\020"
+    ".Epsilon5.Weapon\022\025\n\rpacket_number\030\004 \002(\r\022"
+    "\021\n\tneed_full\030\005 \001(\010\032v\n\tKeyStatus\022\r\n\005keyUp"
+    "\030\001 \002(\010\022\017\n\007keyDown\030\002 \002(\010\022\017\n\007keyLeft\030\003 \002(\010"
+    "\022\020\n\010keyRight\030\004 \002(\010\022\022\n\nkeyAttack1\030\005 \002(\010\022\022"
+    "\n\nkeyAttack2\030\006 \002(\010\"&\n\004Auth\022\014\n\004name\030\001 \002(\t"
+    "\022\020\n\010password\030\002 \001(\t*1\n\006Weapon\022\n\n\006Pistol\020\000"
+    "\022\016\n\nMachinegun\020\001\022\013\n\007Shotgun\020\002", 1269);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Epsilon5.proto", &protobuf_RegisterTypes);
   Player::default_instance_ = new Player();
@@ -1418,6 +1419,7 @@ void Bullet::Swap(Bullet* other) {
 
 #ifndef _MSC_VER
 const int Object::kIdFieldNumber;
+const int Object::kResourceIdFieldNumber;
 const int Object::kXFieldNumber;
 const int Object::kYFieldNumber;
 const int Object::kAngleFieldNumber;
@@ -1439,7 +1441,8 @@ Object::Object(const Object& from)
 
 void Object::SharedCtor() {
   _cached_size_ = 0;
-  id_ = 0;
+  id_ = 0u;
+  resource_id_ = 0;
   x_ = 0;
   y_ = 0;
   angle_ = 0;
@@ -1477,7 +1480,8 @@ Object* Object::New() const {
 
 void Object::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    id_ = 0;
+    id_ = 0u;
+    resource_id_ = 0;
     x_ = 0;
     y_ = 0;
     angle_ = 0;
@@ -1492,23 +1496,39 @@ bool Object::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 id = 1;
+      // required uint32 id = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &id_)));
           set_has_id();
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(16)) goto parse_x;
+        if (input->ExpectTag(16)) goto parse_resource_id;
         break;
       }
       
-      // required int32 x = 2;
+      // optional int32 resource_id = 2;
       case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_resource_id:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &resource_id_)));
+          set_has_resource_id();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_x;
+        break;
+      }
+      
+      // optional int32 x = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_x:
@@ -1519,12 +1539,12 @@ bool Object::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(24)) goto parse_y;
+        if (input->ExpectTag(32)) goto parse_y;
         break;
       }
       
-      // required int32 y = 3;
-      case 3: {
+      // optional int32 y = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_y:
@@ -1535,12 +1555,12 @@ bool Object::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(33)) goto parse_angle;
+        if (input->ExpectTag(41)) goto parse_angle;
         break;
       }
       
-      // required double angle = 4;
-      case 4: {
+      // optional double angle = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_angle:
@@ -1573,24 +1593,29 @@ bool Object::MergePartialFromCodedStream(
 
 void Object::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 id = 1;
+  // required uint32 id = 1;
   if (has_id()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->id(), output);
   }
   
-  // required int32 x = 2;
+  // optional int32 resource_id = 2;
+  if (has_resource_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->resource_id(), output);
+  }
+  
+  // optional int32 x = 3;
   if (has_x()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->x(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->x(), output);
   }
   
-  // required int32 y = 3;
+  // optional int32 y = 4;
   if (has_y()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->y(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->y(), output);
   }
   
-  // required double angle = 4;
+  // optional double angle = 5;
   if (has_angle()) {
-    ::google::protobuf::internal::WireFormatLite::WriteDouble(4, this->angle(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->angle(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1601,24 +1626,29 @@ void Object::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Object::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 id = 1;
+  // required uint32 id = 1;
   if (has_id()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->id(), target);
   }
   
-  // required int32 x = 2;
+  // optional int32 resource_id = 2;
+  if (has_resource_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->resource_id(), target);
+  }
+  
+  // optional int32 x = 3;
   if (has_x()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->x(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->x(), target);
   }
   
-  // required int32 y = 3;
+  // optional int32 y = 4;
   if (has_y()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->y(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->y(), target);
   }
   
-  // required double angle = 4;
+  // optional double angle = 5;
   if (has_angle()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(4, this->angle(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->angle(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1632,28 +1662,35 @@ int Object::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 id = 1;
+    // required uint32 id = 1;
     if (has_id()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->id());
     }
     
-    // required int32 x = 2;
+    // optional int32 resource_id = 2;
+    if (has_resource_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->resource_id());
+    }
+    
+    // optional int32 x = 3;
     if (has_x()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->x());
     }
     
-    // required int32 y = 3;
+    // optional int32 y = 4;
     if (has_y()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->y());
     }
     
-    // required double angle = 4;
+    // optional double angle = 5;
     if (has_angle()) {
       total_size += 1 + 8;
     }
@@ -1688,6 +1725,9 @@ void Object::MergeFrom(const Object& from) {
     if (from.has_id()) {
       set_id(from.id());
     }
+    if (from.has_resource_id()) {
+      set_resource_id(from.resource_id());
+    }
     if (from.has_x()) {
       set_x(from.x());
     }
@@ -1714,7 +1754,7 @@ void Object::CopyFrom(const Object& from) {
 }
 
 bool Object::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   return true;
 }
@@ -1722,6 +1762,7 @@ bool Object::IsInitialized() const {
 void Object::Swap(Object* other) {
   if (other != this) {
     std::swap(id_, other->id_);
+    std::swap(resource_id_, other->resource_id_);
     std::swap(x_, other->x_);
     std::swap(y_, other->y_);
     std::swap(angle_, other->angle_);

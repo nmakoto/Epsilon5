@@ -6,6 +6,9 @@
 #include "world.h"
 #include "defines.h"
 
+const quint32 STATIC_OBJECTS_START_ID = 0x00010000;
+const quint32 DYNAMIC_OBJECTS_START_ID = 0x01000000;
+
 TWorld::TWorld(QObject *parent)
     : QObject(parent)
     , B2World(new b2World(b2Vec2(0, 0)))
@@ -30,7 +33,7 @@ bool SendDistance(double x1, double y1, double x2, double y2) {
     double dx, dy;
     dx = abs(x2 - x1);
     dy = abs(y2 - y1);
-    return (dx < 960 && dy < 540); // Half of screen (190x1080)
+    return (dx < 960 && dy < 540); // Half of screen (1900x1080)
 }
 
 // Serialising world specially for given player
@@ -39,6 +42,7 @@ QByteArray TWorld::Serialize(size_t playerId, bool needFullPacket) {
 
     QPointF playerPos = GetPlayerPos(playerId);
 
+    // Players info
     for (auto& p: Players) {
         auto player = world.add_players();
         player->set_id(p->GetId());
@@ -57,6 +61,7 @@ QByteArray TWorld::Serialize(size_t playerId, bool needFullPacket) {
         player->set_team(p->GetTeamBool());
     }
 
+    // Bullets info
     for (auto& b: Bullets) {
         // Filtering bullets on large distances
         if (!SendDistance(b->GetX() * OBJECT_SCALE_UP,
@@ -67,7 +72,7 @@ QByteArray TWorld::Serialize(size_t playerId, bool needFullPacket) {
             continue;
         }
 
-        auto bullet=world.add_bullets();
+        auto bullet = world.add_bullets();
         bullet->set_x(b->GetX() * OBJECT_SCALE_UP);
         bullet->set_y(b->GetY() * OBJECT_SCALE_UP);
         bullet->set_bullet_type(b->GetType());
@@ -78,20 +83,26 @@ QByteArray TWorld::Serialize(size_t playerId, bool needFullPacket) {
         bullet->set_team(b->GetTeamBool());
     }
 
-    for (auto& o: StaticObjects) {
-        auto object = world.add_objects();
-        object->set_x(o->GetX() * OBJECT_SCALE_UP);
-        object->set_y(o->GetY() * OBJECT_SCALE_UP);
-        object->set_angle(o->GetAngle());
-        object->set_id(o->GetId());
+    // Static objects info
+    if( needFullPacket ) {
+        for (auto& o: StaticObjects) {
+            auto object = world.add_objects();
+            object->set_x(o->GetX() * OBJECT_SCALE_UP);
+            object->set_y(o->GetY() * OBJECT_SCALE_UP);
+            object->set_angle(o->GetAngle());
+            object->set_resource_id(o->GetResourceId());
+            object->set_id(o->GetId());
+        }
     }
 
+    // Dynamic objects info
     for (auto& o: DynamicObjects) {
         // Filtering DynamicObjects on large distances
         if (!SendDistance(o->GetX() * OBJECT_SCALE_UP,
                 o->GetY() * OBJECT_SCALE_UP,
                 playerPos.x() * OBJECT_SCALE_UP,
-                playerPos.y() * OBJECT_SCALE_UP))
+                playerPos.y() * OBJECT_SCALE_UP)
+            || (!o->IsMoving() && !needFullPacket))
         {
             continue;
         }
@@ -100,22 +111,26 @@ QByteArray TWorld::Serialize(size_t playerId, bool needFullPacket) {
         object->set_x(o->GetX() * OBJECT_SCALE_UP);
         object->set_y(o->GetY() * OBJECT_SCALE_UP);
         object->set_angle(o->GetAngle());
+        object->set_resource_id(o->GetResourceId());
         object->set_id(o->GetId());
     }
 
-    for (auto& b: WorldBorders) {
-        auto object = world.add_objects();
-        object->set_x(b->GetX() * OBJECT_SCALE_UP);
-        object->set_y(b->GetY() * OBJECT_SCALE_UP);
-        object->set_angle(b->GetAngle());
-        object->set_id(b->GetId());
+    // World borders info
+    if( needFullPacket ) {
+        for (auto& b: WorldBorders) {
+            auto object = world.add_objects();
+            object->set_x(b->GetX() * OBJECT_SCALE_UP);
+            object->set_y(b->GetY() * OBJECT_SCALE_UP);
+            object->set_angle(b->GetAngle());
+            object->set_resource_id(b->GetResourceId());
+            object->set_id(b->GetId());
+        }
     }
 
     if (needFullPacket) {
         Application()->GetMaps()->SerialiseRespPoints(world);
         Application()->GetServer()->SerialiseStats(world);
     }
-
 
     Epsilon5::PlayerInfo* playerInfo = world.mutable_player_info();
     if (needFullPacket) {
@@ -258,7 +273,8 @@ void TWorld::spawnStaticObject(TStaticObjectsList &container, size_t id,
                                      OBJECT_SCALE_DOWN * y, angle, this);
     object->SetRectSize(OBJECT_SCALE_DOWN * size.width(),
                         OBJECT_SCALE_DOWN * size.height());
-    object->SetId(id);
+    object->SetResourceId(id);
+    object->SetId(STATIC_OBJECTS_START_ID + container.count());
     container.insert(container.end(), object);
 }
 
@@ -273,7 +289,8 @@ void TWorld::spawnDynamicObject(TDynamicObjectsList &container,
                                            vy, angle, this);
     object->SetRectSize(OBJECT_SCALE_DOWN * size.width(),
                         OBJECT_SCALE_DOWN * size.height());
-    object->SetId(id);
+    object->SetResourceId(id);
+    object->SetId(DYNAMIC_OBJECTS_START_ID + container.count());
     container.insert(container.end(), object);
 }
 

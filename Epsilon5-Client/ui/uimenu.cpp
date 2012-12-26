@@ -47,7 +47,7 @@ bool UIMenu::sceneEventFilter(QGraphicsItem* watched, QEvent* event)
         return false;
     }
 
-    static UILayoutItem* lastMenuItem = NULL;
+    static UILayoutItem* lastMenuItem = nullptr;
 
     switch (event->type()) {
     case QEvent::GraphicsSceneHoverEnter:

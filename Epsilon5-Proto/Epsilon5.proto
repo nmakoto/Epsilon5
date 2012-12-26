@@ -37,12 +37,16 @@ message Bullet {
     required bool team = 6;
 }
 
+// Object item
+// [server -> client]
+// If no any optional values passed, client should remove this object,
+// else client only updates'em
 message Object {
-    required int32 id = 1;
-
-    required int32 x = 2;
-    required int32 y = 3;
-    required double angle = 4;
+    required uint32 id = 1;
+    optional int32 resource_id = 2;
+    optional int32 x = 3;
+    optional int32 y = 4;
+    optional double angle = 5;
 }
 
 message RespPoint {

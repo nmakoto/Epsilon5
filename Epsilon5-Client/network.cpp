@@ -5,7 +5,7 @@
 #include "application.h"
 #include "network.h"
 //------------------------------------------------------------------------------
-#define SHOW_PACKETS 0
+#define SHOW_PACKETS 1
 //------------------------------------------------------------------------------
 TNetwork::TNetwork(TApplication* application)
     : QObject(application)

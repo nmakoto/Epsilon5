@@ -472,31 +472,38 @@ class Object : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 id = 1;
+  // required uint32 id = 1;
   inline bool has_id() const;
   inline void clear_id();
   static const int kIdFieldNumber = 1;
-  inline ::google::protobuf::int32 id() const;
-  inline void set_id(::google::protobuf::int32 value);
+  inline ::google::protobuf::uint32 id() const;
+  inline void set_id(::google::protobuf::uint32 value);
   
-  // required int32 x = 2;
+  // optional int32 resource_id = 2;
+  inline bool has_resource_id() const;
+  inline void clear_resource_id();
+  static const int kResourceIdFieldNumber = 2;
+  inline ::google::protobuf::int32 resource_id() const;
+  inline void set_resource_id(::google::protobuf::int32 value);
+  
+  // optional int32 x = 3;
   inline bool has_x() const;
   inline void clear_x();
-  static const int kXFieldNumber = 2;
+  static const int kXFieldNumber = 3;
   inline ::google::protobuf::int32 x() const;
   inline void set_x(::google::protobuf::int32 value);
   
-  // required int32 y = 3;
+  // optional int32 y = 4;
   inline bool has_y() const;
   inline void clear_y();
-  static const int kYFieldNumber = 3;
+  static const int kYFieldNumber = 4;
   inline ::google::protobuf::int32 y() const;
   inline void set_y(::google::protobuf::int32 value);
   
-  // required double angle = 4;
+  // optional double angle = 5;
   inline bool has_angle() const;
   inline void clear_angle();
-  static const int kAngleFieldNumber = 4;
+  static const int kAngleFieldNumber = 5;
   inline double angle() const;
   inline void set_angle(double value);
   
@@ -504,6 +511,8 @@ class Object : public ::google::protobuf::Message {
  private:
   inline void set_has_id();
   inline void clear_has_id();
+  inline void set_has_resource_id();
+  inline void clear_has_resource_id();
   inline void set_has_x();
   inline void clear_has_x();
   inline void set_has_y();
@@ -513,13 +522,14 @@ class Object : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::int32 id_;
+  ::google::protobuf::uint32 id_;
+  ::google::protobuf::int32 resource_id_;
   ::google::protobuf::int32 x_;
-  double angle_;
   ::google::protobuf::int32 y_;
+  double angle_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Epsilon5_2eproto();
   friend void protobuf_AssignDesc_Epsilon5_2eproto();
@@ -1797,7 +1807,7 @@ inline void Bullet::set_team(bool value) {
 
 // Object
 
-// required int32 id = 1;
+// required uint32 id = 1;
 inline bool Object::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1808,26 +1818,48 @@ inline void Object::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void Object::clear_id() {
-  id_ = 0;
+  id_ = 0u;
   clear_has_id();
 }
-inline ::google::protobuf::int32 Object::id() const {
+inline ::google::protobuf::uint32 Object::id() const {
   return id_;
 }
-inline void Object::set_id(::google::protobuf::int32 value) {
+inline void Object::set_id(::google::protobuf::uint32 value) {
   set_has_id();
   id_ = value;
 }
 
-// required int32 x = 2;
-inline bool Object::has_x() const {
+// optional int32 resource_id = 2;
+inline bool Object::has_resource_id() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Object::set_has_x() {
+inline void Object::set_has_resource_id() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Object::clear_has_x() {
+inline void Object::clear_has_resource_id() {
   _has_bits_[0] &= ~0x00000002u;
+}
+inline void Object::clear_resource_id() {
+  resource_id_ = 0;
+  clear_has_resource_id();
+}
+inline ::google::protobuf::int32 Object::resource_id() const {
+  return resource_id_;
+}
+inline void Object::set_resource_id(::google::protobuf::int32 value) {
+  set_has_resource_id();
+  resource_id_ = value;
+}
+
+// optional int32 x = 3;
+inline bool Object::has_x() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Object::set_has_x() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Object::clear_has_x() {
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Object::clear_x() {
   x_ = 0;
@@ -1841,15 +1873,15 @@ inline void Object::set_x(::google::protobuf::int32 value) {
   x_ = value;
 }
 
-// required int32 y = 3;
+// optional int32 y = 4;
 inline bool Object::has_y() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void Object::set_has_y() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void Object::clear_has_y() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Object::clear_y() {
   y_ = 0;
@@ -1863,15 +1895,15 @@ inline void Object::set_y(::google::protobuf::int32 value) {
   y_ = value;
 }
 
-// required double angle = 4;
+// optional double angle = 5;
 inline bool Object::has_angle() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Object::set_has_angle() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void Object::clear_has_angle() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Object::clear_angle() {
   angle_ = 0;

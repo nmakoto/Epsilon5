@@ -142,11 +142,18 @@ void TGameWindow::drawBackground(QPainter* painter, const QRectF& rect)
 void TGameWindow::drawForeground(QPainter* painter, const QRectF& rect)
 {
     QGraphicsView::drawForeground(painter, rect);
-
+#ifdef QT_DEBUG
     DrawText(painter, QPoint(rect.bottomLeft().x(), rect.bottomLeft().y() - 10),
             QString("FPS: ").append(QString::number(LastFps)));
     DrawText(painter, QPoint(rect.bottomLeft().x(), rect.bottomLeft().y() - 24),
             QString("Ping: ").append(QString::number(LastPing)));
+    if( Application->GetState() == ST_InGame ) {
+        DrawText(painter,
+                QPoint(rect.bottomLeft().x(), rect.bottomLeft().y() - 36),
+                QString("Objects:").append(
+                    QString::number(BattlefieldScene->items().count())));
+    }
+#endif
 }
 //------------------------------------------------------------------------------
 void TGameWindow::DrawText(QPainter* painter, const QPoint& pos,

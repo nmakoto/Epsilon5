@@ -20,6 +20,12 @@ public:
     inline double GetAngle() {
         return Body->GetAngle();
     }
+    inline void SetResourceId(size_t id) {
+        ResourceId = id;
+    }
+    inline size_t GetResourceId() {
+        return ResourceId;
+    }
     inline void SetId(size_t id) {
         Id = id;
     }
@@ -30,5 +36,6 @@ protected:
     b2World* B2World();
 protected:
     b2Body* Body;
+    size_t ResourceId;
     size_t Id;
 };

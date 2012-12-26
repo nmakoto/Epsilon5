@@ -1,11 +1,13 @@
 #pragma once
 #include <QGraphicsScene>
+#include "ui/objectitem.h"
 //------------------------------------------------------------------------------
 class QKeyEvent;
 class TApplication;
 class TImageStorage;
 class TObjects;
 class TMap;
+//class TObjectItem;
 //------------------------------------------------------------------------------
 namespace Epsilon5
 {
@@ -16,6 +18,7 @@ class Control;
 class TBattlefieldScene : public QGraphicsScene
 {
     Q_OBJECT
+    typedef QHash<quint32, TObjectItem*> TGraphItemHash;
 public:
     explicit TBattlefieldScene(QObject *parent = 0);
     ~TBattlefieldScene();
@@ -37,6 +40,7 @@ signals:
     void ActionMainMenu();
 
 protected:
+    void timerEvent(QTimerEvent* event);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
     void keyPressEvent(QKeyEvent* event);
@@ -47,6 +51,7 @@ protected:
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
+    void UpdateObjects();
 
 private:
     const TApplication* Application;
@@ -56,5 +61,8 @@ private:
     const Epsilon5::World* CurrentWorld;
     Epsilon5::Control* PlayerControl;
     QPointF PlayerPos;
+    TGraphItemHash ItemHash;
+
+    TObjectItem* playerItem = nullptr;
 };
 //------------------------------------------------------------------------------

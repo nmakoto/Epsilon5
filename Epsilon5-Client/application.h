@@ -37,7 +37,7 @@ public:
     inline TGameModel* GetModel() const {
         return GameModel;
     }
-    inline EGameState GetState() {
+    inline EGameState GetState() const {
         return State;
     }
 

@@ -9,7 +9,7 @@
 
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "ui/uistatistic.h"
-#include "ui/objectitem.h"
+//#include "ui/objectitem.h"
 #include "application.h"
 #include "map.h"
 #include "imagestorage.h"
@@ -18,14 +18,16 @@
 //------------------------------------------------------------------------------
 #define SHOW_SCENE_BORDER 1
 //------------------------------------------------------------------------------
+const quint32 DEFAULT_CORRECT_SCENE_TIME = 500;
+//------------------------------------------------------------------------------
 TBattlefieldScene::TBattlefieldScene(QObject *parent)
     : QGraphicsScene(parent)
-    , Application(NULL)
-    , ResImages(NULL)
-    , ResObjects(NULL)
-    , CurrentMap(NULL)
-    , CurrentWorld(NULL)
-    , PlayerControl(NULL)
+    , Application(nullptr)
+    , ResImages(nullptr)
+    , ResObjects(nullptr)
+    , CurrentMap(nullptr)
+    , CurrentWorld(nullptr)
+    , PlayerControl(nullptr)
 {
 //    ui::UIStatistic* statistic = new ui::UIStatistic;
 //    this->addItem(statistic);
@@ -33,6 +35,7 @@ TBattlefieldScene::TBattlefieldScene(QObject *parent)
 //    statistic->resize(,1000);
 //    qDebug() << statistic->rect();
 //    statistic->setPos(0, 300);
+    startTimer(DEFAULT_CORRECT_SCENE_TIME);
 }
 //------------------------------------------------------------------------------
 TBattlefieldScene::~TBattlefieldScene()
@@ -169,6 +172,16 @@ void TBattlefieldScene::keyReleaseEvent(QKeyEvent* event)
     }
 }
 //------------------------------------------------------------------------------
+void TBattlefieldScene::timerEvent(QTimerEvent *event)
+{
+    Q_UNUSED(event);
+    if( Application->GetState() != ST_InGame )
+        return;
+
+//    qDebug() << Q_FUNC_INFO << ":: full packet requested";
+    PlayerControl->set_need_full(true);
+}
+//------------------------------------------------------------------------------
 void TBattlefieldScene::SetUiRect(const QRectF &rect)
 {
     Q_UNUSED(rect);
@@ -216,24 +229,58 @@ void TBattlefieldScene::UpdateScene()
         return;
     }
 
+    PlayerControl->set_need_full(false);
+
+    // Objects
+    // Add to scene if not already there
+    // Or update it (pos, status, etc)
+    UpdateObjects();
+
+    // Add players
+    const QImage* img;
+    for (int i = 0; i != CurrentWorld->players_size(); i++) {
+        const Epsilon5::Player& player = CurrentWorld->players(i);
+        if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
+            img = &ResImages->GetImage("player");
+            PlayerPos = QPointF(player.x(), player.y());
+        } else {
+            if (player.team()) {
+                img = &ResImages->GetImage("peka_t2");
+            } else {
+                img = &ResImages->GetImage("peka_t1");
+            }
+        }
+//        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
+//        this->addItem(item);
+//        item->setPos(player.x(), player.y());
+        if( !playerItem ) {
+            playerItem = new TObjectItem(QPixmap::fromImage(*img));
+            this->addItem(playerItem);
+        }
+
+        playerItem->setPos(player.x(), player.y());
+    }
+
+    return;
+
     this->clear();
 
     // Add objects
     for (int i = 0; i < CurrentWorld->objects_size(); ++i) {
         const Epsilon5::Object& object = CurrentWorld->objects(i);
-        if (object.id() < 0) {
+        if (object.resource_id() < 0) {
             continue;
         }
 
         TObjectItem* item = new TObjectItem(
-            QPixmap::fromImage(*ResObjects->GetImageById(object.id())));
+            QPixmap::fromImage(*ResObjects->GetImageById(object.resource_id())));
         this->addItem(item);
         item->setPos(object.x(), object.y());
         item->setRotationRad(object.angle());
     }
 
     // Add bullets
-    const QImage* img;
+//    const QImage* img;
     for (int i = 0; i != CurrentWorld->bullets_size(); i++) {
         const Epsilon5::Bullet& bullet = CurrentWorld->bullets(i);
         switch (bullet.bullet_type()) {
@@ -296,6 +343,32 @@ void TBattlefieldScene::UpdateScene()
         TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
         this->addItem(item);
         item->setPos(currentRespPos.x(), currentRespPos.y());
+    }
+}
+//------------------------------------------------------------------------------
+void TBattlefieldScene::UpdateObjects()
+{
+//    QRectF visibleRect(PlayerPos.x() - 1000, PlayerPos.y() - 800, 2000, 1600);
+//    QList<QGraphicsItem*> items = this->items(visibleRect);
+
+    TObjectItem* item;
+    for( int id = 0; id < CurrentWorld->objects_size(); ++id ) {
+        const Epsilon5::Object& object = CurrentWorld->objects(id);
+        if( object.resource_id() < 0 )
+            continue;
+
+        if( !ItemHash.keys().contains(object.id()) ) {
+            item = new TObjectItem(
+                QPixmap::fromImage(*ResObjects->GetImageById(object.resource_id())));
+            this->addItem(item);
+            ItemHash[object.id()] = item;
+        } else {
+            item = ItemHash[object.id()];
+        }
+        if( object.has_x() && object.has_y() )
+            item->setPos(object.x(), object.y());
+        if( object.has_angle() )
+            item->setRotationRad(object.angle());
     }
 }
 //------------------------------------------------------------------------------

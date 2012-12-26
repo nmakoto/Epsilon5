@@ -148,7 +148,6 @@ void TServer::SerialiseStats(Epsilon5::World& world) {
         stat->set_deaths(i->GetDeaths());
         stat->set_id(i->GetId());
     }
-
 }
 
 ETeam TServer::AutoBalance() {
