@@ -17,6 +17,7 @@
 #include "battlefieldscene.h"
 //------------------------------------------------------------------------------
 #define SHOW_SCENE_BORDER 1
+#define NO_IMAGE_BACKGROUND 1
 //------------------------------------------------------------------------------
 const quint32 DEFAULT_CORRECT_SCENE_TIME = 500;
 //------------------------------------------------------------------------------
@@ -195,10 +196,15 @@ void TBattlefieldScene::drawBackground(QPainter *painter, const QRectF &rect)
         return;
     }
 
+#if NO_IMAGE_BACKGROUND && defined(QT_DEBUG)
+    painter->fillRect(rect,
+            QBrush(Application->GetModel()->GetMap()->GetBackgroundColor(),
+                    Qt::Dense7Pattern));
+#else
     QRectF drawingRect = QRectF(image->rect().center() + rect.topLeft(), rect.size());
-
     painter->fillRect(rect, Application->GetModel()->GetMap()->GetBackgroundColor());
     painter->drawImage(rect.topLeft(), *image, drawingRect);
+#endif
 
     QPen oldPen = painter->pen();
 #if SHOW_SCENE_BORDER && defined(QT_DEBUG)
