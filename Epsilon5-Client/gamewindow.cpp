@@ -225,6 +225,7 @@ void TGameWindow::PrepareView(EGameState state)
 void TGameWindow::UpdateView(EGameState state)
 {
     QPoint cursorPos;
+    QRectF rt;
     switch( state ) {
     case ST_MainMenu:
     case ST_Connecting:
@@ -236,6 +237,8 @@ void TGameWindow::UpdateView(EGameState state)
         BattlefieldScene->SetPlayerAngle(::getAngle(cursorPos - rect().center()));
         BattlefieldScene->UpdateScene();
         centerOn(BattlefieldScene->GetPlayerPos());
+        setSceneRect(QRectF(BattlefieldScene->GetPlayerPos() - rect().center(),
+                rect().size()));
         return;
     case ST_SelectingResp:
     default:

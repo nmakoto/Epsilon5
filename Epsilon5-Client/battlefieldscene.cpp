@@ -9,6 +9,7 @@
 #endif
 
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
+#include "ui/uiminimap.h"
 #include "ui/uistatistic.h"
 #include "scene/scplayer.h"
 #include "application.h"
@@ -21,6 +22,7 @@
 #define NO_IMAGE_BACKGROUND 0
 //------------------------------------------------------------------------------
 const quint32 DEFAULT_CORRECT_SCENE_TIME = 500;
+const quint16 MAXIMUM_MINIMAP_SIZE = 300;
 //------------------------------------------------------------------------------
 TBattlefieldScene::TBattlefieldScene(QObject *parent)
     : QGraphicsScene(parent)
@@ -30,6 +32,7 @@ TBattlefieldScene::TBattlefieldScene(QObject *parent)
     , CurrentMap(nullptr)
     , CurrentWorld(nullptr)
     , PlayerControl(nullptr)
+    , Minimap(new ui::UIMinimap)
 {
 //    ui::UIStatistic* statistic = new ui::UIStatistic;
 //    this->addItem(statistic);
@@ -37,6 +40,8 @@ TBattlefieldScene::TBattlefieldScene(QObject *parent)
 //    statistic->resize(,1000);
 //    qDebug() << statistic->rect();
 //    statistic->setPos(0, 300);
+    addItem(Minimap);
+
     startTimer(DEFAULT_CORRECT_SCENE_TIME);
 }
 //------------------------------------------------------------------------------
@@ -67,6 +72,9 @@ void TBattlefieldScene::PrepareScene()
     this->setSceneRect((qreal)CurrentMap->GetWidth() / -2,
             (qreal)CurrentMap->GetHeight() / -2,
             CurrentMap->GetWidth(), CurrentMap->GetHeight());
+    Minimap->SetMaximumSize( MAXIMUM_MINIMAP_SIZE );
+    Minimap->SetMapInfo(QSize(CurrentMap->GetWidth(), CurrentMap->GetHeight()),
+            *CurrentMap->GetBackground());
 }
 //------------------------------------------------------------------------------
 void TBattlefieldScene::SetMovementKeysState(bool state, const QKeyEvent* event)
@@ -183,7 +191,7 @@ void TBattlefieldScene::timerEvent(QTimerEvent *event)
 //------------------------------------------------------------------------------
 void TBattlefieldScene::SetUiRect(const QRectF &rect)
 {
-    Q_UNUSED(rect);
+    ViewRect = rect;
 }
 //------------------------------------------------------------------------------
 void TBattlefieldScene::drawBackground(QPainter *painter, const QRectF &rect)
@@ -213,6 +221,14 @@ void TBattlefieldScene::drawBackground(QPainter *painter, const QRectF &rect)
             image->size()));
     painter->setPen(oldPen);
 #endif
+}
+//------------------------------------------------------------------------------
+void TBattlefieldScene::drawForeground(QPainter *painter, const QRectF &rect)
+{
+    Q_UNUSED(painter);
+    Q_UNUSED(rect);
+//    ViewRect = rect;
+//    Minimap->setPos(rect.topLeft());
 }
 //------------------------------------------------------------------------------
 QPointF TBattlefieldScene::GetPlayerPos() const
@@ -248,6 +264,9 @@ void TBattlefieldScene::UpdateScene()
     UpdateBullets();
     UpdatePlayers();
     UpdateRespawns();
+
+    Minimap->setPos(PlayerPos - ViewRect.center() + QPointF(10, 10));
+//    Minimap->setPos(GetUiRect().topLeft() + QPoint(10,10));
 }
 //------------------------------------------------------------------------------
 void TBattlefieldScene::UpdateObjects()
@@ -267,12 +286,14 @@ void TBattlefieldScene::UpdateObjects()
                     *ResObjects->GetImageById(object.resource_id())));
             ItemHash[object.id()] = item;
             this->addItem(item);
+            Minimap->AddItem("objects", item);
         }
 
         if( object.has_x() && object.has_y() )
             item->setPos(object.x(), object.y());
         if( object.has_angle() )
             item->setRotationRad(object.angle());
+        Minimap->update();
     }
 }
 //------------------------------------------------------------------------------
@@ -331,8 +352,10 @@ void TBattlefieldScene::UpdateRespawns()
             item->setZValue(10);
             ItemHash[respawn.id()] = item;
             this->addItem(item);
+            Minimap->AddItem("respawns", item);
         }
         item->setPos(respawn.x(), respawn.y());
+        Minimap->update();
     }
 }
 //------------------------------------------------------------------------------
@@ -363,10 +386,32 @@ void TBattlefieldScene::UpdatePlayers()
             item = new scene::SCPlayer(QPixmap::fromImage(*img));
             ItemHash[player.id()] = item;
             this->addItem(item);
+            Minimap->AddItem("players", item);
         }
 
         item->setPos(player.x(), player.y());
         item->SetHp(player.hp());
+        Minimap->update();
     }
+}
+//------------------------------------------------------------------------------
+void TBattlefieldScene::SetViewRect(const QRectF &rect)
+{
+    ViewRect = rect;
+}
+//------------------------------------------------------------------------------
+QRectF TBattlefieldScene::GetUiRect() const
+{
+    QPointF topLeft(PlayerPos - ViewRect.center());
+    if(PlayerPos.x() < ViewRect.center().x())
+        topLeft.setX(ViewRect.left());
+    if(PlayerPos.y() < ViewRect.center().y())
+        topLeft.setY(ViewRect.top());
+    if(PlayerPos.x() > ViewRect.center().x())
+        topLeft.setX(ViewRect.left());
+    if(PlayerPos.y() > ViewRect.center().y())
+        topLeft.setY(ViewRect.left());
+
+    return QRectF(topLeft, ViewRect.size());
 }
 //------------------------------------------------------------------------------

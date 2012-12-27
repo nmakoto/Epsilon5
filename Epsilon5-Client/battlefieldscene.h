@@ -14,6 +14,11 @@ class World;
 class Control;
 }
 //------------------------------------------------------------------------------
+namespace ui
+{
+class UIMinimap;
+}
+//------------------------------------------------------------------------------
 class TBattlefieldScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -28,6 +33,7 @@ public:
     void PrepareScene();
     void UpdateScene();
     void SetUiRect(const QRectF& rect);
+    void SetViewRect(const QRectF& rect);
 
     QPointF GetPlayerPos() const;
     void SetPlayerAngle(qreal angle);
@@ -46,7 +52,7 @@ protected:
     void keyReleaseEvent(QKeyEvent* event);
 
     void drawBackground(QPainter* painter, const QRectF& rect);
-//    void drawForeground(QPainter* painter, const QRectF& rect);
+    void drawForeground(QPainter* painter, const QRectF& rect);
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
@@ -55,6 +61,7 @@ private:
     void UpdateBullets();
     void UpdateRespawns();
     void UpdatePlayers();
+    QRectF GetUiRect() const;
 
 private:
     const TApplication* Application;
@@ -66,5 +73,7 @@ private:
     QPointF PlayerPos;
     TGraphItemHash ItemHash;
     TGraphItemHash BulletItemHash;
+    ui::UIMinimap* Minimap;
+    QRectF ViewRect;
 };
 //------------------------------------------------------------------------------

@@ -32,7 +32,8 @@ SOURCES += \
     menuscene.cpp \
     battlefieldscene.cpp \
     scene/scobject.cpp \
-    scene/scplayer.cpp
+    scene/scplayer.cpp \
+    ui/uiminimap.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -55,7 +56,8 @@ HEADERS  += \
     menuscene.h \
     battlefieldscene.h \
     scene/scobject.h \
-    scene/scplayer.h
+    scene/scplayer.h \
+    ui/uiminimap.h
 
 FORMS    +=
 
