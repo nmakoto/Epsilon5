@@ -10,6 +10,7 @@
 
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "ui/uistatistic.h"
+#include "scene/scplayer.h"
 #include "application.h"
 #include "map.h"
 #include "imagestorage.h"
@@ -17,7 +18,7 @@
 #include "battlefieldscene.h"
 //------------------------------------------------------------------------------
 #define SHOW_SCENE_BORDER 1
-#define NO_IMAGE_BACKGROUND 1
+#define NO_IMAGE_BACKGROUND 0
 //------------------------------------------------------------------------------
 const quint32 DEFAULT_CORRECT_SCENE_TIME = 500;
 //------------------------------------------------------------------------------
@@ -326,17 +327,18 @@ void TBattlefieldScene::UpdateRespawns()
             }
 
             item = new scene::SCObject(QPixmap::fromImage(*img));
+            // TODO: remove magic number
+            item->setZValue(10);
             ItemHash[respawn.id()] = item;
             this->addItem(item);
         }
-
         item->setPos(respawn.x(), respawn.y());
     }
 }
 //------------------------------------------------------------------------------
 void TBattlefieldScene::UpdatePlayers()
 {
-    scene::SCObject* item;
+    scene::SCPlayer* item;
     size_t currentPlayerId = Application->GetModel()->GetPlayerId();
     for (int i = 0; i != CurrentWorld->players_size(); i++) {
         const Epsilon5::Player& player = CurrentWorld->players(i);
@@ -346,7 +348,7 @@ void TBattlefieldScene::UpdatePlayers()
         }
 
         if( ItemHash.keys().contains(player.id()) ) {
-            item = ItemHash[player.id()];
+            item = qgraphicsitem_cast<scene::SCPlayer*>(ItemHash[player.id()]);
         } else {
             const QImage* img;
             if ((size_t)player.id() == currentPlayerId) {
@@ -358,12 +360,13 @@ void TBattlefieldScene::UpdatePlayers()
                     img = &ResImages->GetImage("peka_t1");
                 }
             }
-            item = new scene::SCObject(QPixmap::fromImage(*img));
+            item = new scene::SCPlayer(QPixmap::fromImage(*img));
             ItemHash[player.id()] = item;
             this->addItem(item);
         }
 
         item->setPos(player.x(), player.y());
+        item->SetHp(player.hp());
     }
 }
 //------------------------------------------------------------------------------

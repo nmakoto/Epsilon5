@@ -31,7 +31,8 @@ SOURCES += \
     gamewindow.cpp \
     menuscene.cpp \
     battlefieldscene.cpp \
-    scene/scobject.cpp
+    scene/scobject.cpp \
+    scene/scplayer.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -53,7 +54,8 @@ HEADERS  += \
     gamewindow.h \
     menuscene.h \
     battlefieldscene.h \
-    scene/scobject.h
+    scene/scobject.h \
+    scene/scplayer.h
 
 FORMS    +=
 
