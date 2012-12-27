@@ -33,7 +33,8 @@ bool SendDistance(double x1, double y1, double x2, double y2) {
     double dx, dy;
     dx = abs(x2 - x1);
     dy = abs(y2 - y1);
-    return (dx < 960 && dy < 540); // Half of screen (1900x1080)
+//    return (dx < 960 && dy < 540); // Half of screen (1900x1080)
+    return (dx < 1024 && dy < 768);
 }
 
 // Serialising world specially for given player

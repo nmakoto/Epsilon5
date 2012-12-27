@@ -124,7 +124,8 @@ void protobuf_AssignDesc_Epsilon5_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Object));
   RespPoint_descriptor_ = file->message_type(3);
-  static const int RespPoint_offsets_[4] = {
+  static const int RespPoint_offsets_[5] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RespPoint, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RespPoint, x_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RespPoint, y_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RespPoint, team_),
@@ -331,28 +332,29 @@ void protobuf_AddDesc_Epsilon5_2eproto() {
     "\030\006 \002(\010\"0\n\004Type\022\t\n\005ARBUZ\020\000\022\021\n\rLITTLE_BULL"
     "ET\020\001\022\n\n\006ROCKET\020\002\"N\n\006Object\022\n\n\002id\030\001 \002(\r\022\023"
     "\n\013resource_id\030\002 \001(\005\022\t\n\001x\030\003 \001(\005\022\t\n\001y\030\004 \001("
-    "\005\022\r\n\005angle\030\005 \001(\001\"@\n\tRespPoint\022\t\n\001x\030\001 \002(\005"
-    "\022\t\n\001y\030\002 \002(\005\022\014\n\004team\030\003 \002(\005\022\017\n\007is_main\030\004 \002"
-    "(\010\"F\n\nPlayerStat\022\n\n\002id\030\001 \002(\005\022\r\n\005score\030\002 "
-    "\002(\005\022\r\n\005kills\030\003 \002(\005\022\016\n\006deaths\030\004 \002(\005\"T\n\nPl"
-    "ayerInfo\022\n\n\002id\030\001 \001(\005\022\013\n\003map\030\002 \001(\t\022\016\n\006wea"
-    "pon\030\003 \001(\005\022\017\n\007bullets\030\004 \001(\005\022\014\n\004cage\030\005 \001(\005"
-    "\"\210\002\n\005World\022!\n\007players\030\001 \003(\0132\020.Epsilon5.P"
-    "layer\022!\n\007bullets\030\002 \003(\0132\020.Epsilon5.Bullet"
-    "\022!\n\007objects\030\003 \003(\0132\020.Epsilon5.Object\022(\n\013r"
-    "esp_points\030\004 \003(\0132\023.Epsilon5.RespPoint\022\025\n"
-    "\rpacket_number\030\005 \002(\r\022*\n\014players_stat\030\006 \003"
-    "(\0132\024.Epsilon5.PlayerStat\022)\n\013player_info\030"
-    "\007 \001(\0132\024.Epsilon5.PlayerInfo\"\214\002\n\007Control\022"
-    ".\n\tkeyStatus\030\001 \002(\0132\033.Epsilon5.Control.Ke"
-    "yStatus\022\r\n\005angle\030\002 \002(\001\022 \n\006weapon\030\003 \002(\0162\020"
-    ".Epsilon5.Weapon\022\025\n\rpacket_number\030\004 \002(\r\022"
-    "\021\n\tneed_full\030\005 \001(\010\032v\n\tKeyStatus\022\r\n\005keyUp"
-    "\030\001 \002(\010\022\017\n\007keyDown\030\002 \002(\010\022\017\n\007keyLeft\030\003 \002(\010"
-    "\022\020\n\010keyRight\030\004 \002(\010\022\022\n\nkeyAttack1\030\005 \002(\010\022\022"
-    "\n\nkeyAttack2\030\006 \002(\010\"&\n\004Auth\022\014\n\004name\030\001 \002(\t"
-    "\022\020\n\010password\030\002 \001(\t*1\n\006Weapon\022\n\n\006Pistol\020\000"
-    "\022\016\n\nMachinegun\020\001\022\013\n\007Shotgun\020\002", 1269);
+    "\005\022\r\n\005angle\030\005 \001(\001\"L\n\tRespPoint\022\n\n\002id\030\001 \002("
+    "\r\022\t\n\001x\030\002 \002(\005\022\t\n\001y\030\003 \002(\005\022\014\n\004team\030\004 \002(\005\022\017\n"
+    "\007is_main\030\005 \002(\010\"F\n\nPlayerStat\022\n\n\002id\030\001 \002(\005"
+    "\022\r\n\005score\030\002 \002(\005\022\r\n\005kills\030\003 \002(\005\022\016\n\006deaths"
+    "\030\004 \002(\005\"T\n\nPlayerInfo\022\n\n\002id\030\001 \001(\005\022\013\n\003map\030"
+    "\002 \001(\t\022\016\n\006weapon\030\003 \001(\005\022\017\n\007bullets\030\004 \001(\005\022\014"
+    "\n\004cage\030\005 \001(\005\"\210\002\n\005World\022!\n\007players\030\001 \003(\0132"
+    "\020.Epsilon5.Player\022!\n\007bullets\030\002 \003(\0132\020.Eps"
+    "ilon5.Bullet\022!\n\007objects\030\003 \003(\0132\020.Epsilon5"
+    ".Object\022(\n\013resp_points\030\004 \003(\0132\023.Epsilon5."
+    "RespPoint\022\025\n\rpacket_number\030\005 \002(\r\022*\n\014play"
+    "ers_stat\030\006 \003(\0132\024.Epsilon5.PlayerStat\022)\n\013"
+    "player_info\030\007 \001(\0132\024.Epsilon5.PlayerInfo\""
+    "\214\002\n\007Control\022.\n\tkeyStatus\030\001 \002(\0132\033.Epsilon"
+    "5.Control.KeyStatus\022\r\n\005angle\030\002 \002(\001\022 \n\006we"
+    "apon\030\003 \002(\0162\020.Epsilon5.Weapon\022\025\n\rpacket_n"
+    "umber\030\004 \002(\r\022\021\n\tneed_full\030\005 \001(\010\032v\n\tKeySta"
+    "tus\022\r\n\005keyUp\030\001 \002(\010\022\017\n\007keyDown\030\002 \002(\010\022\017\n\007k"
+    "eyLeft\030\003 \002(\010\022\020\n\010keyRight\030\004 \002(\010\022\022\n\nkeyAtt"
+    "ack1\030\005 \002(\010\022\022\n\nkeyAttack2\030\006 \002(\010\"&\n\004Auth\022\014"
+    "\n\004name\030\001 \002(\t\022\020\n\010password\030\002 \001(\t*1\n\006Weapon"
+    "\022\n\n\006Pistol\020\000\022\016\n\nMachinegun\020\001\022\013\n\007Shotgun\020"
+    "\002", 1281);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Epsilon5.proto", &protobuf_RegisterTypes);
   Player::default_instance_ = new Player();
@@ -1784,6 +1786,7 @@ void Object::Swap(Object* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int RespPoint::kIdFieldNumber;
 const int RespPoint::kXFieldNumber;
 const int RespPoint::kYFieldNumber;
 const int RespPoint::kTeamFieldNumber;
@@ -1806,6 +1809,7 @@ RespPoint::RespPoint(const RespPoint& from)
 
 void RespPoint::SharedCtor() {
   _cached_size_ = 0;
+  id_ = 0u;
   x_ = 0;
   y_ = 0;
   team_ = 0;
@@ -1844,6 +1848,7 @@ RespPoint* RespPoint::New() const {
 
 void RespPoint::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    id_ = 0u;
     x_ = 0;
     y_ = 0;
     team_ = 0;
@@ -1859,10 +1864,26 @@ bool RespPoint::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 x = 1;
+      // required uint32 id = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &id_)));
+          set_has_id();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_x;
+        break;
+      }
+      
+      // required int32 x = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_x:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &x_)));
@@ -1870,12 +1891,12 @@ bool RespPoint::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(16)) goto parse_y;
+        if (input->ExpectTag(24)) goto parse_y;
         break;
       }
       
-      // required int32 y = 2;
-      case 2: {
+      // required int32 y = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_y:
@@ -1886,12 +1907,12 @@ bool RespPoint::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(24)) goto parse_team;
+        if (input->ExpectTag(32)) goto parse_team;
         break;
       }
       
-      // required int32 team = 3;
-      case 3: {
+      // required int32 team = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_team:
@@ -1902,12 +1923,12 @@ bool RespPoint::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(32)) goto parse_is_main;
+        if (input->ExpectTag(40)) goto parse_is_main;
         break;
       }
       
-      // required bool is_main = 4;
-      case 4: {
+      // required bool is_main = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_is_main:
@@ -1940,24 +1961,29 @@ bool RespPoint::MergePartialFromCodedStream(
 
 void RespPoint::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 x = 1;
+  // required uint32 id = 1;
+  if (has_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->id(), output);
+  }
+  
+  // required int32 x = 2;
   if (has_x()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->x(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->x(), output);
   }
   
-  // required int32 y = 2;
+  // required int32 y = 3;
   if (has_y()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->y(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->y(), output);
   }
   
-  // required int32 team = 3;
+  // required int32 team = 4;
   if (has_team()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->team(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->team(), output);
   }
   
-  // required bool is_main = 4;
+  // required bool is_main = 5;
   if (has_is_main()) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->is_main(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->is_main(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1968,24 +1994,29 @@ void RespPoint::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* RespPoint::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 x = 1;
+  // required uint32 id = 1;
+  if (has_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->id(), target);
+  }
+  
+  // required int32 x = 2;
   if (has_x()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->x(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->x(), target);
   }
   
-  // required int32 y = 2;
+  // required int32 y = 3;
   if (has_y()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->y(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->y(), target);
   }
   
-  // required int32 team = 3;
+  // required int32 team = 4;
   if (has_team()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->team(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->team(), target);
   }
   
-  // required bool is_main = 4;
+  // required bool is_main = 5;
   if (has_is_main()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->is_main(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->is_main(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1999,28 +2030,35 @@ int RespPoint::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 x = 1;
+    // required uint32 id = 1;
+    if (has_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->id());
+    }
+    
+    // required int32 x = 2;
     if (has_x()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->x());
     }
     
-    // required int32 y = 2;
+    // required int32 y = 3;
     if (has_y()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->y());
     }
     
-    // required int32 team = 3;
+    // required int32 team = 4;
     if (has_team()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->team());
     }
     
-    // required bool is_main = 4;
+    // required bool is_main = 5;
     if (has_is_main()) {
       total_size += 1 + 1;
     }
@@ -2052,6 +2090,9 @@ void RespPoint::MergeFrom(const ::google::protobuf::Message& from) {
 void RespPoint::MergeFrom(const RespPoint& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_id()) {
+      set_id(from.id());
+    }
     if (from.has_x()) {
       set_x(from.x());
     }
@@ -2081,13 +2122,14 @@ void RespPoint::CopyFrom(const RespPoint& from) {
 }
 
 bool RespPoint::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
   
   return true;
 }
 
 void RespPoint::Swap(RespPoint* other) {
   if (other != this) {
+    std::swap(id_, other->id_);
     std::swap(x_, other->x_);
     std::swap(y_, other->y_);
     std::swap(team_, other->team_);

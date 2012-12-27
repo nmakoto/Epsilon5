@@ -28,6 +28,7 @@ struct TRespPoint {
     bool IsCapturable;
     size_t CaptureTime;
     ETeam Team;
+    quint32 Id;
 };
 
 class TMaps : public QObject

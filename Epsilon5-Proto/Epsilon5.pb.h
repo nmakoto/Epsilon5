@@ -594,36 +594,45 @@ class RespPoint : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required int32 x = 1;
+  // required uint32 id = 1;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 1;
+  inline ::google::protobuf::uint32 id() const;
+  inline void set_id(::google::protobuf::uint32 value);
+  
+  // required int32 x = 2;
   inline bool has_x() const;
   inline void clear_x();
-  static const int kXFieldNumber = 1;
+  static const int kXFieldNumber = 2;
   inline ::google::protobuf::int32 x() const;
   inline void set_x(::google::protobuf::int32 value);
   
-  // required int32 y = 2;
+  // required int32 y = 3;
   inline bool has_y() const;
   inline void clear_y();
-  static const int kYFieldNumber = 2;
+  static const int kYFieldNumber = 3;
   inline ::google::protobuf::int32 y() const;
   inline void set_y(::google::protobuf::int32 value);
   
-  // required int32 team = 3;
+  // required int32 team = 4;
   inline bool has_team() const;
   inline void clear_team();
-  static const int kTeamFieldNumber = 3;
+  static const int kTeamFieldNumber = 4;
   inline ::google::protobuf::int32 team() const;
   inline void set_team(::google::protobuf::int32 value);
   
-  // required bool is_main = 4;
+  // required bool is_main = 5;
   inline bool has_is_main() const;
   inline void clear_is_main();
-  static const int kIsMainFieldNumber = 4;
+  static const int kIsMainFieldNumber = 5;
   inline bool is_main() const;
   inline void set_is_main(bool value);
   
   // @@protoc_insertion_point(class_scope:Epsilon5.RespPoint)
  private:
+  inline void set_has_id();
+  inline void clear_has_id();
   inline void set_has_x();
   inline void clear_has_x();
   inline void set_has_y();
@@ -635,13 +644,14 @@ class RespPoint : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::google::protobuf::uint32 id_;
   ::google::protobuf::int32 x_;
   ::google::protobuf::int32 y_;
   ::google::protobuf::int32 team_;
   bool is_main_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Epsilon5_2eproto();
   friend void protobuf_AssignDesc_Epsilon5_2eproto();
@@ -1921,15 +1931,37 @@ inline void Object::set_angle(double value) {
 
 // RespPoint
 
-// required int32 x = 1;
-inline bool RespPoint::has_x() const {
+// required uint32 id = 1;
+inline bool RespPoint::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void RespPoint::set_has_x() {
+inline void RespPoint::set_has_id() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void RespPoint::clear_has_x() {
+inline void RespPoint::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void RespPoint::clear_id() {
+  id_ = 0u;
+  clear_has_id();
+}
+inline ::google::protobuf::uint32 RespPoint::id() const {
+  return id_;
+}
+inline void RespPoint::set_id(::google::protobuf::uint32 value) {
+  set_has_id();
+  id_ = value;
+}
+
+// required int32 x = 2;
+inline bool RespPoint::has_x() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RespPoint::set_has_x() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RespPoint::clear_has_x() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void RespPoint::clear_x() {
   x_ = 0;
@@ -1943,15 +1975,15 @@ inline void RespPoint::set_x(::google::protobuf::int32 value) {
   x_ = value;
 }
 
-// required int32 y = 2;
+// required int32 y = 3;
 inline bool RespPoint::has_y() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void RespPoint::set_has_y() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void RespPoint::clear_has_y() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void RespPoint::clear_y() {
   y_ = 0;
@@ -1965,15 +1997,15 @@ inline void RespPoint::set_y(::google::protobuf::int32 value) {
   y_ = value;
 }
 
-// required int32 team = 3;
+// required int32 team = 4;
 inline bool RespPoint::has_team() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void RespPoint::set_has_team() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void RespPoint::clear_has_team() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void RespPoint::clear_team() {
   team_ = 0;
@@ -1987,15 +2019,15 @@ inline void RespPoint::set_team(::google::protobuf::int32 value) {
   team_ = value;
 }
 
-// required bool is_main = 4;
+// required bool is_main = 5;
 inline bool RespPoint::has_is_main() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void RespPoint::set_has_is_main() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void RespPoint::clear_has_is_main() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void RespPoint::clear_is_main() {
   is_main_ = false;

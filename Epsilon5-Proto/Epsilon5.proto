@@ -50,10 +50,11 @@ message Object {
 }
 
 message RespPoint {
-    required int32 x = 1;
-    required int32 y = 2;
-    required int32 team = 3;
-    required bool is_main = 4;
+    required uint32 id = 1;
+    required int32 x = 2;
+    required int32 y = 3;
+    required int32 team = 4;
+    required bool is_main = 5;
 }
 
 message PlayerStat {

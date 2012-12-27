@@ -8,6 +8,8 @@
 
 #include <QDebug>
 
+const quint32 RESPAWN_POINTS_START_ID = 0x00000100;
+
 TMaps::TMaps(QObject *parent)
     : QObject(parent)
 {
@@ -112,6 +114,7 @@ void TMaps::LoadRespPoints(const QString& fileName) {
         point.IsMain = utils::FromString(params[5]);
         point.CaptureTime = utils::FromString(params[6]);
         point.Team = utils::FromString(params[7]) ? T_One : T_Second;
+        point.Id = RESPAWN_POINTS_START_ID + RespPoints.count();
         RespPoints.push_back(point);
     }
 }
@@ -137,6 +140,7 @@ void TMaps::SerialiseRespPoints(Epsilon5::World& world) {
         point->set_y(i->Y);
         point->set_is_main(i->IsMain);
         point->set_team(i->Team);
+        point->set_id(i->Id);
     }
 }
 

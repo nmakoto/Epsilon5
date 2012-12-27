@@ -7,7 +7,6 @@ class TApplication;
 class TImageStorage;
 class TObjects;
 class TMap;
-//class TObjectItem;
 //------------------------------------------------------------------------------
 namespace Epsilon5
 {
@@ -51,7 +50,11 @@ protected:
 
 private:
     void SetMovementKeysState(bool state, const QKeyEvent* event);
+    bool IsAtShowingDistance(const QPointF& playerPos, const QPointF& pos);
     void UpdateObjects();
+    void UpdateBullets();
+    void UpdateRespawns();
+    void UpdatePlayers();
 
 private:
     const TApplication* Application;
@@ -62,7 +65,6 @@ private:
     Epsilon5::Control* PlayerControl;
     QPointF PlayerPos;
     TGraphItemHash ItemHash;
-
-    TObjectItem* playerItem = nullptr;
+    TGraphItemHash BulletItemHash;
 };
 //------------------------------------------------------------------------------

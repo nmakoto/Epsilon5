@@ -1,6 +1,7 @@
 #include <qglobal.h>
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 #include <QKeyEvent>
 
 #ifdef Q_OS_LINUX
@@ -9,7 +10,6 @@
 
 #include "../Epsilon5-Proto/Epsilon5.pb.h"
 #include "ui/uistatistic.h"
-//#include "ui/objectitem.h"
 #include "application.h"
 #include "map.h"
 #include "imagestorage.h"
@@ -178,9 +178,6 @@ void TBattlefieldScene::timerEvent(QTimerEvent *event)
     Q_UNUSED(event);
     if( Application->GetState() != ST_InGame )
         return;
-
-//    qDebug() << Q_FUNC_INFO << ":: full packet requested";
-    PlayerControl->set_need_full(true);
 }
 //------------------------------------------------------------------------------
 void TBattlefieldScene::SetUiRect(const QRectF &rect)
@@ -227,7 +224,17 @@ void TBattlefieldScene::SetPlayerAngle(qreal angle)
     PlayerControl->set_angle(angle);
 }
 //------------------------------------------------------------------------------
-// TODO: rewrite this function
+bool TBattlefieldScene::IsAtShowingDistance(const QPointF &playerPos,
+        const QPointF &pos)
+{
+    const QGraphicsView* item = views().first();
+    if( !item )
+        return true;
+
+    return abs(playerPos.x() - pos.x()) < item->rect().width()
+            && abs(playerPos.y() - pos.y()) < item->rect().height();
+}
+//------------------------------------------------------------------------------
 void TBattlefieldScene::UpdateScene()
 {
     if( !IsValid() ) {
@@ -235,60 +242,53 @@ void TBattlefieldScene::UpdateScene()
         return;
     }
 
-    PlayerControl->set_need_full(false);
-
-    // Objects
-    // Add to scene if not already there
-    // Or update it (pos, status, etc)
+    // Add items to scene if not already there or update'em (pos, status, etc)
     UpdateObjects();
-
-    // Add players
-    const QImage* img;
-    for (int i = 0; i != CurrentWorld->players_size(); i++) {
-        const Epsilon5::Player& player = CurrentWorld->players(i);
-        if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
-            img = &ResImages->GetImage("player");
-            PlayerPos = QPointF(player.x(), player.y());
-        } else {
-            if (player.team()) {
-                img = &ResImages->GetImage("peka_t2");
-            } else {
-                img = &ResImages->GetImage("peka_t1");
-            }
-        }
-//        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
-//        this->addItem(item);
-//        item->setPos(player.x(), player.y());
-        if( !playerItem ) {
-            playerItem = new TObjectItem(QPixmap::fromImage(*img));
-            this->addItem(playerItem);
-        }
-
-        playerItem->setPos(player.x(), player.y());
-    }
-
-    return;
-
-    this->clear();
-
-    // Add objects
-    for (int i = 0; i < CurrentWorld->objects_size(); ++i) {
+    UpdateBullets();
+    UpdatePlayers();
+    UpdateRespawns();
+}
+//------------------------------------------------------------------------------
+void TBattlefieldScene::UpdateObjects()
+{
+    TObjectItem* item;
+    for( int i = 0; i < CurrentWorld->objects_size(); ++i ) {
         const Epsilon5::Object& object = CurrentWorld->objects(i);
-        if (object.resource_id() < 0) {
+        if( object.resource_id() < 0 || !IsAtShowingDistance(
+                PlayerPos, QPointF(object.x(), object.y()))) {
             continue;
         }
 
-        TObjectItem* item = new TObjectItem(
-            QPixmap::fromImage(*ResObjects->GetImageById(object.resource_id())));
-        this->addItem(item);
-        item->setPos(object.x(), object.y());
-        item->setRotationRad(object.angle());
+        if( ItemHash.keys().contains(object.id()) ) {
+            item = ItemHash[object.id()];
+        } else {
+            item = new TObjectItem(QPixmap::fromImage(
+                    *ResObjects->GetImageById(object.resource_id())));
+            ItemHash[object.id()] = item;
+            this->addItem(item);
+        }
+
+        if( object.has_x() && object.has_y() )
+            item->setPos(object.x(), object.y());
+        if( object.has_angle() )
+            item->setRotationRad(object.angle());
     }
+}
+//------------------------------------------------------------------------------
+void TBattlefieldScene::UpdateBullets()
+{
+    // Clear all bullet item at scene
+    auto it = BulletItemHash.constBegin();
+    for( ; it != BulletItemHash.constEnd(); ++it ) {
+        this->removeItem(*it);
+    }
+    BulletItemHash.clear();
 
     // Add bullets
-//    const QImage* img;
-    for (int i = 0; i != CurrentWorld->bullets_size(); i++) {
+    for( int i = 0; i < CurrentWorld->bullets_size(); ++i ) {
         const Epsilon5::Bullet& bullet = CurrentWorld->bullets(i);
+
+        const QImage* img;
         switch (bullet.bullet_type()) {
         case Epsilon5::Bullet_Type_ARBUZ:
             img = &ResImages->GetImage("arbuz");
@@ -302,79 +302,68 @@ void TBattlefieldScene::UpdateScene()
         }
 
         TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
+        BulletItemHash[BulletItemHash.count()] = item;
         this->addItem(item);
         item->setPos(bullet.x(), bullet.y());
     }
-
-    // Add players
-    for (int i = 0; i != CurrentWorld->players_size(); i++) {
-        const Epsilon5::Player& player = CurrentWorld->players(i);
-        if ((size_t)player.id() == Application->GetModel()->GetPlayerId()) {
-            img = &ResImages->GetImage("player");
-            PlayerPos = QPointF(player.x(), player.y());
+}
+//------------------------------------------------------------------------------
+void TBattlefieldScene::UpdateRespawns()
+{
+    TObjectItem* item;
+    for( int i = 0; i < CurrentWorld->resp_points_size(); ++i ) {
+        const Epsilon5::RespPoint& respawn = CurrentWorld->resp_points(i);
+        if( ItemHash.keys().contains(respawn.id()) ) {
+            item = ItemHash[respawn.id()];
         } else {
-            if (player.team()) {
-                img = &ResImages->GetImage("peka_t2");
+            const QImage* img;
+            if (respawn.team() == T_One) {
+                img = &ResImages->GetImage("flag_t1");
+            } else if (respawn.team() == T_Second) {
+                img = &ResImages->GetImage("flag_t2");
             } else {
-                img = &ResImages->GetImage("peka_t1");
+                img = &ResImages->GetImage("flag_tn");
             }
-        }
-        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
-        this->addItem(item);
-        item->setPos(player.x(), player.y());
-    }
 
-    // Add respawns
-    static QVector<TRespPoint> RespPoints;
-    if (CurrentWorld->resp_points_size() > 0) {
-        RespPoints.clear();
-        for (int i = 0; i < CurrentWorld->resp_points_size(); i++) {
-            TRespPoint pos;
-            pos.X = CurrentWorld->resp_points(i).x();
-            pos.Y = CurrentWorld->resp_points(i).y();
-            pos.Team = (ETeam)(CurrentWorld->resp_points(i).team());
-            RespPoints.push_back(pos);
+            item = new TObjectItem(QPixmap::fromImage(*img));
+            ItemHash[respawn.id()] = item;
+            this->addItem(item);
         }
-    }
 
-    for (int i = 0; i < RespPoints.size(); i++) {
-        if (RespPoints[i].Team == T_One) {
-            img = &ResImages->GetImage("flag_t1");
-        } else if (RespPoints[i].Team == T_Second) {
-            img = &ResImages->GetImage("flag_t2");
-        } else {
-            img = &ResImages->GetImage("flag_tn");
-        }
-        QPoint currentRespPos(RespPoints[i].X, RespPoints[i].Y);
-        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
-        this->addItem(item);
-        item->setPos(currentRespPos.x(), currentRespPos.y());
+        item->setPos(respawn.x(), respawn.y());
     }
 }
 //------------------------------------------------------------------------------
-void TBattlefieldScene::UpdateObjects()
+void TBattlefieldScene::UpdatePlayers()
 {
-//    QRectF visibleRect(PlayerPos.x() - 1000, PlayerPos.y() - 800, 2000, 1600);
-//    QList<QGraphicsItem*> items = this->items(visibleRect);
-
     TObjectItem* item;
-    for( int id = 0; id < CurrentWorld->objects_size(); ++id ) {
-        const Epsilon5::Object& object = CurrentWorld->objects(id);
-        if( object.resource_id() < 0 )
-            continue;
+    size_t currentPlayerId = Application->GetModel()->GetPlayerId();
+    for (int i = 0; i != CurrentWorld->players_size(); i++) {
+        const Epsilon5::Player& player = CurrentWorld->players(i);
 
-        if( !ItemHash.keys().contains(object.id()) ) {
-            item = new TObjectItem(
-                QPixmap::fromImage(*ResObjects->GetImageById(object.resource_id())));
-            this->addItem(item);
-            ItemHash[object.id()] = item;
-        } else {
-            item = ItemHash[object.id()];
+        if( (size_t)player.id() == currentPlayerId) {
+            PlayerPos = QPointF(player.x(), player.y());
         }
-        if( object.has_x() && object.has_y() )
-            item->setPos(object.x(), object.y());
-        if( object.has_angle() )
-            item->setRotationRad(object.angle());
+
+        if( ItemHash.keys().contains(player.id()) ) {
+            item = ItemHash[player.id()];
+        } else {
+            const QImage* img;
+            if ((size_t)player.id() == currentPlayerId) {
+                img = &ResImages->GetImage("player");
+            } else {
+                if (player.team()) {
+                    img = &ResImages->GetImage("peka_t2");
+                } else {
+                    img = &ResImages->GetImage("peka_t1");
+                }
+            }
+            item = new TObjectItem(QPixmap::fromImage(*img));
+            ItemHash[player.id()] = item;
+            this->addItem(item);
+        }
+
+        item->setPos(player.x(), player.y());
     }
 }
 //------------------------------------------------------------------------------
