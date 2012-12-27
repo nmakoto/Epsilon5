@@ -1,11 +1,14 @@
 #pragma once
 #include <QGraphicsPixmapItem>
 //------------------------------------------------------------------------------
-class TObjectItem : public QGraphicsPixmapItem
+namespace scene
+{
+//------------------------------------------------------------------------------
+class SCObject : public QGraphicsPixmapItem
 {
 public:
-    explicit TObjectItem(QGraphicsItem* parent = 0);
-    explicit TObjectItem(const QPixmap& pixmap, QGraphicsItem* parent = 0);
+    explicit SCObject(QGraphicsItem* parent = 0);
+    explicit SCObject(const QPixmap& pixmap, QGraphicsItem* parent = 0);
 
     QRectF boundingRect() const;
     void setPos(qreal x, qreal y);
@@ -17,4 +20,6 @@ public:
     qreal rotation() const;
     qreal rotationRad() const;
 };
+//------------------------------------------------------------------------------
+}
 //------------------------------------------------------------------------------

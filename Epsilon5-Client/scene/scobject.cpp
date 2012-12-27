@@ -1,62 +1,64 @@
 #include <qmath.h>
-#include "objectitem.h"
+#include "scene/scobject.h"
 //------------------------------------------------------------------------------
 const qreal RAD_CONVERT = 180 / M_PI;
 //------------------------------------------------------------------------------
-TObjectItem::TObjectItem(QGraphicsItem* parent)
+using namespace scene;
+//------------------------------------------------------------------------------
+SCObject::SCObject(QGraphicsItem* parent)
     : QGraphicsPixmapItem(parent)
 {
 }
 //------------------------------------------------------------------------------
-TObjectItem::TObjectItem(const QPixmap& pixmap, QGraphicsItem* parent)
+SCObject::SCObject(const QPixmap& pixmap, QGraphicsItem* parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {
 }
 //------------------------------------------------------------------------------
-QRectF TObjectItem::boundingRect() const
+QRectF SCObject::boundingRect() const
 {
     return pixmap().rect();
 }
 //------------------------------------------------------------------------------
-void TObjectItem::setPos(const QPointF pos)
+void SCObject::setPos(const QPointF pos)
 {
     setPos(pos.x(), pos.y());
 }
 //------------------------------------------------------------------------------
-void TObjectItem::setPos(qreal x, qreal y)
+void SCObject::setPos(qreal x, qreal y)
 {
     setTransformOriginPoint(0, 0);
     QGraphicsPixmapItem::setPos(x - center().x(), y - center().y());
     setTransformOriginPoint(center());
 }
 //------------------------------------------------------------------------------
-QPointF TObjectItem::pos() const
+QPointF SCObject::pos() const
 {
     return QGraphicsPixmapItem::pos() + center();
 }
 //------------------------------------------------------------------------------
-QPointF TObjectItem::center() const
+QPointF SCObject::center() const
 {
     return QPointF(pixmap().width() / 2, pixmap().height() / 2);
 }
 //------------------------------------------------------------------------------
-void TObjectItem::setRotation(qreal angle)
+void SCObject::setRotation(qreal angle)
 {
     setTransformOriginPoint(center());
     QGraphicsPixmapItem::setRotation(angle);
 }
 //------------------------------------------------------------------------------
-void TObjectItem::setRotationRad(qreal rad)
+void SCObject::setRotationRad(qreal rad)
 {
     setRotation(rad * RAD_CONVERT);
 }
 //------------------------------------------------------------------------------
-qreal TObjectItem::rotation() const
+qreal SCObject::rotation() const
 {
     return QGraphicsPixmapItem::rotation();
 }
 //------------------------------------------------------------------------------
-qreal TObjectItem::rotationRad() const
+qreal SCObject::rotationRad() const
 {
     return QGraphicsPixmapItem::rotation() * RAD_CONVERT;
 }

@@ -18,7 +18,6 @@ SOURCES += \
     ../utils/uexception.cpp \
     ../utils/ufullscreenwrapper.cpp \
     ../utils/ucast.cpp \
-    ui/objectitem.cpp \
     ui/uimenu.cpp \
     ui/uilayoutitem.cpp \
     ui/uistatistic.cpp \
@@ -31,7 +30,8 @@ SOURCES += \
     gamemodel.cpp \
     gamewindow.cpp \
     menuscene.cpp \
-    battlefieldscene.cpp
+    battlefieldscene.cpp \
+    scene/scobject.cpp
 
 HEADERS  += \
     ../Epsilon5-Proto/Epsilon5.pb.h \
@@ -40,7 +40,6 @@ HEADERS  += \
     ../utils/uexception.h \
     ../utils/ufullscreenwrapper.h \
     ../utils/ucast.h \
-    ui/objectitem.h \
     ui/uimenu.h \
     ui/uilayoutitem.h \
     ui/uistatistic.h \
@@ -53,7 +52,8 @@ HEADERS  += \
     gamemodel.h \
     gamewindow.h \
     menuscene.h \
-    battlefieldscene.h
+    battlefieldscene.h \
+    scene/scobject.h
 
 FORMS    +=
 

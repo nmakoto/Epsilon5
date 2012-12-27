@@ -1,6 +1,6 @@
 #pragma once
 #include <QGraphicsScene>
-#include "ui/objectitem.h"
+#include "scene/scobject.h"
 //------------------------------------------------------------------------------
 class QKeyEvent;
 class TApplication;
@@ -17,7 +17,7 @@ class Control;
 class TBattlefieldScene : public QGraphicsScene
 {
     Q_OBJECT
-    typedef QHash<quint32, TObjectItem*> TGraphItemHash;
+    typedef QHash<quint32, scene::SCObject*> TGraphItemHash;
 public:
     explicit TBattlefieldScene(QObject *parent = 0);
     ~TBattlefieldScene();

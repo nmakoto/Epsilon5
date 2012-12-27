@@ -251,7 +251,7 @@ void TBattlefieldScene::UpdateScene()
 //------------------------------------------------------------------------------
 void TBattlefieldScene::UpdateObjects()
 {
-    TObjectItem* item;
+    scene::SCObject* item;
     for( int i = 0; i < CurrentWorld->objects_size(); ++i ) {
         const Epsilon5::Object& object = CurrentWorld->objects(i);
         if( object.resource_id() < 0 || !IsAtShowingDistance(
@@ -262,7 +262,7 @@ void TBattlefieldScene::UpdateObjects()
         if( ItemHash.keys().contains(object.id()) ) {
             item = ItemHash[object.id()];
         } else {
-            item = new TObjectItem(QPixmap::fromImage(
+            item = new scene::SCObject(QPixmap::fromImage(
                     *ResObjects->GetImageById(object.resource_id())));
             ItemHash[object.id()] = item;
             this->addItem(item);
@@ -301,7 +301,7 @@ void TBattlefieldScene::UpdateBullets()
             break;
         }
 
-        TObjectItem* item = new TObjectItem(QPixmap::fromImage(*img));
+        scene::SCObject* item = new scene::SCObject(QPixmap::fromImage(*img));
         BulletItemHash[BulletItemHash.count()] = item;
         this->addItem(item);
         item->setPos(bullet.x(), bullet.y());
@@ -310,7 +310,7 @@ void TBattlefieldScene::UpdateBullets()
 //------------------------------------------------------------------------------
 void TBattlefieldScene::UpdateRespawns()
 {
-    TObjectItem* item;
+    scene::SCObject* item;
     for( int i = 0; i < CurrentWorld->resp_points_size(); ++i ) {
         const Epsilon5::RespPoint& respawn = CurrentWorld->resp_points(i);
         if( ItemHash.keys().contains(respawn.id()) ) {
@@ -325,7 +325,7 @@ void TBattlefieldScene::UpdateRespawns()
                 img = &ResImages->GetImage("flag_tn");
             }
 
-            item = new TObjectItem(QPixmap::fromImage(*img));
+            item = new scene::SCObject(QPixmap::fromImage(*img));
             ItemHash[respawn.id()] = item;
             this->addItem(item);
         }
@@ -336,7 +336,7 @@ void TBattlefieldScene::UpdateRespawns()
 //------------------------------------------------------------------------------
 void TBattlefieldScene::UpdatePlayers()
 {
-    TObjectItem* item;
+    scene::SCObject* item;
     size_t currentPlayerId = Application->GetModel()->GetPlayerId();
     for (int i = 0; i != CurrentWorld->players_size(); i++) {
         const Epsilon5::Player& player = CurrentWorld->players(i);
@@ -358,7 +358,7 @@ void TBattlefieldScene::UpdatePlayers()
                     img = &ResImages->GetImage("peka_t1");
                 }
             }
-            item = new TObjectItem(QPixmap::fromImage(*img));
+            item = new scene::SCObject(QPixmap::fromImage(*img));
             ItemHash[player.id()] = item;
             this->addItem(item);
         }
