@@ -22,6 +22,9 @@ public:
     inline bool IsServerAlive() {
         return LastPacketReceived.elapsed() < DEFAULT_SERVER_TIMEOUT_MESSAGE;
     }
+    inline bool IsFullWorld() {
+        return LastFullWorldPacket;
+    }
 
 public slots:
     void Connect();
@@ -52,5 +55,6 @@ private:
     Epsilon5::World* CurrentWorld;
     EPlayerStatus Status;
     QTime LastPacketReceived;
+    bool LastFullWorldPacket;
 };
 //------------------------------------------------------------------------------

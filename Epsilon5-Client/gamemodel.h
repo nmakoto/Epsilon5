@@ -47,6 +47,8 @@ public:
     quint32 GetPlayerPing() const;
 
     Epsilon5::Control* GetPlayerControl();
+    void SetFullWorldState(bool value);
+    bool GetFullWorldState() const;
 
 signals:
     void MapLoaded();
@@ -58,5 +60,6 @@ private:
     Epsilon5::PlayerInfo PlayerInfo;
     Epsilon5::Control PlayerControl;
     TStatVector Statistic;
+    bool FullWorldState;
 };
 //------------------------------------------------------------------------------

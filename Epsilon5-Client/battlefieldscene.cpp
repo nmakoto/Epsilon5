@@ -265,8 +265,13 @@ void TBattlefieldScene::UpdateScene()
     UpdatePlayers();
     UpdateRespawns();
 
+    if( Application->GetModel()->GetFullWorldState() )
+    {
+        QList<GraphicsItem*>& list = this->items(ViewRect);
+        scene::SCObject* item =
+    }
+
     Minimap->setPos(PlayerPos - ViewRect.center() + QPointF(10, 10));
-//    Minimap->setPos(GetUiRect().topLeft() + QPoint(10,10));
 }
 //------------------------------------------------------------------------------
 void TBattlefieldScene::UpdateObjects()

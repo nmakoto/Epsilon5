@@ -110,7 +110,7 @@ void TServer::SendWorld()
         size_t id = i.value()->GetId();
         bool needFullPacket = i.value()->NeedFullWorld();
         QByteArray world = Application()->GetWorld()->Serialize(id, needFullPacket);
-        i.value()->SendWorld(world);
+        i.value()->SendWorld(world, needFullPacket);
     }
 }
 

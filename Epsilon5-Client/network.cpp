@@ -78,10 +78,15 @@ void TNetwork::OnDataReceived()
                 }
             }
             break;
+            case PT_FullWorld:
+                if (Status != PS_Spawned) {
+                    throw UException("Wrong packet: PT_FullWorld");
+                }
             case PT_World: {
                 if (Status != PS_Spawned) {
                     throw UException("Wrong packet: PT_World");
                 }
+                LastFullWorldPacket = packetType == PT_FullWorld;
                 CurrentWorld->Clear();
                 if (CurrentWorld->ParseFromArray(content.data(), content.size())) {
                     qint32 packetnumber = CurrentWorld->packet_number();

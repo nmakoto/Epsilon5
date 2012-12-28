@@ -4,6 +4,7 @@ TGameModel::TGameModel(TApplication* parent)
     : QObject(parent)
     , WorldMap(new TMap(this))
     , PlayerId(0)
+    , FullWorldState(false)
 {
     connect(WorldMap, SIGNAL(MapLoaded()), SIGNAL(MapLoaded()));
 
@@ -84,5 +85,15 @@ Epsilon5::Control* TGameModel::GetPlayerControl()
 //------------------------------------------------------------------------------
 void TGameModel::Update()
 {
+}
+//------------------------------------------------------------------------------
+void TGameModel::SetFullWorldState(bool value)
+{
+    FullWorldState = value;
+}
+//------------------------------------------------------------------------------
+bool TGameModel::GetFullWorldState() const
+{
+    return FullWorldState;
 }
 //------------------------------------------------------------------------------

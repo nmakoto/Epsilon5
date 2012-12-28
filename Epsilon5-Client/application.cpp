@@ -80,6 +80,7 @@ void TApplication::PrepareMap(const Epsilon5::PlayerInfo& info)
 //------------------------------------------------------------------------------
 void TApplication::UpdateWorld()
 {
+    GameModel->SetFullWorldState(Network->IsFullWorld());
 }
 //------------------------------------------------------------------------------
 void TApplication::GameClose()

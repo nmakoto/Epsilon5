@@ -119,8 +119,8 @@ void TClient::OnDataReceived(const QByteArray &data)
     }
 }
 
-void TClient::SendWorld(const QByteArray &world) {
-    Send(world, PT_World);
+void TClient::SendWorld(const QByteArray &world, bool needFull) {
+    Send(world, needFull ? PT_FullWorld : PT_World);
 }
 
 void TClient::Send(const QByteArray& data, EPacketType packetType)

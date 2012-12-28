@@ -10,6 +10,7 @@ enum EPlayerStatus {
 
 enum EPacketType {
     PT_World,
+    PT_FullWorld,
     PT_Control,
     PT_PlayerAuth,
     PT_PlayerInfo

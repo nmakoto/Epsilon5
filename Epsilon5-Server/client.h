@@ -14,7 +14,7 @@ class TClient : public QObject
 public:
     TClient(const QHostAddress& addr, quint16 port, size_t id, QObject *parent = 0);
     size_t GetId();
-    void SendWorld(const QByteArray& world);
+    void SendWorld(const QByteArray& world, bool needFull = false);
     inline quint64 GetLastSeen() {
         return LastSeen;
     }
