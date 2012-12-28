@@ -397,6 +397,8 @@ void TBattlefieldScene::UpdatePlayers()
 
         item->setPos(player.x(), player.y());
         item->SetHp(player.hp());
+        if( player.has_name())
+            item->SetName(player.name().c_str());
         Minimap->update();
     }
 }

@@ -15,9 +15,11 @@ public:
             QWidget *widget);
 
     void SetHp(quint16 hp);
+    void SetName(const QString& name);
 
 private:
     quint16 Hp = 100;
+    QString Name;
 };
 //------------------------------------------------------------------------------
 }
