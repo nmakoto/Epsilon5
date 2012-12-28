@@ -205,6 +205,7 @@ void TGameWindow::PrepareView(EGameState state)
     case ST_MainMenu:
         MenuScene->PrepareScene(TMenuScene::MS_MainMenu);
         this->setScene(MenuScene);
+        this->setSceneRect(MenuScene->sceneRect());
         centerOn(MenuScene->sceneRect().center());
         return;
     case ST_Connecting:

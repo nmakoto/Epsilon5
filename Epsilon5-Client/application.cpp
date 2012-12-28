@@ -41,6 +41,7 @@ void TApplication::SetMainMenuState()
     qDebug() << Q_FUNC_INFO;
     State = ST_MainMenu;
     Network->Disconnect();
+//    GameWindow->ShowMainMenu();
 }
 //------------------------------------------------------------------------------
 void TApplication::SetConnectingState()
@@ -56,7 +57,6 @@ void TApplication::SetLoadingMapState()
     qDebug() << Q_FUNC_INFO;
     State = ST_LoadingMap;
     GameModel->LoadMap(GameModel->GetCurrentMapName());
-    GameWindow->PrepareView(State);
     GameWindow->ShowLoading();
 }
 //------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void TApplication::UpdateWorld()
 //------------------------------------------------------------------------------
 void TApplication::GameClose()
 {
-    SetMainMenuState();
+//    SetMainMenuState();
     GameWindow->close();
 }
 //------------------------------------------------------------------------------

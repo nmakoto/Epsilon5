@@ -267,8 +267,9 @@ void TBattlefieldScene::UpdateScene()
 
     if( Application->GetModel()->GetFullWorldState() )
     {
-        QList<GraphicsItem*>& list = this->items(ViewRect);
-        scene::SCObject* item =
+//        QList<QGraphicsItem*>& list = this->items(ViewRect);
+//        for( auto& item : list ) {
+//        }
     }
 
     Minimap->setPos(PlayerPos - ViewRect.center() + QPointF(10, 10));
